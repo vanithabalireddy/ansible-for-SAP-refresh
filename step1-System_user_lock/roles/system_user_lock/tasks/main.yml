@@ -5,7 +5,8 @@
      bapi_user_lock:
        user_list: True
        existing_locked_users: True
-       lock_users: True
+       lock_users:
+         action: lock
    register: system_user_lock
 
  - debug: var=system_user_lock

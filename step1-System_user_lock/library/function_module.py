@@ -6,9 +6,9 @@ from ansible.module_utils.PreSystemRefresh import PreSystemRefresh
 def main():
     fields = dict(
         bapi_user_lock=dict(
-            user_list=dict(default=True, type='bool'),
+            user_list=dict(default=True, type='bool', required=True),
             existing_locked_users=dict(default=True, type='bool'),
-            lock_users=dict(default=True, type='bool'),
+            lock_users=dict(action=dict(choices=['lock', 'unlock'], required=True), default=True, type='dict'),
             type='dict')
     )
 
@@ -18,7 +18,7 @@ def main():
     )
 
     if module.check_mode:
-        module.exit_json({"Mes" : "CheckMode is not supported as of now!"})
+        module.exit_json({"Mes": "CheckMode is not supported as of now!"})
 
     systemRefresh = PreSystemRefresh()
 
@@ -28,13 +28,16 @@ def main():
     exception_list = ['SST_TRNG', 'KRISHNA', 'BJOERN', 'DDIC', 'SMAGENDIRAN', 'GIRIDR', 'MRAM']
 
     if module.params['bapi_user_lock']:
-        if module.params['bapi_user_lock']['user_list'] == True:
+        if module.params['bapi_user_lock']['user_list']:
             user_list = systemRefresh.users_list()
-        if module.params['bapi_user_lock']['existing_locked_users'] == True:
+        if module.params['bapi_user_lock']['existing_locked_users']:
             existing_locked_users = systemRefresh.existing_locked_users()
-        if module.params['bapi_user_lock']['lock_users'] == True:
+        if module.params['bapi_user_lock']['lock_users']['action'] == 'lock':
             list = [user for user in user_list if user not in existing_locked_users]
             locked_users, errors, excempted_users = systemRefresh.user_lock(list, exception_list, 'lock')
+        if module.params['bapi_user_lock']['lock_users']['action'] == 'unlock':
+            list = [user for user in user_list if user not in existing_locked_users]
+            locked_users, errors, excempted_users = systemRefresh.user_lock(list, exception_list, 'unlock')
 
     data = dict()
     data["Entire System User List"] = user_list
