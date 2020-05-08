@@ -1,4 +1,8 @@
 - hosts: localhost
   roles:
     - role: system_user_lock
-
+    - role: export_printers
+      vars:
+        report: RSPOXDEV
+        variant_name: ZPRINT_EXP
+        client: 100
