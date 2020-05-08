@@ -10,7 +10,6 @@ def bapi_user_lock(module, systemRefresh, params):
     locked_users = None
 
     exception_list = params['lock_users']['exception_list']
-    dbiswas = ['SAP*']
 
     data = dict()
 
@@ -29,7 +28,7 @@ def bapi_user_lock(module, systemRefresh, params):
         data["User's Locked with exception to the users list provided to kept unlocked"] = locked_users
 
     if params['lock_users']['action'] == 'unlock':
-        locked_users, errors, excempted_users = systemRefresh.user_lock(user_list, dbiswas, 'unlock')
+        locked_users, errors, excempted_users = systemRefresh.user_lock(user_list, exception_list, 'unlock')
         data["User's who's status was already locked prior to the activity"] = dbiswas
         data["User's Unlocked with exception to the users who's status was already locked prior to the activity"] = locked_users
 

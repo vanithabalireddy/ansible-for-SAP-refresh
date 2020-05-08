@@ -19,6 +19,7 @@
             existing_locked_users: False
             lock_users:
                 action: unlock
+                exception_list: ['SAP*']
    register: system_user_unlock
 
  - debug: var=system_user_unlock
