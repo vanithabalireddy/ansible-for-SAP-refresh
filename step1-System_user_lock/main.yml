@@ -1,4 +1,4 @@
 - hosts: localhost
   roles:
-    - role: step1-System_user_lock
+    - role: system_user_lock
 

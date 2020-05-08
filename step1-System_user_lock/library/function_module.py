@@ -3,9 +3,13 @@ from ansible.module_utils.basic import *
 from ansible.module_utils.PreSystemRefresh import PreSystemRefresh
 
 
+def user_list():
+    pass
+
+
 def main():
     fields = dict(
-        users_list=dict(
+        user_list=dict(
             action=dict(default=True, type='bool'),
             type='dict'),
         existing_locked_users=dict(
@@ -24,9 +28,15 @@ def main():
     if module.check_mode:
         module.exit_json({"Mes" : "CheckMode is not supported as of now!"})
 
-    users_list = module.params['users_list']
+    systemRefresh = PreSystemRefresh()
 
-    result = users_list
+    user_list = None
+    if module.params['user_list']:
+        action = module.params['user_list']['action']
+        if action == True:
+            user_list = systemRefresh.users_list()
+
+    result = user_list
     data = {"Result": result}
 
     module.exit_json(changed=True, meta=data)

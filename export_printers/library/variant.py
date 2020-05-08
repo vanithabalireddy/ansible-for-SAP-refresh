@@ -26,6 +26,8 @@ def main():
 
     sysRefresh = PreSystemRefresh()
 
+    sysRefresh.
+
     if action == "create":
         result = sysRefresh.create_variant(report, variant_name, desc, content, text, screen)
     elif action == "delete":

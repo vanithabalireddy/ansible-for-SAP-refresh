@@ -17,7 +17,7 @@ class PreSystemRefresh:
         try:
             tables = self.conn.call("RFC_READ_TABLE", QUERY_TABLE='USR02', FIELDS=[{'FIELDNAME': 'BNAME'}])
         except Exception as e:
-            return self.prRed("\nError while fetching user's list from USR02 table: {}".format(e))
+            return "Error while fetching user's list from USR02 table: {}".format(e)
 
         users = []
 
