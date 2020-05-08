@@ -30,14 +30,21 @@ def main():
 
     systemRefresh = PreSystemRefresh()
 
-    user_list = None
+    output = None
     if module.params['user_list']:
         action = module.params['user_list']['action']
         if action == True:
-            user_list = systemRefresh.users_list()
+            output = systemRefresh.users_list()
+    elif module.params['existing_locked_users']:
+        action = module.params['existing_locked_users']['action']
+        if action == True:
+            output = systemRefresh.users_list()
+    elif module.params['lock_users']:
+        action = module.params['lock_users']['action']
+        if action == True:
+            output = systemRefresh.users_list()
 
-    result = user_list
-    data = {"Result": result}
+    data = {"Result": output}
 
     module.exit_json(changed=True, meta=data)
 
