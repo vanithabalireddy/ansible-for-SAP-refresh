@@ -9,6 +9,7 @@
                 action: lock
                 exception_list: ['SST_TRNG', 'KRISHNA', 'BJOERN', 'DDIC', 'SMAGENDIRAN', 'GIRIDR', 'MRAM']
    register: system_user_lock
+   tags: lock
 
  - debug: var=system_user_lock
 
@@ -21,5 +22,6 @@
                 action: unlock
                 exception_list: ['SAP*']
    register: system_user_unlock
+   tags: unlock
 
  - debug: var=system_user_unlock
