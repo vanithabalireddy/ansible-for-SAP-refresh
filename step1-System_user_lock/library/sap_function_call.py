@@ -2,7 +2,7 @@
 from ansible.module_utils.basic import *
 from ansible.module_utils.PreSystemRefresh import PreSystemRefresh
 
-
+# For setting users to Administer Lock and Unlock
 def bapi_user_lock(module, systemRefresh, params):
 
     user_list = None
