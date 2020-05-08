@@ -29,7 +29,7 @@ def bapi_user_lock(module, systemRefresh, params):
 
     if params['lock_users']['action'] == 'unlock':
         locked_users, errors, excempted_users = systemRefresh.user_lock(user_list, exception_list, 'unlock')
-        data["User's who's status was already locked prior to the activity"] = dbiswas
+        data["User's who's status was already locked prior to the activity"] = exception_list
         data["User's Unlocked with exception to the users who's status was already locked prior to the activity"] = locked_users
 
     module.exit_json(changed=True, meta=data)
