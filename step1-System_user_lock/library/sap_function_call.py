@@ -24,12 +24,12 @@ def bapi_user_lock(module, systemRefresh, params):
     if params['lock_users']['action'] == 'lock':
         list = [user for user in user_list if user not in existing_locked_users]
         locked_users, errors, excempted_users = systemRefresh.user_lock(list, exception_list, 'lock')
-        data["Exception user list provided to keep them unlocked"] = exception_list
-        data["User's Locked with exception to the users list provided to kept unlocked"] = locked_users
+        data["Exception user list provided to keep them from locking"] = exception_list
+        data["User's Locked with exception to the Exception user list provided ^^"] = locked_users
 
     if params['lock_users']['action'] == 'unlock':
         locked_users, errors, excempted_users = systemRefresh.user_lock(user_list, exception_list, 'unlock')
-        data["User's who's status was already locked prior to the activity"] = exception_list
+        data["User's who's current status is set to Lock(*including existing users that are locked)"] = exception_list
         data["User's Unlocked with exception to the users who's status was already locked prior to the activity"] = locked_users
 
     module.exit_json(changed=True, meta=data)
