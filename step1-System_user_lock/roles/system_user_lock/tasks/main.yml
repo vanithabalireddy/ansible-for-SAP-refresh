@@ -12,5 +12,6 @@
    function_module:
      existing_locked_users:
        action: True
+   register: existing_locked_users
 
- - debug: True
+ - debug: var=existing_locked_users
