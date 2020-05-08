@@ -1,12 +1,22 @@
 ---
 # tasks file for system_user_lock
- - name: Fetch user list
+ - name: System User Lock
    function_module:
      bapi_user_lock:
        user_list: True
        existing_locked_users: True
        lock_users:
          action: lock
+   register: system_user_lock
+
+ - debug: var=system_user_lock
+
+ - name: System User UnLock
+   function_module:
+     bapi_user_lock:
+       user_list: True
+       lock_users:
+         action: unlock
    register: system_user_lock
 
  - debug: var=system_user_lock
