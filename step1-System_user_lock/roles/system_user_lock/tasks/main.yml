@@ -7,6 +7,7 @@
             existing_locked_users: True
             lock_users:
                 action: lock
+                exception_list: ['SST_TRNG', 'KRISHNA', 'BJOERN', 'DDIC', 'SMAGENDIRAN', 'GIRIDR', 'MRAM']
    register: system_user_lock
 
  - debug: var=system_user_lock
