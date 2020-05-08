@@ -14,21 +14,21 @@ def bapi_user_lock(module, systemRefresh, params):
 
     data = dict()
 
-    if params['bapi_user_lock']['user_list']:
+    if params['user_list']:
         user_list = systemRefresh.users_list()
         data["Entire System User List"] = user_list
 
-    if params['bapi_user_lock']['existing_locked_users']:
+    if params['existing_locked_users']:
         existing_locked_users = systemRefresh.existing_locked_users()
         data["User's who's status is already set to Administer Lock"] = existing_locked_users
 
-    if params['bapi_user_lock']['lock_users']['action'] == 'lock':
+    if params['lock_users']['action'] == 'lock':
         list = [user for user in user_list if user not in existing_locked_users]
         locked_users, errors, excempted_users = systemRefresh.user_lock(list, exception_list, 'lock')
         data["Exception user list provided to keep them unlocked"] = exception_list
         data["User's Locked with exception to the users list provided to kept unlocked"] = locked_users
 
-    if params['bapi_user_lock']['lock_users']['action'] == 'unlock':
+    if params['lock_users']['action'] == 'unlock':
         locked_users, errors, excempted_users = systemRefresh.user_lock(user_list, dbiswas, 'unlock')
         data["User's who's status was already locked prior to the activity"] = dbiswas
         data["User's Unlocked with exception to the users who's status was already locked prior to the activity"] = locked_users
