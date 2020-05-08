@@ -1,2 +1,9 @@
 ---
 # tasks file for system_user_lock
+ - name: Testing Function Module for system user lock
+   function_module:
+     user_list:
+       action: True
+   register: user_list
+
+ - debug: var=user_list
