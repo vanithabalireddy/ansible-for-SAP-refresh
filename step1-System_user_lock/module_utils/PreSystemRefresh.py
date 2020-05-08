@@ -1,4 +1,3 @@
-#!/usr/bin/python
 from pyrfc import Connection
 from configparser import ConfigParser
 import os
@@ -16,6 +15,7 @@ class PreSystemRefresh:
     def users_list(self):
         try:
             tables = self.conn.call("RFC_READ_TABLE", QUERY_TABLE='USR02', FIELDS=[{'FIELDNAME': 'BNAME'}])
+            print(tables)
         except Exception as e:
             return "Error while fetching user's list from USR02 table: {}".format(e)
 
@@ -27,7 +27,7 @@ class PreSystemRefresh:
 
         return users
 
-    def locked_users(self):
+    def existing_locked_users(self):
         params = dict(
                     PARAMETER='ISLOCKED',
                     FIELD='LOCAL_LOCK',
@@ -47,22 +47,30 @@ class PreSystemRefresh:
 
         return locked_user_list
 
-    def user_lock(self, user_list, except_users_list):
-        users_locked = []
+    def user_lock(self, user_list, except_users_list, action):
+        if action == "lock":
+            func_module = 'BAPI_USER_LOCK'
+        elif action == "unlock":
+            func_module = 'BAPI_USER_UNLOCK'
+        else:
+            return "Please pass third argument ['lock' | 'unlock']"
 
+        users_locked = []
+        errors = dict()
+        users_exempted = []
         for user in user_list:
             if user not in except_users_list:
                 try:
-                    self.conn.call('BAPI_USER_LOCK', USERNAME=user)
-                    print("User: {} is locked!".format(user))
+                    self.conn.call(func_module, USERNAME=user)
                     users_locked.append(user)
                 except Exception as e:
-                    print("Not able to Lock user: " + user + "Please check! {}".format(e))
+                    errors[user] = e
                     pass
             else:
-                print("User: " + user + " is excepted from setting to Administer Lock.")
+                users_exempted.append(user)
+                #print("User: " + user + " is excepted from setting to Administer Lock.")
 
-        return users_locked
+        return users_locked, errors, users_exempted
 
     def suspend_jobs(self):
         try:
@@ -71,7 +79,25 @@ class PreSystemRefresh:
         except Exception as e:
             return "Failed to Suspend Background Jobs: {}".format(e)
 
+    # Needs work around
     def export_sys_tables(self):
+        params = dict(
+            NAME='ZTABEXP',
+            OPSYSTEM='Linux',
+            OPCOMMAND='R3trans',
+            PARAMETERS='-w /tmp/exp_ecc.log /tmp/exp.ctl'
+        )
+
+        try:
+            self.conn.call("ARCHIVFILE_CLIENT_TO_SERVER", PATH="", TARGETPATH='/tmp')
+        except Exception as e:
+            return "Error while copying exp.ctl file to SAP server: {}".format(e)
+
+        try:
+            self.conn.call("SXPG_COMMAND_INSERT", COMMAND=params)
+        except Exception as e:
+            return "Error while inserting Command arguments: {}".format(e)
+
         try:
             self.conn.call("SXPG_COMMAND_EXECUTE", COMMANDNAME='ZTABEXP')
             return "Successfully Exported Quality System Tables"
@@ -204,3 +230,11 @@ class PreSystemRefresh:
                 return "User Master Export is Failed!! {}".format(e)
         else:
             return "Variant {} creation has unknown issues, please check!".format(variant_name)
+
+
+# 1. System user lock               = Done
+# 2. Suspend background Jobs        = Done
+# 3. Export Quality System Tables   = Not Done # Funciton module is not callable
+# 4. Export Printer Devices         = Done     # SSH to fetch /tmp/printers file from target to ansible controller node.
+# 5. User Master Export             = Done     # SSH to fetch user master exported file.
+

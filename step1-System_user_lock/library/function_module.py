@@ -38,7 +38,7 @@ def main():
     elif module.params['existing_locked_users']:
         action = module.params['existing_locked_users']['action']
         if action == True:
-            output = systemRefresh.users_list()
+            output = systemRefresh.existing_locked_users()
     elif module.params['lock_users']:
         action = module.params['lock_users']['action']
         if action == True:
