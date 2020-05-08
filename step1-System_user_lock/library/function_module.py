@@ -3,21 +3,13 @@ from ansible.module_utils.basic import *
 from ansible.module_utils.PreSystemRefresh import PreSystemRefresh
 
 
-def user_list():
-    pass
-
-
 def main():
     fields = dict(
-        user_list=dict(
-            action=dict(default=True, type='bool'),
+        bapi_user_lock=dict(
+            user_list=dict(default=True, type='bool'),
+            existing_locked_users=dict(default=True, type='bool'),
+            lock_users=dict(default=True, type='bool'),
             type='dict'),
-        existing_locked_users=dict(
-            action=dict(default=True, type='bool'),
-            type='dict'),
-        lock_users=dict(
-            action=dict(default=True, type='bool'),
-            type='dict')
     )
 
     module = AnsibleModule(
@@ -30,21 +22,23 @@ def main():
 
     systemRefresh = PreSystemRefresh()
 
-    output = None
-    if module.params['user_list']:
-        action = module.params['user_list']['action']
-        if action == True:
-            output = systemRefresh.users_list()
-    elif module.params['existing_locked_users']:
-        action = module.params['existing_locked_users']['action']
-        if action == True:
-            output = systemRefresh.existing_locked_users()
-    elif module.params['lock_users']:
-        action = module.params['lock_users']['action']
-        if action == True:
-            output = systemRefresh.users_list()
+    user_list = None
+    existing_locked_users = None
+    locked_users = None
+    exception_list = ['SST_TRNG', 'KRISHNA', 'BJOERN', 'DDIC', 'DMAGENDIRAN', 'GIRIDR', 'MRAM']
 
-    data = {"Result": output}
+    if module.params['bapi_user_lock']:
+        if module.params['bapi_user_lock']['user_list'] == True:
+            user_list = systemRefresh.users_list()
+        if module.params['bapi_user_lock']['existing_locked_users'] == True:
+            existing_locked_users = systemRefresh.existing_locked_users()
+        if module.params['bapi_user_lock']['locked_users'] == True:
+            locked_users = systemRefresh.user_lock(user_list, exception_list, 'lock')
+
+    data = dict()
+    data['User_List'] = user_list
+    data['Existing_locked_users'] = existing_locked_users
+    data['Users_Locked'] = locked_users
 
     module.exit_json(changed=True, meta=data)
 
