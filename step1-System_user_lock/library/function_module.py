@@ -25,7 +25,9 @@ def main():
     user_list = None
     existing_locked_users = None
     locked_users = None
+
     exception_list = ['SST_TRNG', 'KRISHNA', 'BJOERN', 'DDIC', 'SMAGENDIRAN', 'GIRIDR', 'MRAM']
+    dbiswas = ['SAP*']
 
     if module.params['bapi_user_lock']:
         if module.params['bapi_user_lock']['user_list']:
@@ -36,8 +38,7 @@ def main():
             list = [user for user in user_list if user not in existing_locked_users]
             locked_users, errors, excempted_users = systemRefresh.user_lock(list, exception_list, 'lock')
         if module.params['bapi_user_lock']['lock_users']['action'] == 'unlock':
-            list = [user for user in user_list if user not in existing_locked_users]
-            locked_users, errors, excempted_users = systemRefresh.user_lock(list, exception_list, 'unlock')
+            locked_users, errors, excempted_users = systemRefresh.user_lock(user_list, dbiswas, 'unlock')
 
     data = dict()
     data["Entire System User List"] = user_list
