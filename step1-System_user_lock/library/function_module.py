@@ -9,7 +9,7 @@ def main():
             user_list=dict(default=True, type='bool'),
             existing_locked_users=dict(default=True, type='bool'),
             lock_users=dict(default=True, type='bool'),
-            type='dict'),
+            type='dict')
     )
 
     module = AnsibleModule(
@@ -25,7 +25,7 @@ def main():
     user_list = None
     existing_locked_users = None
     locked_users = None
-    exception_list = ['SST_TRNG', 'KRISHNA', 'BJOERN', 'DDIC', 'DMAGENDIRAN', 'GIRIDR', 'MRAM']
+    exception_list = ['SST_TRNG', 'KRISHNA', 'BJOERN', 'DDIC', 'SMAGENDIRAN', 'GIRIDR', 'MRAM']
 
     if module.params['bapi_user_lock']:
         if module.params['bapi_user_lock']['user_list'] == True:
@@ -33,7 +33,8 @@ def main():
         if module.params['bapi_user_lock']['existing_locked_users'] == True:
             existing_locked_users = systemRefresh.existing_locked_users()
         if module.params['bapi_user_lock']['lock_users'] == True:
-            locked_users, errors, excempted_users = systemRefresh.user_lock(user_list, exception_list, 'lock')
+            list = [user for user in user_list if user not in existing_locked_users]
+            locked_users, errors, excempted_users = systemRefresh.user_lock(list, exception_list, 'lock')
 
     data = dict()
     data["Entire System User List"] = user_list
