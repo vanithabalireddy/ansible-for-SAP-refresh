@@ -38,11 +38,11 @@ def main():
 
         if module.params['bapi_user_lock']['existing_locked_users']:
             existing_locked_users = systemRefresh.existing_locked_users()
-            data["User's who's status is already set to Administer Lock"] = existing_locked_users
 
         if module.params['bapi_user_lock']['lock_users']['action'] == 'lock':
             list = [user for user in user_list if user not in existing_locked_users]
             locked_users, errors, excempted_users = systemRefresh.user_lock(list, exception_list, 'lock')
+            data["User's who's status is already set to Administer Lock"] = existing_locked_users
             data["Exception user list provided to keep them unlocked"] = exception_list
             data["User's Locked with exception to the users list provided to kept unlocked"] = locked_users
 
