@@ -41,7 +41,7 @@ def main():
             user_list=dict(default=True, type='bool', required=True),
             existing_locked_users=dict(default=True, type='bool'),
             lock_users=dict(action=dict(choices=['lock', 'unlock'], required=True),
-                            exception_list=dict(required=True, type='list'), default=True, type='dict'),
+                            exception_list=dict(required=True, type='list'), type='dict'),
             type='dict')
     )
 
