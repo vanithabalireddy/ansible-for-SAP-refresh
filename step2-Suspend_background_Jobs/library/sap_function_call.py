@@ -36,7 +36,7 @@ def bapi_user_lock(module, prefresh, params):
     module.exit_json(changed=True, meta=data)
 
 
-def suspend_jobs(module, prefresh, params):
+def suspend_bg_jobs(module, prefresh, params):
     if params:
         response = prefresh.suspend_bg_jobs()
         module.exit_json(changed=True, meta={'stdout': response})
@@ -69,7 +69,7 @@ def main():
 
     if module.params['suspend_bg_jobs']:
         params = module.params['suspend_bg_jobs']
-        suspend_jobs(module, prefresh, params)
+        suspend_bg_jobs(module, prefresh, params)
 
 
 if __name__ == "__main__":
