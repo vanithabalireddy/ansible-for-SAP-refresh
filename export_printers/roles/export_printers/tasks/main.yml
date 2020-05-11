@@ -21,9 +21,11 @@
    when: var_check.stdout == "False"
 
  - name: Export printer devices
-   export_printers:
-       report: "{{ report }}"
-       variant_name: "{{ variant_name }}"
+   sap_function_call:
+     export_printers:
+         report: "{{ report }}"
+         variant_name: "{{ variant_name }}"
+   register: export_printers
    notify: Delete Variant
 
-
+- debug: var=export_printers
