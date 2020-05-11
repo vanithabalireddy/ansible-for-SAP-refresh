@@ -1,0 +1,31 @@
+---
+# tasks file for user_master_export
+ - name: Copy Variables templates containing variant details
+   template:
+        src: variant_data.py.j2
+        dest: /root/ansible-for-SAP/step3-Export_printers/module_utils/export_printer_devices_vars.py
+        force: yes
+
+ - name: Check Variant
+   variant:
+       report: "{{ report }}"
+       variant_name: "{{ variant_name }}"
+       action: check
+   register: var_check
+
+ - name: Create Variant
+   variant:
+       report: "{{ report }}"
+       variant_name: "{{ variant_name }}"
+       action: create
+   when: var_check.stdout == "False"
+
+ - name: Export printer devices
+   sap_function_call:
+     export_printers:
+         report: "{{ report }}"
+         variant_name: "{{ variant_name }}"
+   register: export_printers
+   notify: Delete Variant
+
+ - debug: var=export_printers
