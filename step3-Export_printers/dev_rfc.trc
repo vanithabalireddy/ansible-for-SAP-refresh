@@ -318,3 +318,47 @@ NW RFC Library: SDK variant, Release 750 Patch Level 5, Compiled on Aug 20 2019 
 2020-05-11 14:45:44.347919 [140301681723200] >> Info entry
 	Searching for config file sapnwrfc.ini
 
+
+**** Trace file opened at 2020-05-11 15:02:05.538996 UTC+00:00 (GMT), Encoding UTF-8
+NW RFC Library: SDK variant, Release 750 Patch Level 5, Compiled on Aug 20 2019 21:18:37
+ CPIC library: 753.2019.02.22 version 3, NI library: 40, Kernel Release: 753 Patch Level 500
+ Current working directory: /home/ansible/ansible-for-SAP/step3-Export_printers, Program: python3
+ Hardware: AMD/Intel x86_64 with Linux x86_64, Operating_system: Linux 4.15.0-1065-aws
+ Hostname: ip-10-56-1-169, IP address: 10.56.1.169, IPv6 address: fe80::4ed:8ff:fe11:41ee
+
+2020-05-11 15:02:05.539037 [140261120034624] >> Info entry
+	Searching for config file sapnwrfc.ini
+
+
+**** Trace file opened at 2020-05-11 15:02:08.126085 UTC+00:00 (GMT), Encoding UTF-8
+NW RFC Library: SDK variant, Release 750 Patch Level 5, Compiled on Aug 20 2019 21:18:37
+ CPIC library: 753.2019.02.22 version 3, NI library: 40, Kernel Release: 753 Patch Level 500
+ Current working directory: /home/ansible/ansible-for-SAP/step3-Export_printers, Program: python3
+ Hardware: AMD/Intel x86_64 with Linux x86_64, Operating_system: Linux 4.15.0-1065-aws
+ Hostname: ip-10-56-1-169, IP address: 10.56.1.169, IPv6 address: fe80::4ed:8ff:fe11:41ee
+
+2020-05-11 15:02:08.126124 [140122474051392] >> Info entry
+	Searching for config file sapnwrfc.ini
+
+
+**** Trace file opened at 2020-05-11 15:02:10.950767 UTC+00:00 (GMT), Encoding UTF-8
+NW RFC Library: SDK variant, Release 750 Patch Level 5, Compiled on Aug 20 2019 21:18:37
+ CPIC library: 753.2019.02.22 version 3, NI library: 40, Kernel Release: 753 Patch Level 500
+ Current working directory: /home/ansible/ansible-for-SAP/step3-Export_printers, Program: python3
+ Hardware: AMD/Intel x86_64 with Linux x86_64, Operating_system: Linux 4.15.0-1065-aws
+ Hostname: ip-10-56-1-169, IP address: 10.56.1.169, IPv6 address: fe80::4ed:8ff:fe11:41ee
+
+2020-05-11 15:02:10.950803 [139763551233856] >> Info entry
+	Searching for config file sapnwrfc.ini
+
+
+**** Trace file opened at 2020-05-11 15:02:12.325789 UTC+00:00 (GMT), Encoding UTF-8
+NW RFC Library: SDK variant, Release 750 Patch Level 5, Compiled on Aug 20 2019 21:18:37
+ CPIC library: 753.2019.02.22 version 3, NI library: 40, Kernel Release: 753 Patch Level 500
+ Current working directory: /home/ansible/ansible-for-SAP/step3-Export_printers, Program: python3
+ Hardware: AMD/Intel x86_64 with Linux x86_64, Operating_system: Linux 4.15.0-1065-aws
+ Hostname: ip-10-56-1-169, IP address: 10.56.1.169, IPv6 address: fe80::4ed:8ff:fe11:41ee
+
+2020-05-11 15:02:12.325820 [140576806098752] >> Info entry
+	Searching for config file sapnwrfc.ini
+

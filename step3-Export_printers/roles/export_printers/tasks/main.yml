@@ -3,7 +3,7 @@
  - name: Copy Variables templates containing variant details
    template:
         src: variant_data.py.j2
-        dest: /root/ansible-for-SAP/step3-Export_printers/module_utils/export_printer_devices_vars.py
+        dest: /home/ansible/ansible-for-SAP/step3-Export_printers/module_utils/export_printer_devices_vars.py
         force: yes
 
  - name: Check Variant
