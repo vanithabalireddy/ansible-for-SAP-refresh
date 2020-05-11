@@ -1,8 +1,11 @@
 - hosts: localhost
   roles:
+    - role: system_user_lock
+    - role: suspend_background-jobs
     - role: export_printers
       vars:
         report: RSPOXDEV
         variant_name: ZPRINT_EXP
         client: 100
+
 
