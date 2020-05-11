@@ -1,7 +1,5 @@
 - hosts: localhost
   roles:
-    - role: system_user_lock
-    - role: suspend_background-jobs
     - role: export_printers
       vars:
         report: RSPOXDEV
