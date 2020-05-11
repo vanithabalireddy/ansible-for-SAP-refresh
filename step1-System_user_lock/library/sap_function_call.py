@@ -58,7 +58,7 @@ def main():
             lock_users=dict(action=dict(choices=['lock', 'unlock'], required=True),
                             exception_list=dict(required=True, type='list'), type='dict'),
             type='dict'),
-        suspend_bg_jobs=dict(default=True, type='bool'),
+        suspend_bg_jobs=dict(type='bool'),
         export_printers=dict(report=dict(required=True, type='str'),
                              variant_name=dict(required=True, type='str'), type='dict')
     )

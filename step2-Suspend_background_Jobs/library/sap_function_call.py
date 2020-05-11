@@ -42,6 +42,14 @@ def suspend_bg_jobs(module, prefresh, params):
         module.exit_json(changed=True, meta={'stdout': response})
 
 
+def export_printers(module, prefresh, params):
+    if params:
+        report = params['report']
+        variant_name = params['variant_name']
+        response = prefresh.export_printer_devices(report, variant_name)
+        module.exit_json(changed=True, meta={'stdout': response})
+
+
 def main():
     fields = dict(
         bapi_user_lock=dict(
@@ -50,7 +58,9 @@ def main():
             lock_users=dict(action=dict(choices=['lock', 'unlock'], required=True),
                             exception_list=dict(required=True, type='list'), type='dict'),
             type='dict'),
-        suspend_bg_jobs=dict(default=True, type='bool')
+        suspend_bg_jobs=dict(type='bool'),
+        export_printers=dict(report=dict(required=True, type='str'),
+                             variant_name=dict(required=True, type='str'), type='dict')
     )
 
     module = AnsibleModule(
@@ -70,6 +80,10 @@ def main():
     if module.params['suspend_bg_jobs']:
         params = module.params['suspend_bg_jobs']
         suspend_bg_jobs(module, prefresh, params)
+
+    if module.params['export_printers']:
+        params = module.params['export_printers']
+        export_printers(module, prefresh, params)
 
 
 if __name__ == "__main__":
