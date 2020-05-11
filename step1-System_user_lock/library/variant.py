@@ -6,11 +6,11 @@ from ansible.module_utils.export_printer_devices_vars import *
 
 def main():
 
-    fields = {
-        "report": {"required": True, "type": "str"},
-        "variant_name": {"required": True, "type": "str"},
-        "action": {"required": True, "type": "str"}
-    }
+    fields = dict(
+        report=dict(required=True, type='str'),
+        variant_name=dict(required=True, type='str'),
+        action=dict(required=True, type='str')
+    )
 
     module = AnsibleModule(
         argument_spec=fields,
@@ -24,20 +24,19 @@ def main():
     variant_name = module.params['variant_name']
     action = module.params['action']
 
-    sysRefresh = PreSystemRefresh()
+    prefresh = PreSystemRefresh()
 
     if action == "create":
-        result = sysRefresh.create_variant(report, variant_name, desc, content, text, screen)
+        result = prefresh.create_variant(report, variant_name, desc, content, text, screen)
     elif action == "delete":
-        result = sysRefresh.delete_variant(report, variant_name)
+        result = prefresh.delete_variant(report, variant_name)
     elif action == "check":
-        result = sysRefresh.check_variant(report, variant_name)
+        result = prefresh.check_variant(report, variant_name)
     else:
         raise AnsibleError("action parameters supports only [create|delete|check]")
 
-    data = {"stdout": result}
-
     module.exit_json(changed=True, stdout="{}".format(result))
+
 
 if __name__ == "__main__":
     main()
