@@ -28,4 +28,4 @@
    register: export_printers
    notify: Delete Variant
 
-- debug: var=export_printers
+ - debug: var=export_printers
