@@ -1378,3 +1378,25 @@ NW RFC Library: SDK variant, Release 750 Patch Level 5, Compiled on Aug 20 2019 
 	The UUID daemon (uuidd) is not active.
 Please ask your system administrator to activate uuidd according to SAP note 1391070.
 
+
+**** Trace file opened at 2020-05-11 14:42:54.773296 UTC+00:00 (GMT), Encoding UTF-8
+NW RFC Library: SDK variant, Release 750 Patch Level 5, Compiled on Aug 20 2019 21:18:37
+ CPIC library: 753.2019.02.22 version 3, NI library: 40, Kernel Release: 753 Patch Level 500
+ Current working directory: /root/ansible-for-SAP/step1-System_user_lock, Program: python3
+ Hardware: AMD/Intel x86_64 with Linux x86_64, Operating_system: Linux 4.15.0-1065-aws
+ Hostname: ip-10-56-1-169, IP address: 10.56.1.169, IPv6 address: fe80::4ed:8ff:fe11:41ee
+
+2020-05-11 14:42:54.773772 [140193712084800] >> Info entry
+	Searching for config file sapnwrfc.ini
+
+
+**** Trace file opened at 2020-05-11 14:42:57.260035 UTC+00:00 (GMT), Encoding UTF-8
+NW RFC Library: SDK variant, Release 750 Patch Level 5, Compiled on Aug 20 2019 21:18:37
+ CPIC library: 753.2019.02.22 version 3, NI library: 40, Kernel Release: 753 Patch Level 500
+ Current working directory: /root/ansible-for-SAP/step1-System_user_lock, Program: python3
+ Hardware: AMD/Intel x86_64 with Linux x86_64, Operating_system: Linux 4.15.0-1065-aws
+ Hostname: ip-10-56-1-169, IP address: 10.56.1.169, IPv6 address: fe80::4ed:8ff:fe11:41ee
+
+2020-05-11 14:42:57.260066 [140238087382848] >> Info entry
+	Searching for config file sapnwrfc.ini
+
