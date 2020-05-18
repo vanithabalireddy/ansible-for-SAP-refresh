@@ -8,7 +8,7 @@
    register: pc3_ctc_val
    tags: ctc
 
- - debug: pc3_ctc_val
+ - debug: var=pc3_ctc_val
    tags: ctc
 
  - name: Copy Variables templates containing variant details

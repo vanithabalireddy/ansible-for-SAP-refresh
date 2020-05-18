@@ -4,9 +4,9 @@ report = ""ZRSCLXCOP""
 variant_name = ""SST_ZUSR_EXP""
 
 desc = dict(
-    MANDT="{{ client }}",
-    REPORT="{{ report }}",
-    VARIANT=self.creds['client']
+    MANDT=self.creds['client'],
+    REPORT=report,
+    VARIANT=variant_name
 )
 
 content = [{'SELNAME': 'COPYCLI', 'KIND': 'P', 'LOW': self.creds['client']},
