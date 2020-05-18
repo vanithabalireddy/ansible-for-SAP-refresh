@@ -202,7 +202,7 @@ class PreSystemRefresh:
         else:
             return False
 
-    def user_master_export(self):
+    def user_master_export(self, report, variant_name):
         try:
             self.conn.call("SUBST_START_REPORT_IN_BATCH", IV_JOBNAME=report, IV_REPNAME=report, IV_VARNAME=variant_name)
             return "User Master Export is Completed!"
