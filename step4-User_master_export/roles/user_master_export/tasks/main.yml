@@ -36,3 +36,12 @@
        action: create
    when: var_check.stdout == "False"
 
+ - name: User Master Export
+   sap_function_call:
+     user_master_export:
+         report: "{{ report }}"
+         variant_name: "{{ variant_name }}"
+   register: user_master_export
+   notify: Delete Variant
+
+ - debug: var=user_master_export
