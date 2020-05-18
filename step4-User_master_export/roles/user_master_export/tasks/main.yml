@@ -41,7 +41,11 @@
      user_master_export:
          report: "{{ report }}"
          variant_name: "{{ variant_name }}"
+         pc3_ctc_val: False
    register: user_master_export
    notify: Delete Variant
 
  - debug: var=user_master_export
+
+
+
