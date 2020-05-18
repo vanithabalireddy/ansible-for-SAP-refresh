@@ -5,8 +5,8 @@
   roles:
     - role: user_master_export
       vars:
-        report: RSPOXDEV
-        variant_name: ZPRINT_EXP
+        report: "ZRSCLXCOP"
+        variant_name: "SST_ZUSR_EXP"
         client: 100
 
 

@@ -53,7 +53,7 @@ def export_printers(module, prefresh, params):
 def user_master_export(module, prefresh, params):
     if params['pc3_ctc_val']:
         response = prefresh.pc3_ctc_val()
-        module.exit_json(changed=True, meta={'stdout': response})
+        module.exit_json(changed=True, stdout=response)
     else:
         report = params['report']
         variant_name = params['variant_name']
