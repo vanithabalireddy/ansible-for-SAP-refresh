@@ -2,14 +2,15 @@
 
 report = "ZRSCLXCOP"
 variant_name = "SST_ZUSR_EXP"
+client = "100"
 
 desc = dict(
-    MANDT=self.creds['client'],
+    MANDT=client,
     REPORT=report,
     VARIANT=variant_name
 )
 
-content = [{'SELNAME': 'COPYCLI', 'KIND': 'P', 'LOW': self.creds['client']},
+content = [{'SELNAME': 'COPYCLI', 'KIND': 'P', 'LOW': client},
            {'SELNAME': 'SUSR', 'KIND': 'P', 'LOW': 'X'},
            {'SELNAME': 'MODUS', 'KIND': 'P', 'LOW': 'E'},
            {'SELNAME': 'ALTINP', 'KIND': 'P', 'LOW': 'A'},
@@ -18,7 +19,7 @@ content = [{'SELNAME': 'COPYCLI', 'KIND': 'P', 'LOW': self.creds['client']},
            {'SELNAME': 'PROFIL', 'KIND': 'P', 'LOW': 'SAP_USER'},
            {'SELNAME': 'TARGET', 'KIND': 'P', 'LOW': 'PC3'}]
 
-text = [{'MANDT': self.creds['client'], 'LANGU': 'EN', 'REPORT': report, 'VARIANT': variant_name,
+text = [{'MANDT': client, 'LANGU': 'EN', 'REPORT': report, 'VARIANT': variant_name,
          'VTEXT': 'User Master Export'}]
 
 screen = [{'DYNNR': '1000', 'KIND': 'P'}]
