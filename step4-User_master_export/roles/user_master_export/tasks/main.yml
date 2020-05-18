@@ -3,10 +3,13 @@
 
  - name: Fetch pc3_val and ctc_val
    sap_function_call:
-     pc3_ctc_val: True
+     user_master_export:
+       pc3_ctc_val: True
    register: pc3_ctc_val
+   tags: ctc
 
  - debug: pc3_ctc_val
+   tags: ctc
 
  - name: Copy Variables templates containing variant details
    template:
