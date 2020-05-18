@@ -9,7 +9,7 @@
    tags: ctc
 
 
- - debug: var=pc3_ctc_val.stdout
+ - debug: var=pc3_ctc_val.meta.stdout
    tags: ctc
 
  - name: Copy Variables templates containing variant details
@@ -18,8 +18,8 @@
         dest: /root/ansible-for-SAP/step4-User_master_export/module_utils/user_master_export.py
         force: yes
    vars:
-     pc3_val: "{{ pc3_ctc_val.stdout.pc3_val }}"
-     ctc_val: "{{ pc3_ctc_val.stdout.ctc_val }}"
+     pc3_val: "{{ pc3_ctc_val.meta.stdout.pc3_val }}"
+     ctc_val: "{{ pc3_ctc_val.meta.stdout.ctc_val }}"
    tags: ctc
 
  - name: Check Variant
