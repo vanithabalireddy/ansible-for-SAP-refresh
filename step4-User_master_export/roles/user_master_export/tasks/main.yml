@@ -1,0 +1,33 @@
+---
+# tasks file for user_master_export
+
+ - name: Fetch pc3_val and ctc_val
+   sap_function_call:
+     pc3_ctc_val: True
+   register: pc3_ctc_val
+
+ - debug: pc3_ctc_val
+
+ - name: Copy Variables templates containing variant details
+   template:
+        src: variant_data.py.j2
+        dest: /home/ansible/ansible-for-SAP/step4-User_master_export/module_utils/user_master_export.py
+        force: yes
+   vars:
+     pc3_val: pc3_val
+     ctc_val: ctc_val
+
+ - name: Check Variant
+   variant:
+       report: "ZRSCLXCOP"
+       variant_name: "SST_ZUSR_EXP"
+       action: check
+   register: var_check
+
+ - name: Create Variant
+   variant:
+       report: "ZRSCLXCOP"
+       variant_name: "SST_ZUSR_EXP"
+       action: create
+   when: var_check.stdout == "False"
+
