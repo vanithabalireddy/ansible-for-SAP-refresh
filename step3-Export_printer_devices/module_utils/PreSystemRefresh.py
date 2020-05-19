@@ -157,6 +157,8 @@ class PreSystemRefresh:
 
         if self.check_variant(report, variant_name) is False:
             return "Variant {} Successfully Deleted".format(variant_name)
+        else:
+            return "Failed to delete variant {}".format(variant_name)
 
     def export_printer_devices(self, report, variant_name):
             try:
@@ -215,5 +217,4 @@ class PreSystemRefresh:
 # 3. Export Quality System Tables   = Not Done # Funciton module is not callable
 # 4. Export Printer Devices         = Done     # SSH to fetch /tmp/printers file from target to ansible controller node.
 # 5. User Master Export             = Done     # SSH to fetch user master exported file.
-
 
