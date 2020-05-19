@@ -2,11 +2,12 @@
 
 report = "{{ report }}"
 variant_name = "{{ variant_name }}"
+client = "{{ client }}"
 
 desc = dict(
-    MANDT="{{ client }}",
-    REPORT="{{ report }}",
-    VARIANT="{{ variant_name }}"
+    MANDT=client,
+    REPORT=report,
+    VARIANT=variant_name
 )
 
 content = [{'SELNAME': 'DO_SRV', 'KIND': 'P', 'LOW': 'X'},
@@ -17,7 +18,7 @@ content = [{'SELNAME': 'DO_SRV', 'KIND': 'P', 'LOW': 'X'},
            {'SELNAME': 'DEVICE', 'KIND': 'S', 'SIGN': 'I', 'OPTION': 'CP', 'LOW': '*'},
            {'SELNAME': 'FILE', 'KIND': 'P', 'LOW': '/tmp/printers'}]
 
-text = [{'MANDT': "{{ client }}", 'LANGU': 'EN', 'REPORT': "{{ report }}", 'VARIANT': "{{ variant_name }}", 'VTEXT': 'Printers Export'}]
+text = [{'MANDT': client, 'LANGU': 'EN', 'REPORT': report, 'VARIANT': variant_name, 'VTEXT': 'Printers Export'}]
 
 screen = [{'DYNNR': '1000', 'KIND': 'P'}]
 

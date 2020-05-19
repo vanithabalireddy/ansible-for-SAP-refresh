@@ -1,12 +1,13 @@
 #!/usr/bin/python
 
-report = "RSPOXDEV"
-variant_name = "SST_ZPRINT_EXP"
+report = "{{ report }}"
+variant_name = "{{ variant_name }}"
+client = "{{ client }}"
 
 desc = dict(
-    MANDT="100",
-    REPORT="RSPOXDEV",
-    VARIANT="SST_ZPRINT_EXP"
+    MANDT=client,
+    REPORT=report,
+    VARIANT=variant_name
 )
 
 content = [{'SELNAME': 'DO_SRV', 'KIND': 'P', 'LOW': 'X'},
@@ -17,7 +18,7 @@ content = [{'SELNAME': 'DO_SRV', 'KIND': 'P', 'LOW': 'X'},
            {'SELNAME': 'DEVICE', 'KIND': 'S', 'SIGN': 'I', 'OPTION': 'CP', 'LOW': '*'},
            {'SELNAME': 'FILE', 'KIND': 'P', 'LOW': '/tmp/printers'}]
 
-text = [{'MANDT': "100", 'LANGU': 'EN', 'REPORT': "RSPOXDEV", 'VARIANT': "SST_ZPRINT_EXP", 'VTEXT': 'Printers Export'}]
+text = [{'MANDT': client, 'LANGU': 'EN', 'REPORT': report, 'VARIANT': variant_name, 'VTEXT': 'Printers Export'}]
 
 screen = [{'DYNNR': '1000', 'KIND': 'P'}]
 
