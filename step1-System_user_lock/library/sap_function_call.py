@@ -12,7 +12,7 @@ def bapi_user_lock(module, prefresh, params):
 
     data = dict()
 
-    if params == params['fetch']:
+    if params['fetch'] in params:
         if params['fetch'] == 'users':
             user_list = prefresh.users_list()
             data["Entire System User List"] = user_list
@@ -21,7 +21,7 @@ def bapi_user_lock(module, prefresh, params):
             existing_locked_users = prefresh.existing_locked_users()
             data["User's who's status is already set to Administer Lock"] = existing_locked_users
 
-    if params == params['lock_users']:
+    if params['lock_users'] in params:
         if params['lock_users']['action'] == 'lock':
             exception_list = params['lock_users']['exception_list']
             active_users = [user for user in user_list if user not in existing_locked_users]
