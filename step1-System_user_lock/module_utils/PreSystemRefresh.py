@@ -15,7 +15,6 @@ class PreSystemRefresh:
     def users_list(self):
         try:
             tables = self.conn.call("RFC_READ_TABLE", QUERY_TABLE='USR02', FIELDS=[{'FIELDNAME': 'BNAME'}])
-            print(tables)
         except Exception as e:
             return "Error while fetching user's list from USR02 table: {}".format(e)
 
@@ -116,12 +115,12 @@ class PreSystemRefresh:
             if key == 'VALUTAB':
                 var_content = value
 
-        for cont in var_content:        # Export Printer devices
+        for cont in var_content:
             if cont['SELNAME'] == 'FILE' and cont['LOW'] == '/tmp/printers':
                 return True
 
-        for cont in var_content:        # User Master Export
-            if cont['SELNAME'] == 'COPYCLI' and cont['LOW'] == self.creds['client']:
+        for cont in var_content:
+            if cont['SELNAME'] == 'COMFILE' and cont['LOW'] == 'PC3C900006':
                 return True
 
         for cont in var_content:
@@ -157,8 +156,6 @@ class PreSystemRefresh:
 
         if self.check_variant(report, variant_name) is False:
             return "Variant {} Successfully Deleted".format(variant_name)
-        else:
-            return "Failed to delete variant {}".format(variant_name)
 
     def export_printer_devices(self, report, variant_name):
             try:
@@ -167,49 +164,71 @@ class PreSystemRefresh:
             except Exception as e:
                 return "Failed to export printer devices! {}".format(e)
 
-    def pc3_ctc_val(self):
+    def user_master_export(self):
+        report = "ZRSCLXCOP"
+        variant_name = "ZUSR_EXP"
+
         try:
-            output = self.conn.call("RFC_READ_TABLE", QUERY_TABLE='E070L')  # IF Condition check needs to be implemented
+            output = self.conn.call("RFC_READ_TABLE", QUERY_TABLE='E070L') #IF Condition check needs to be implemented
         except Exception as e:
             return "Failed to get current transport sequence number from E070L Table: {}".format(e)
 
-        result = dict()
         pc3_val = None
         for data in output['DATA']:
             for val in data.values():
                 pc3_val = ((val.split()[1][:3] + 'C') + str(int(val.split()[1][4:]) + 1))
-                result["pc3_val"] = pc3_val
 
         try:
-            output = self.conn.call("RFC_READ_TABLE", QUERY_TABLE='TMSPCONF', FIELDS=[{'FIELDNAME': 'NAME'}, {'FIELDNAME': 'SYSNAME'}, {'FIELDNAME': 'VALUE'}])
+            result = self.conn.call("RFC_READ_TABLE", QUERY_TABLE='TMSPCONF', FIELDS=[{'FIELDNAME': 'NAME'}, {'FIELDNAME': 'SYSNAME'}, {'FIELDNAME': 'VALUE'}])
         except Exception as e:
             return "Failed while fetching TMC CTC Value: {}".format(e)
 
         ctc = None
-        for field in output['DATA']:
+        for field in result['DATA']:
             if field['WA'].split()[0] == 'CTC' and field['WA'].split()[1] == self.creds['sid']:
                 ctc = field['WA'].split()[2]
 
         if ctc is '1':
             ctc_val = self.creds['sid'] + '.' + self.creds['client']
-            result["ctc_val"] = ctc_val
         else:
             ctc_val = self.creds['sid']
-            result["ctc_val"] = ctc_val
 
-        result["client"] = self.creds['client']
+        desc = dict(
+            MANDT=self.creds['client'],
+            REPORT=report,
+            VARIANT=variant_name
+        )
 
-        if pc3_val and ctc is not None:
-            return result
+        content = [{'SELNAME': 'COPYCLI', 'KIND': 'P', 'LOW': self.creds['client']},
+                   {'SELNAME': 'SUSR', 'KIND': 'P', 'LOW': 'X'},
+                   {'SELNAME': 'MODUS', 'KIND': 'P', 'LOW': 'E'},
+                   {'SELNAME': 'ALTINP', 'KIND': 'P', 'LOW': 'A'},
+                   {'SELNAME': 'COMFILE', 'KIND': 'P', 'LOW': pc3_val},
+                   {'SELNAME': 'PROF', 'KIND': 'P', 'LOW': 'X'},
+                   {'SELNAME': 'PROFIL', 'KIND': 'P', 'LOW': 'SAP_USER'},
+                   {'SELNAME': 'TARGET', 'KIND': 'P', 'LOW': ctc_val}]
+
+        text = [{'MANDT': self.creds['client'], 'LANGU': 'EN', 'REPORT': report, 'VARIANT': variant_name,
+                 'VTEXT': 'User Master Export'}]
+
+        screen = [{'DYNNR': '1000', 'KIND': 'P'}]
+
+        if pc3_val is not None and self.check_variant(report, variant_name) is False:
+            try:
+                self.create_variant(report, variant_name, desc, content, text, screen)
+            except Exception as e:
+                return "Exception occured while creating variant {}".format(e)
         else:
-            return False
+            return "User-Master Export : pc3_val and variant {} check failed!!".format(variant_name)
 
-    def user_master_export(self, report, variant_name):
-        try:
-            self.conn.call("SUBST_START_REPORT_IN_BATCH", IV_JOBNAME=report, IV_REPNAME=report, IV_VARNAME=variant_name)
-            return "User Master Export is Completed!"
-        except Exception as e:
-            return "User Master Export is Failed!! {}".format(e)
+        if self.check_variant(report, variant_name) is True:
+            try:
+                self.conn.call("SUBST_START_REPORT_IN_BATCH", IV_JOBNAME=report, IV_REPNAME=report, IV_VARNAME=variant_name)
+                return "User Master Export is Completed!"
+            except Exception as e:
+                return "User Master Export is Failed!! {}".format(e)
+        else:
+            return "Variant {} creation has unknown issues, please check!".format(variant_name)
 
 
 # 1. System user lock               = Done
