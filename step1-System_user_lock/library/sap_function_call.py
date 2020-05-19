@@ -14,6 +14,14 @@ def bapi_user_lock(module, prefresh, params):
 
     data = dict()
 
+    if params['fetch'] == 'users':
+        user_list = prefresh.users_list()
+        data["Entire System User List"] = user_list
+
+    if params['fetch'] == 'locked_users':
+        existing_locked_users = prefresh.existing_locked_users()
+        data["User's who's status is already set to Administer Lock"] = existing_locked_users
+
     if params['user_list']:
         user_list = prefresh.users_list()
         data["Entire System User List"] = user_list
@@ -53,6 +61,7 @@ def export_printers(module, prefresh, params):
 def main():
     fields = dict(
         bapi_user_lock=dict(
+            fetch=dict(choices=('users', 'locked_users'), type='str'),
             user_list=dict(default=True, type='bool', required=True),
             existing_locked_users=dict(default=True, type='bool'),
             lock_users=dict(action=dict(choices=['lock', 'unlock'], required=True),
