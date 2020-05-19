@@ -104,12 +104,13 @@ def main():
 
     prefresh = PreSystemRefresh()
 
-    if module.params['bapi_user_lock']['fetch']:
-        params = module.params['bapi_user_lock']['fetch']
-        bapi_user_lock_fetch(module, prefresh, params)
-    elif module.params['bapi_user_lock']['lock_users']:
-        params = module.params['bapi_user_lock']['lock_users']
-        bapi_user_lock_action(module, prefresh, params)
+    if module.params['bapi_user_lock']:
+        if module.params['bapi_user_lock']['fetch']:
+            params = module.params['bapi_user_lock']['fetch']
+            bapi_user_lock_fetch(module, prefresh, params)
+        elif module.params['bapi_user_lock']['lock_users']:
+            params = module.params['bapi_user_lock']['lock_users']
+            bapi_user_lock_action(module, prefresh, params)
 
     if module.params['suspend_bg_jobs']:
         params = module.params['suspend_bg_jobs']
