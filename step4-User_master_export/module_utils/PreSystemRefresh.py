@@ -157,6 +157,8 @@ class PreSystemRefresh:
 
         if self.check_variant(report, variant_name) is False:
             return "Variant {} Successfully Deleted".format(variant_name)
+        else:
+            return "Failed to delete variant {}".format(variant_name)
 
     def export_printer_devices(self, report, variant_name):
             try:

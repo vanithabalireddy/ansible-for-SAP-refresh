@@ -39,13 +39,17 @@
  - name: User Master Export
    sap_function_call:
      user_master_export:
-         report: "{{ report }}"
-         variant_name: "{{ variant_name }}"
-         pc3_ctc_val: False
-   register: user_master_export
-   notify: Delete Variant
+       pc3_ctc_val: False
+       report: "{{ report }}"
+       variant_name: "{{ variant_name }}"
 
- - debug: var=user_master_export
+ - name: Waiting for user master export to complete
+   pause:
+     seconds: 10
 
-
+ - name: Delete Variant
+   variant:
+       report: "{{ report }}"
+       variant_name: "{{ variant_name }}"
+       action: delete
 
