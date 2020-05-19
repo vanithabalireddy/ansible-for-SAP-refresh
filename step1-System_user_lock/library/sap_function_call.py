@@ -41,8 +41,6 @@ def bapi_user_lock_action(module, prefresh, params):
 
 def bapi_user_lock(module, prefresh, params):
     data = dict()
-    user_list = None
-    existing_locked_users = None
 
     try:
         if params['fetch']:
@@ -56,15 +54,24 @@ def bapi_user_lock(module, prefresh, params):
     except KeyError:
         if params['lock_users']:
             if params['lock_users']['action'] == 'lock':
+                user_list = prefresh.users_list()
+                existing_locked_users = prefresh.existing_locked_users()
                 exception_list = params['lock_users']['exception_list']
-                active_users = [user for user in user_list if user not in existing_locked_users]
+                
+                active_users = [user for user in prefresh.users_list() if user not in existing_locked_users]
+                
                 locked_users, errors, excempted_users = prefresh.user_lock(active_users, exception_list, 'lock')
+                
                 data["Exception user list provided to keep them from locking"] = exception_list
                 data["User's Locked with exception to the Exception user list provided ^^"] = locked_users
 
             if params['lock_users']['action'] == 'unlock':
+                user_list = prefresh.users_list()
+                existing_locked_users = prefresh.existing_locked_users()
                 exception_list = params['lock_users']['exception_list']
+
                 locked_users, errors, excempted_users = prefresh.user_lock(user_list, exception_list, 'unlock')
+                
                 data["User's who's current status is set to Lock(*including existing users that are locked)"] = exception_list
                 data["User's Unlocked with exception to the users who's status was already locked prior to the activity"] = locked_users
     
@@ -109,7 +116,7 @@ def main():
 
     if module.params['bapi_user_lock']:
         params = module.params['bapi_user_lock']
-        bapi_user_lock(module, params, prefresh)
+        bapi_user_lock(module, prefresh, params)
 
     if module.params['suspend_bg_jobs']:
         params = module.params['suspend_bg_jobs']
