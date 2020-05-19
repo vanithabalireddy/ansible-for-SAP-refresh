@@ -1,8 +1,8 @@
 #!/usr/bin/python
 
-report = "{{ report }}"
-variant_name = "{{ variant_name }}"
-client = "{{ client }}"
+report = "RSPOXDEV"
+variant_name = "SST_ZPRINT_EXP"
+client = "100"
 
 desc = dict(
     MANDT=client,

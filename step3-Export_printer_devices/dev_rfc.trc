@@ -1395,3 +1395,95 @@ NW RFC Library: SDK variant, Release 750 Patch Level 5, Compiled on Aug 20 2019 
 	The UUID daemon (uuidd) is not active.
 Please ask your system administrator to activate uuidd according to SAP note 1391070.
 
+
+**** Trace file opened at 2020-05-19 06:14:40.480129 UTC+00:00 (GMT), Encoding UTF-8
+NW RFC Library: SDK variant, Release 750 Patch Level 5, Compiled on Aug 20 2019 21:18:37
+ CPIC library: 753.2019.02.22 version 3, NI library: 40, Kernel Release: 753 Patch Level 500
+ Current working directory: /root/ansible-for-SAP/step3-Export_printer_devices, Program: python3
+ Hardware: AMD/Intel x86_64 with Linux x86_64, Operating_system: Linux 4.14.177-139.253.amzn2.x86_64
+ Hostname: ip-172-30-81-191.ec2.internal, IP address: 172.30.81.191, IPv6 address: fe80::89d:8ff:fe81:6fd9
+
+2020-05-19 06:14:40.480613 [140329073608512] >> Info entry
+	Searching for config file sapnwrfc.ini
+
+
+**** Trace file opened at 2020-05-19 06:14:40.480656 UTC+00:00 (GMT), Encoding UTF-8
+NW RFC Library: SDK variant, Release 750 Patch Level 5, Compiled on Aug 20 2019 21:18:37
+ CPIC library: 753.2019.02.22 version 3, NI library: 40, Kernel Release: 753 Patch Level 500
+ Current working directory: /root/ansible-for-SAP/step3-Export_printer_devices, Program: python3
+ Hardware: AMD/Intel x86_64 with Linux x86_64, Operating_system: Linux 4.14.177-139.253.amzn2.x86_64
+ Hostname: ip-172-30-81-191.ec2.internal, IP address: 172.30.81.191, IPv6 address: fe80::89d:8ff:fe81:6fd9
+
+2020-05-19 06:14:40.480669 [140329073608512] >> Error entry
+	The UUID daemon (uuidd) is not active.
+Please ask your system administrator to activate uuidd according to SAP note 1391070.
+
+
+**** Trace file opened at 2020-05-19 06:14:41.105092 UTC+00:00 (GMT), Encoding UTF-8
+NW RFC Library: SDK variant, Release 750 Patch Level 5, Compiled on Aug 20 2019 21:18:37
+ CPIC library: 753.2019.02.22 version 3, NI library: 40, Kernel Release: 753 Patch Level 500
+ Current working directory: /root/ansible-for-SAP/step3-Export_printer_devices, Program: python3
+ Hardware: AMD/Intel x86_64 with Linux x86_64, Operating_system: Linux 4.14.177-139.253.amzn2.x86_64
+ Hostname: ip-172-30-81-191.ec2.internal, IP address: 172.30.81.191, IPv6 address: fe80::89d:8ff:fe81:6fd9
+
+2020-05-19 06:14:41.105136 [140384839866176] >> Info entry
+	Searching for config file sapnwrfc.ini
+
+
+**** Trace file opened at 2020-05-19 06:14:41.105173 UTC+00:00 (GMT), Encoding UTF-8
+NW RFC Library: SDK variant, Release 750 Patch Level 5, Compiled on Aug 20 2019 21:18:37
+ CPIC library: 753.2019.02.22 version 3, NI library: 40, Kernel Release: 753 Patch Level 500
+ Current working directory: /root/ansible-for-SAP/step3-Export_printer_devices, Program: python3
+ Hardware: AMD/Intel x86_64 with Linux x86_64, Operating_system: Linux 4.14.177-139.253.amzn2.x86_64
+ Hostname: ip-172-30-81-191.ec2.internal, IP address: 172.30.81.191, IPv6 address: fe80::89d:8ff:fe81:6fd9
+
+2020-05-19 06:14:41.105187 [140384839866176] >> Error entry
+	The UUID daemon (uuidd) is not active.
+Please ask your system administrator to activate uuidd according to SAP note 1391070.
+
+
+**** Trace file opened at 2020-05-19 06:14:41.872613 UTC+00:00 (GMT), Encoding UTF-8
+NW RFC Library: SDK variant, Release 750 Patch Level 5, Compiled on Aug 20 2019 21:18:37
+ CPIC library: 753.2019.02.22 version 3, NI library: 40, Kernel Release: 753 Patch Level 500
+ Current working directory: /root/ansible-for-SAP/step3-Export_printer_devices, Program: python3
+ Hardware: AMD/Intel x86_64 with Linux x86_64, Operating_system: Linux 4.14.177-139.253.amzn2.x86_64
+ Hostname: ip-172-30-81-191.ec2.internal, IP address: 172.30.81.191, IPv6 address: fe80::89d:8ff:fe81:6fd9
+
+2020-05-19 06:14:41.872646 [139744680400704] >> Info entry
+	Searching for config file sapnwrfc.ini
+
+
+**** Trace file opened at 2020-05-19 06:14:41.872673 UTC+00:00 (GMT), Encoding UTF-8
+NW RFC Library: SDK variant, Release 750 Patch Level 5, Compiled on Aug 20 2019 21:18:37
+ CPIC library: 753.2019.02.22 version 3, NI library: 40, Kernel Release: 753 Patch Level 500
+ Current working directory: /root/ansible-for-SAP/step3-Export_printer_devices, Program: python3
+ Hardware: AMD/Intel x86_64 with Linux x86_64, Operating_system: Linux 4.14.177-139.253.amzn2.x86_64
+ Hostname: ip-172-30-81-191.ec2.internal, IP address: 172.30.81.191, IPv6 address: fe80::89d:8ff:fe81:6fd9
+
+2020-05-19 06:14:41.872694 [139744680400704] >> Error entry
+	The UUID daemon (uuidd) is not active.
+Please ask your system administrator to activate uuidd according to SAP note 1391070.
+
+
+**** Trace file opened at 2020-05-19 06:14:42.495817 UTC+00:00 (GMT), Encoding UTF-8
+NW RFC Library: SDK variant, Release 750 Patch Level 5, Compiled on Aug 20 2019 21:18:37
+ CPIC library: 753.2019.02.22 version 3, NI library: 40, Kernel Release: 753 Patch Level 500
+ Current working directory: /root/ansible-for-SAP/step3-Export_printer_devices, Program: python3
+ Hardware: AMD/Intel x86_64 with Linux x86_64, Operating_system: Linux 4.14.177-139.253.amzn2.x86_64
+ Hostname: ip-172-30-81-191.ec2.internal, IP address: 172.30.81.191, IPv6 address: fe80::89d:8ff:fe81:6fd9
+
+2020-05-19 06:14:42.495853 [139796542814016] >> Info entry
+	Searching for config file sapnwrfc.ini
+
+
+**** Trace file opened at 2020-05-19 06:14:42.495884 UTC+00:00 (GMT), Encoding UTF-8
+NW RFC Library: SDK variant, Release 750 Patch Level 5, Compiled on Aug 20 2019 21:18:37
+ CPIC library: 753.2019.02.22 version 3, NI library: 40, Kernel Release: 753 Patch Level 500
+ Current working directory: /root/ansible-for-SAP/step3-Export_printer_devices, Program: python3
+ Hardware: AMD/Intel x86_64 with Linux x86_64, Operating_system: Linux 4.14.177-139.253.amzn2.x86_64
+ Hostname: ip-172-30-81-191.ec2.internal, IP address: 172.30.81.191, IPv6 address: fe80::89d:8ff:fe81:6fd9
+
+2020-05-19 06:14:42.495897 [139796542814016] >> Error entry
+	The UUID daemon (uuidd) is not active.
+Please ask your system administrator to activate uuidd according to SAP note 1391070.
+
