@@ -62,7 +62,7 @@ def main():
     fields = dict(
         bapi_user_lock=dict(
             fetch=dict(choices=('users', 'locked_users'), type='str'),
-            user_list=dict(default=True, type='bool', required=True),
+            user_list=dict(default=True, type='bool'),
             existing_locked_users=dict(default=True, type='bool'),
             lock_users=dict(action=dict(choices=['lock', 'unlock'], required=True),
                             exception_list=dict(required=True, type='list'), type='dict'),
