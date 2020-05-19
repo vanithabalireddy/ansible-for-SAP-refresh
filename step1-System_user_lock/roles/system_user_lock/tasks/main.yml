@@ -17,4 +17,12 @@
 
  - debug: var=locked_users
 
+ - name: Lock Users
+   sap_function_call:
+     bapi_user_lock:
+       lock_users:
+         exception_list: ['SST_TRNG', 'KRISHNA', 'BJOERN', 'DDIC', 'SMAGENDIRAN', 'GIRIDR', 'MRAM']
+         action: lock
+   register: lock
 
+ - debug: var=lock
