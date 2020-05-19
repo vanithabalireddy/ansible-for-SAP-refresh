@@ -63,6 +63,17 @@ def export_printers(module, prefresh, params):
         module.exit_json(changed=True, meta={'stdout': response})
 
 
+def user_master_export(module, prefresh, params):
+    if params['pc3_ctc_val']:
+        response = prefresh.pc3_ctc_val()
+        module.exit_json(changed=True, stdout=response)
+    else:
+        report = params['report']
+        variant_name = params['variant_name']
+        response = prefresh.user_master_export(report, variant_name)
+        module.exit_json(changed=True, meta={'stdout': response})
+
+
 def main():
     fields = dict(
         bapi_user_lock=dict(
@@ -72,7 +83,10 @@ def main():
             type='dict'),
         suspend_bg_jobs=dict(type='bool'),
         export_printers=dict(report=dict(required=True, type='str'),
-                             variant_name=dict(required=True, type='str'), type='dict')
+                             variant_name=dict(required=True, type='str'), type='dict'),
+        user_master_export=dict(report=dict(type='str'),
+                                variant_name=dict(type='str'),
+                                pc3_ctc_val=dict(default=True, type='bool'), type='dict')
     )
 
     module = AnsibleModule(
@@ -96,6 +110,10 @@ def main():
     if module.params['export_printers']:
         params = module.params['export_printers']
         export_printers(module, prefresh, params)
+
+    if module.params['user_master_export']:
+        params = module.params['user_master_export']
+        user_master_export(module, prefresh, params)
 
 
 if __name__ == "__main__":
