@@ -5,11 +5,6 @@ from ansible.module_utils.PreSystemRefresh import PreSystemRefresh
 
 # For setting users to Administer Lock and Unlock
 def bapi_user_lock_fetch(module, prefresh, params):
-
-    user_list = None
-    existing_locked_users = None
-    locked_users = None
-
     data = dict()
 
     if params['fetch'] == 'users':
@@ -20,27 +15,26 @@ def bapi_user_lock_fetch(module, prefresh, params):
         existing_locked_users = prefresh.existing_locked_users()
         data["User's who's status is already set to Administer Lock"] = existing_locked_users
 
+    module.exit_json(changed=True, meta=data)
+
+
 def bapi_user_lock_action(module, prefresh, params):
-
-    user_list = None
-    existing_locked_users = None
-    locked_users = None
-
     data = dict()
+    user_list = prefresh.users_list()
+    existing_locked_users = prefresh.existing_locked_users()
 
+    if params['lock_users']['action'] == 'lock':
+        exception_list = params['lock_users']['exception_list']
+        active_users = [user for user in user_list if user not in existing_locked_users]
+        locked_users, errors, excempted_users = prefresh.user_lock(active_users, exception_list, 'lock')
+        data["Exception user list provided to keep them from locking"] = exception_list
+        data["User's Locked with exception to the Exception user list provided ^^"] = locked_users
 
- #       if params['lock_users']['action'] == 'lock':
-  #          exception_list = params['lock_users']['exception_list']
-  #          active_users = [user for user in user_list if user not in existing_locked_users]
-  #          locked_users, errors, excempted_users = prefresh.user_lock(active_users, exception_list, 'lock')
-  #          data["Exception user list provided to keep them from locking"] = exception_list
-  #          data["User's Locked with exception to the Exception user list provided ^^"] = locked_users
-
-  #      if params['lock_users']['action'] == 'unlock':
-  #          exception_list = params['lock_users']['exception_list']
-  #          locked_users, errors, excempted_users = prefresh.user_lock(user_list, exception_list, 'unlock')
-  #          data["User's who's current status is set to Lock(*including existing users that are locked)"] = exception_list
-  #          data["User's Unlocked with exception to the users who's status was already locked prior to the activity"] = locked_users
+    if params['lock_users']['action'] == 'unlock':
+        exception_list = params['lock_users']['exception_list']
+        locked_users, errors, excempted_users = prefresh.user_lock(user_list, exception_list, 'unlock')
+        data["User's who's current status is set to Lock(*including existing users that are locked)"] = exception_list
+        data["User's Unlocked with exception to the users who's status was already locked prior to the activity"] = locked_users
 
     module.exit_json(changed=True, meta=data)
 
@@ -81,9 +75,13 @@ def main():
 
     prefresh = PreSystemRefresh()
 
-    if module.params['bapi_user_lock']:
-        params = module.params['bapi_user_lock']
-        bapi_user_lock(module, prefresh, params)
+    if module.params['bapi_user_lock']['fetch']:
+        params = module.params['bapi_user_lock']['fetch']
+        bapi_user_lock_fetch(module, prefresh, params)
+
+    if module.params['bapi_user_lock']['lock_users']:
+        params = module.params['bapi_user_lock']['lock_users']
+        bapi_user_lock_action(module, prefresh, params)
 
     if module.params['suspend_bg_jobs']:
         params = module.params['suspend_bg_jobs']
