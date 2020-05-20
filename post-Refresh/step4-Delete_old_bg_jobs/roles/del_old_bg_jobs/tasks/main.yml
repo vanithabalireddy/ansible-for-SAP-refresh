@@ -26,6 +26,13 @@
          report: "{{ report }}"
          variant_name: "{{ variant_name }}"
    register: del_old_bg_jobs
-   notify: Delete Variant
 
- - debug: var=del_old_bg_jobs
+ - name: Waiting for the above task to delete old background jobs
+   pause:
+     seconds: 10
+
+ - name: Delete Variant
+   variant:
+       report: "{{ report }}"
+       variant_name: "{{ variant_name }}"
+       action: delete
