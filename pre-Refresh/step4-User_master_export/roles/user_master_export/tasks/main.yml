@@ -42,6 +42,9 @@
        pc3_ctc_val: False
        report: "{{ report }}"
        variant_name: "{{ variant_name }}"
+   register: user_master_export
+
+ - debug: var=user_master_export
 
  - name: Waiting for user master export to complete
    pause:

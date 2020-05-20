@@ -1,7 +1,7 @@
 #!/usr/bin/python
 from ansible.module_utils.basic import *
 from ansible.module_utils.PreSystemRefresh import PreSystemRefresh
-from ansible.module_utils.export_printer_devices_vars import *
+from ansible.module_utils.variant_data import *
 
 
 def main():

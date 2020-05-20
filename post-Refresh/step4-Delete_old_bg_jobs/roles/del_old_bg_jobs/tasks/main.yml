@@ -27,6 +27,8 @@
          variant_name: "{{ variant_name }}"
    register: del_old_bg_jobs
 
+ - debug: var=del_old_bg_jobs
+
  - name: Waiting for the above task to delete old background jobs
    pause:
      seconds: 10

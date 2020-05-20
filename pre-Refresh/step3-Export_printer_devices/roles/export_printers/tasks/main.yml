@@ -3,7 +3,7 @@
  - name: Copy Variables templates containing variant details
    template:
         src: variant_data.py.j2
-        dest: "{{playbook_dir}}/module_utils/export_printer_devices_vars.py"
+        dest: "{{playbook_dir}}/module_utils/variant_data.py"
         force: yes
 
  - name: Check Variant
@@ -26,6 +26,15 @@
          report: "{{ report }}"
          variant_name: "{{ variant_name }}"
    register: export_printers
-   notify: Delete Variant
 
  - debug: var=export_printers
+
+ - name: Waiting for exporint printer devices
+   pause:
+     seconds: 10
+
+ - name: Delete Variant
+   variant:
+       report: "{{ report }}"
+       variant_name: "{{ variant_name }}"
+       action: delete
