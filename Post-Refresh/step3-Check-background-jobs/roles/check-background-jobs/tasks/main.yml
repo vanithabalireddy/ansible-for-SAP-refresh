@@ -1,0 +1,11 @@
+---
+# tasks file for user_master_export
+
+ - name: Check background Jobs
+   sap_function_call:
+      fetch: bgd_val
+   register: bgd_val
+   tags: bgd_val
+
+
+ - debug: var=bgd_val
