@@ -5,7 +5,6 @@
    sap_function_call:
       fetch: bgd_val
    register: bgd_val
-   tags: bgd_val
 
 
  - debug: var=bgd_val
