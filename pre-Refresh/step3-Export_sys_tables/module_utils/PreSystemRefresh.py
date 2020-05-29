@@ -88,11 +88,6 @@ class PreSystemRefresh:
         )
 
         try:
-            self.conn.call("ZARCHIVFILE_CLIENT_TO_SERVER", PATH="/tmp/exp.ctl", TARGETPATH='/tmp/exp.ctl')
-        except Exception as e:
-            return "Error while copying exp.ctl file to SAP server: {}".format(e)
-
-        try:
             self.conn.call("ZSXPG_COMMAND_INSERT", COMMAND=params)
         except Exception as e:
             return "Error while inserting Command arguments: {}".format(e)
