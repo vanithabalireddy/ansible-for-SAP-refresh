@@ -1,0 +1,7 @@
+---
+# tasks file for user_master_export
+
+ - name: copy exp.ctl file
+   file:
+     src: /tmp/exp.ctl
+     dest: /tmp/exp.ctl

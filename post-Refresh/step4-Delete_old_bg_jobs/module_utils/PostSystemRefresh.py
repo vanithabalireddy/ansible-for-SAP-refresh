@@ -125,11 +125,11 @@ class PostSystemRefresh(PreSystemRefresh):
 
 
 # Steps Completed in Post Refresh
-# 1. Quality System User Lock           = Done
-# 2. Suspend background jobs            = Done
-# 3. Check background process           = Done
+# 1. Quality System User Lock           = Done (playbook is done)
+# 2. Suspend background jobs            = Done (playbook is done)
+# 3. Check background process           = Done (playbook is done)
 # 4. Import Quality System Tab          = Not Done  #FM not callable  (.ctl file to target sap server.)
-# 5. Delete old background jobs         = Done
+# 5. Delete old background jobs         = Done (playbook is done)
 # 6. Delete outbound Queues SMQ1        = Done
 # 7. Delete outbound Queues SMQ2        = Done
 # 8. Delete TRC Queues SM58             = Done
@@ -143,5 +143,3 @@ class PostSystemRefresh(PreSystemRefresh):
 # 15. BDLS – Logical system conversion              = Not Done >            #variants
 # 16. ZSCREEN_LOGIN_INFO - change                   = Not Done >            #variants
 # 17. Quality System User Unlock                    = Testing Phase
-
-
