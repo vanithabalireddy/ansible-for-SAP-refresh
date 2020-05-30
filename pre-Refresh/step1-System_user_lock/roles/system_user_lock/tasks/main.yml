@@ -21,7 +21,7 @@
    sap_function_call:
      bapi_user_lock:
        lock_users:
-         exception_list: ['SST_TRNG', 'KRISHNA', 'BJOERN', 'DDIC', 'DBISWAS', 'GIRIDR', 'MRAM']
+         exception_list: {{ exception_list }}
          action: lock
    register: lock
 
