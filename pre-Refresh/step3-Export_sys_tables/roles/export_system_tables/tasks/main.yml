@@ -3,7 +3,7 @@
   - name: Insert Command
     sap_function_call:
       ZSXPG_COMMAND_INSERT:
-        NAME: 'SSTTABEXP'
+        NAME: 'SST_TABEXP'
         OPSYSTEM: 'Linux'
         OPCOMMAND: 'R3trans'
         PARAMETERS: '-w /tmp/exp_ecc.log /tmp/exp.ctl'
