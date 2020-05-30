@@ -5,6 +5,16 @@ from ansible.module_utils.PreSystemRefresh import PreSystemRefresh
 
 class SAPFunctionCall(PreSystemRefresh):
 
+    def suspend_bg_jobs(self, module, params):
+        data = dict()
+        try:
+            self.conn.call("INST_EXECUTE_REPORT", PROGRAM=params['PROGRAM'])
+            data["Success!"] = "Background Jobs are Suspended!"
+            module.exit_json(changed=True, meta=data)
+        except Exception as e:
+            data["Failure!"] = "Failed to Suspend Background Jobs: {}".format(e)
+            module.exit_json(changed=False, meta=data)
+
     def export_sys_tables_comm_insert(self, module, params):
         data = dict()
         args = dict(
@@ -21,8 +31,6 @@ class SAPFunctionCall(PreSystemRefresh):
         except Exception as e:
             data["Failure!"] = "Failed to insert command {} = {}".format(params['NAME'], e)
             module.exit_json(changed=False, meta=data)
-
-
 
     def export_sys_tables_comm_execute(self, module, params):
         command_name = params['NAME']
@@ -82,12 +90,6 @@ def bapi_user_lock(module, prefresh, params):
         module.exit_json(changed=False, meta=data)
 
 
-def suspend_bg_jobs(module, prefresh, params):
-    if params:
-        response = prefresh.suspend_bg_jobs()
-        module.exit_json(changed=True, meta={'stdout': response})
-
-
 def export_printers(module, prefresh, params):
     if params:
         report = params['report']
@@ -114,7 +116,7 @@ def main():
             lock_users=dict(action=dict(choices=['lock', 'unlock'], required=True),
                             exception_list=dict(required=True, type='list'), type='dict'),
             type='dict'),
-        suspend_bg_jobs=dict(type='bool'),
+        INST_EXECUTE_REPORT=dict(PROGRAM=dict(type='str'), type='dict'),
         export_printers=dict(report=dict(required=True, type='str'),
                              variant_name=dict(required=True, type='str'), type='dict'),
         user_master_export=dict(report=dict(type='str'),
@@ -143,9 +145,9 @@ def main():
         params = module.params['bapi_user_lock']
         bapi_user_lock(module, prefresh, params)
 
-    if module.params['suspend_bg_jobs']:
-        params = module.params['suspend_bg_jobs']
-        suspend_bg_jobs(module, prefresh, params)
+    if module.params['INST_EXECUTE_REPORT']:
+        params = module.params['INST_EXECUTE_REPORT']
+        functioncall.suspend_bg_jobs(module, params)
 
     if module.params['export_printers']:
         params = module.params['export_printers']

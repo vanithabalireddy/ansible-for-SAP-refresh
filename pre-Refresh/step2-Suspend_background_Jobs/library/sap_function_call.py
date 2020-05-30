@@ -80,22 +80,14 @@ def bapi_user_lock(module, prefresh, params):
 
             locked_users, errors, excempted_users = prefresh.user_lock(user_list, exception_list, 'unlock')
 
-            data[
-                "User's who's current status is set to Lock(*including existing users that are locked)"] = exception_list
-            data[
-                "User's Unlocked with exception to the users who's status was already locked prior to the activity"] = locked_users
+            data["User's who's current status is set to Lock(*including existing users that are locked)"] = exception_list
+            data["User's Unlocked with exception to the users who's status was already locked prior to the activity"] = locked_users
 
             module.exit_json(changed=True, meta=data)
 
     except Exception as e:
         data["Error"] = e
         module.exit_json(changed=False, meta=data)
-
-
-def suspend_bg_jobs(module, prefresh, params):
-    if params:
-        response = prefresh.suspend_bg_jobs()
-        module.exit_json(changed=True, meta={'stdout': response})
 
 
 def export_printers(module, prefresh, params):
@@ -125,7 +117,6 @@ def main():
                             exception_list=dict(required=True, type='list'), type='dict'),
             type='dict'),
         INST_EXECUTE_REPORT=dict(PROGRAM=dict(type='str'), type='dict'),
-        suspend_bg_jobs=dict(type='bool'),
         export_printers=dict(report=dict(required=True, type='str'),
                              variant_name=dict(required=True, type='str'), type='dict'),
         user_master_export=dict(report=dict(type='str'),
