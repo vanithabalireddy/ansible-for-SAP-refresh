@@ -6,23 +6,10 @@ from ansible.module_utils.PreSystemRefresh import PreSystemRefresh
 
 
 class PostSystemRefresh(PreSystemRefresh):
-    # for post refresh step3 and step11.
-    def check_background_jobs(self):
-        try:
-            output = self.conn.call("TH_WPINFO")
-        except Exception as e:
-            return "Error while call Function Module: {}".format(e)
 
-        wp_type = []
-        for type in output['WPLIST']:
-            wp_type.append(type['WP_TYP'])
+    # for post refresh step3 and step11
+    # def check_background_jobs(self):    Handled in sap_function_call.py module
 
-        if 'BGD' in wp_type:
-            return True
-        else:
-            return False
-
-    # Change in Requirement.
     def import_sys_tables(self):
         try:
             self.conn.call("SXPG_COMMAND_EXECUTE", COMMANDNAME='ZTABIMP')
@@ -30,46 +17,7 @@ class PostSystemRefresh(PreSystemRefresh):
         except Exception as e:
             return "Error while exporting system tables: {}".format(e)
 
-    def del_old_bg_jobs(self):
-        report = "RSBTCDEL"
-        variant_name = "ZDELLOG"
-
-        desc = dict(
-            MANDT=self.creds['client'],
-            REPORT=report,
-            VARIANT=variant_name
-        )
-
-        content = [{'SELNAME': 'JOBNAME', 'KIND': 'P', 'LOW': '*'},
-                   {'SELNAME': 'USERNAME', 'KIND': 'P', 'LOW': '*'},
-                   {'SELNAME': 'FRM_DATE', 'KIND': 'P', 'LOW': ''},
-                   {'SELNAME': 'FRM_TIME', 'KIND': 'P', 'LOW': ''},
-                   {'SELNAME': 'TO_DATE', 'KIND': 'P', 'LOW': ''},
-                   {'SELNAME': 'TO_TIME', 'KIND': 'P', 'LOW': ''},
-                   {'SELNAME': 'ENDDATE', 'KIND': 'P', 'LOW': ''},
-                   {'SELNAME': 'ENDTIME', 'KIND': 'P', 'LOW': ''},
-                   {'SELNAME': 'FIN', 'KIND': 'P', 'LOW': 'X'},
-                   {'SELNAME': 'ABORT', 'KIND': 'P', 'LOW': 'X'},
-                   {'SELNAME': 'FORCE', 'KIND': 'P', 'LOW': 'X'}]
-
-        text = [{'MANDT': self.creds['client'], 'LANGU': 'EN', 'REPORT': report, 'VARIANT':variant_name, 'VTEXT': 'Delete background jobs logs'}]
-
-        screen = [{'DYNNR': '1000', 'KIND': 'P'}]
-
-        if self.check_variant(report, variant_name) is False:
-            try:
-                self.create_variant(report, variant_name, desc, content, text, screen)
-            except Exception as e:
-                return "Failed to create variant {}: {}".format(variant_name, e)
-
-        if self.check_variant(report, variant_name) is True:
-            try:
-                self.conn.call("SUBST_START_REPORT_IN_BATCH", IV_JOBNAME=report, IV_REPNAME=report, IV_VARNAME=variant_name)
-                return "Old Background jobs logs are successfully deleted."
-            except Exception as e:
-                return "Failed to delete Old Background job logs: {}".format(e)
-        else:
-            return "Creation of variant {} is failed!".format(variant_name)
+    # def del_old_bg_jobs(self):         Handled in sap_function_call.py module
 
     # Deletes outbound queues SMQ1 & SMQ2
     def del_outbound_queues(self, jobname, report, variant_name): #For SMQ1 and SMQ2

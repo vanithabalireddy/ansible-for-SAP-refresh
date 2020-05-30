@@ -6,23 +6,10 @@ from ansible.module_utils.PreSystemRefresh import PreSystemRefresh
 
 
 class PostSystemRefresh(PreSystemRefresh):
-    # for post refresh step3 and step11.
-    def check_background_jobs(self):
-        try:
-            output = self.conn.call("TH_WPINFO")
-        except Exception as e:
-            return "Error while call Function Module: {}".format(e)
 
-        wp_type = []
-        for type in output['WPLIST']:
-            wp_type.append(type['WP_TYP'])
+    # for post refresh step3 and step11
+    # def check_background_jobs(self):    Handled in sap_function_call.py module
 
-        if 'BGD' in wp_type:
-            return True
-        else:
-            return False
-
-    # Change in Requirement.
     def import_sys_tables(self):
         try:
             self.conn.call("SXPG_COMMAND_EXECUTE", COMMANDNAME='ZTABIMP')
@@ -30,10 +17,10 @@ class PostSystemRefresh(PreSystemRefresh):
         except Exception as e:
             return "Error while exporting system tables: {}".format(e)
 
-#    def del_old_bg_jobs(self):     Handled in sap_function_call.py
+    # def del_old_bg_jobs(self):         Handled in sap_function_call.py module
 
     # Deletes outbound queues SMQ1 & SMQ2
-    def del_outbound_queues(self, jobname, report, variant_name): #For SMQ1 and SMQ2
+    def del_outbound_queues(self, jobname, report, variant_name):  # For SMQ1 and SMQ2
 
         desc = dict(
             MANDT=self.creds['client'],
@@ -45,7 +32,8 @@ class PostSystemRefresh(PreSystemRefresh):
                    {'SELNAME': 'PACKAGE', 'KIND': 'P', 'LOW': '10.000'},
                    {'SELNAME': 'DISPLAY', 'KIND': 'P', 'LOW': 'X'}]
 
-        text = [{'MANDT': self.creds['client'], 'LANGU': 'EN', 'REPORT': report, 'VARIANT':variant_name, 'VTEXT': 'Delete all outbound Queues'}]
+        text = [{'MANDT': self.creds['client'], 'LANGU': 'EN', 'REPORT': report, 'VARIANT': variant_name,
+                 'VTEXT': 'Delete all outbound Queues'}]
 
         screen = [{'DYNNR': '1000', 'KIND': 'P'}]
 
@@ -57,7 +45,8 @@ class PostSystemRefresh(PreSystemRefresh):
 
         if self.check_variant(report, variant_name) is True:
             try:
-                self.conn.call("SUBST_START_REPORT_IN_BATCH", IV_JOBNAME=jobname, IV_REPNAME=report, IV_VARNAME=variant_name)
+                self.conn.call("SUBST_START_REPORT_IN_BATCH", IV_JOBNAME=jobname, IV_REPNAME=report,
+                               IV_VARNAME=variant_name)
                 return "Deleted all Outbound Queues Successfully!"
             except Exception as e:
                 return "Failed to delete Outbound Queues: {}".format(e)
@@ -67,7 +56,7 @@ class PostSystemRefresh(PreSystemRefresh):
     def del_trc_queues_sm58(self):
         jobname = "DELTE_SM58_QUEUES"
         report = "RSARFCDL"
-        variant_name= "ZDELSM58"
+        variant_name = "ZDELSM58"
 
         desc = dict(
             MANDT=self.creds['client'],
@@ -78,7 +67,8 @@ class PostSystemRefresh(PreSystemRefresh):
         content = [{'SELNAME': 'TID', 'KIND': 'P', 'LOW': '*'},
                    {'SELNAME': 'SET_EXEC', 'KIND': 'P', 'LOW': 'X'}]
 
-        text = [{'MANDT': self.creds['client'], 'LANGU': 'EN', 'REPORT': report, 'VARIANT':variant_name, 'VTEXT': 'Delete all TRFC Queues'}]
+        text = [{'MANDT': self.creds['client'], 'LANGU': 'EN', 'REPORT': report, 'VARIANT': variant_name,
+                 'VTEXT': 'Delete all TRFC Queues'}]
 
         screen = [{'DYNNR': '1000', 'KIND': 'P'}]
 
@@ -90,7 +80,8 @@ class PostSystemRefresh(PreSystemRefresh):
 
         if self.check_variant(report, variant_name) is True:
             try:
-                self.conn.call("SUBST_START_REPORT_IN_BATCH", IV_JOBNAME=jobname, IV_REPNAME=report, IV_VARNAME=variant_name)
+                self.conn.call("SUBST_START_REPORT_IN_BATCH", IV_JOBNAME=jobname, IV_REPNAME=report,
+                               IV_VARNAME=variant_name)
                 return "Deleted all TRC Queues SM58"
             except Exception as e:
                 return "Failed to delete Outbound Queues: {}".format(e)
@@ -118,13 +109,12 @@ class PostSystemRefresh(PreSystemRefresh):
     def se06_post_copy_transport(self):
         pass
 
-
 # Steps Completed in Post Refresh
-# 1. Quality System User Lock           = Done (playbook is done)
-# 2. Suspend background jobs            = Done (playbook is done)
-# 3. Check background process           = Done (playbook is done)
+# 1. Quality System User Lock           = Done
+# 2. Suspend background jobs            = Done
+# 3. Check background process           = Done
 # 4. Import Quality System Tab          = Not Done  #FM not callable  (.ctl file to target sap server.)
-# 5. Delete old background jobs         = Done (playbook is done)
+# 5. Delete old background jobs         = Done
 # 6. Delete outbound Queues SMQ1        = Done
 # 7. Delete outbound Queues SMQ2        = Done
 # 8. Delete TRC Queues SM58             = Done
@@ -138,3 +128,5 @@ class PostSystemRefresh(PreSystemRefresh):
 # 15. BDLS – Logical system conversion              = Not Done >            #variants
 # 16. ZSCREEN_LOGIN_INFO - change                   = Not Done >            #variants
 # 17. Quality System User Unlock                    = Testing Phase
+
+
