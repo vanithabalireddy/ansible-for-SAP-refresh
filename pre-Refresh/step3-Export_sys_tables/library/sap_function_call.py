@@ -27,7 +27,8 @@ class SAPFunctionCall(PreSystemRefresh):
 
  #       module.exit_json(changed=False, meta=params_a)
         try:
-            self.conn.call("ZSXPG_COMMAND_INSERT", COMMAND=params_a)
+            self.conn.call("INST_EXECUTE_REPORT", PROGRAM='BTCTRNS1')
+            # self.conn.call("ZSXPG_COMMAND_INSERT", COMMAND=params_a)
             data["Success!"] = "Successfully inserted command {}".format(params['NAME'])
             module.exit_json(changed=True, meta=data)
         except Exception as e:
