@@ -30,12 +30,7 @@ class PostSystemRefresh(PreSystemRefresh):
         except Exception as e:
             return "Error while exporting system tables: {}".format(e)
 
-    def del_old_bg_jobs(self, report, variant_name):
-        try:
-            self.conn.call("SUBST_START_REPORT_IN_BATCH", IV_JOBNAME=report, IV_REPNAME=report, IV_VARNAME=variant_name)
-            return "Old Background jobs logs are successfully deleted."
-        except Exception as e:
-            return "Failed to delete Old Background job logs: {}".format(e)
+#    def del_old_bg_jobs(self):     Handled in sap_function_call.py
 
     # Deletes outbound queues SMQ1 & SMQ2
     def del_outbound_queues(self, jobname, report, variant_name): #For SMQ1 and SMQ2
