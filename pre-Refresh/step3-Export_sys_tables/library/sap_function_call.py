@@ -9,7 +9,7 @@ class SAPFunctionCall(PreSystemRefresh):
         data = dict()
         params_a = dict(
             NAME=params['NAME'],
-            OPPSYSTEM=params['OPPSYSTEM'],
+            OPSYSTEM=params['OPSYSTEM'],
             OPCOMMAND=params['OPCOMMAND'],
             PARAMETERS=params['PARAMETERS']
         )
@@ -118,7 +118,7 @@ def main():
                                 variant_name=dict(type='str'),
                                 pc3_ctc_val=dict(default=True, type='bool'), type='dict'),
         ZSXPG_COMMAND_INSERT=dict(NAME=dict(type='str'),
-                                  OPPSYSTEM=dict(type='str'),
+                                  OPSYSTEM=dict(type='str'),
                                   OPCOMMAND=dict(type='str'),
                                   PARAMETERS=dict(type='str'), type='dict'),
         SXPG_COMMAND_EXECUTE=dict(COMMAND=dict(type='str'), type='dict')
