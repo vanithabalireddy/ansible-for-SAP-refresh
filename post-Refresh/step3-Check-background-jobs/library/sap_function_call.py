@@ -3,6 +3,7 @@ from ansible.module_utils.basic import *
 from ansible.module_utils.PreSystemRefresh import PreSystemRefresh
 from ansible.module_utils.PostSystemRefresh import PostSystemRefresh
 
+
 def bapi_user_lock(module, prefresh, params):
     data = dict()
 
@@ -44,10 +45,16 @@ def bapi_user_lock(module, prefresh, params):
             module.exit_json(changed=True, meta=data)
 
 
-def fetch(module, postrefresh, params):
-    if params == 'bgd_val':
+def check_bg_jobs(module, postrefresh, params):
+    data = dict()
+    if params['fetch']:
         response = postrefresh.check_background_jobs()
-        module.exit_json(changed=True, meta={'stdout': response})
+        if response:
+            data['Message'] = "No BGD entry found!"
+            module.exit_json(changed=True, meta=data)
+        else:
+            data['Message'] = "Background work process is not set to 0. Please change it immediately"
+            module.exit_json(changed=True, meta=data)
 
 
 def main():
@@ -75,9 +82,9 @@ def main():
         params = module.params['bapi_user_lock']
         bapi_user_lock(module, prefresh, params)
 
-    if module.params['fetch']:
-        params = module.params['fetch']
-        fetch(module, postrefresh, params)
+    if module.params['TH_WPINFO']:
+        params = module.params['TH_WPINFO']
+        check_bg_jobs(module, postrefresh, params)
 
 
 if __name__ == "__main__":
