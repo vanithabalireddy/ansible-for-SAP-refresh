@@ -54,7 +54,7 @@ def check_bg_jobs(module, postrefresh, params):
             module.exit_json(changed=True, meta=data)
         else:
             data['Message'] = "Background work process is not set to 0. Please change it immediately"
-            module.exit_json(changed=True, meta=data)
+            module.exit_json(changed=False, meta=data)
 
 
 def main():
