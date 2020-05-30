@@ -7,15 +7,15 @@ class SAPFunctionCall(PreSystemRefresh):
 
     def export_sys_tables_comm_insert(self, module, params):
         data = dict()
-        params_a = dict(
-            NAME='SST_TABEXP',
-            OPSYSTEM='Linux',
-            OPCOMMAND='R3trans',
-            PARAMETERS='-w /tmp/exp_ecc.log /tmp/exp.ctl'
+        args = dict(
+            NAME=params['NAME'],
+            OPSYSTEM=params['OPSYSTEM'],
+            OPCOMMAND=params['OPCOMMAND'],
+            PARAMETERS=params['PARAMETERS']
         )
 
         try:
-            self.conn.call("ZSXPG_COMMAND_INSERT", COMMAND=params_a)
+            self.conn.call("ZSXPG_COMMAND_INSERT", COMMAND=args)
             data["Success!"] = "Successfully inserted command {}".format(params['NAME'])
             module.exit_json(changed=True, meta=data)
         except Exception as e:
