@@ -4,6 +4,20 @@ from ansible.module_utils.PreSystemRefresh import PreSystemRefresh
 from ansible.module_utils.PostSystemRefresh import PostSystemRefresh
 
 
+class SAPFunctionCall(PreSystemRefresh):
+
+    def del_old_bg_jobs(self, module, params):
+        data = dict()
+        try:
+            self.conn.call("SUBST_START_REPORT_IN_BATCH", IV_JOBNAME=params['IV_JOBNAME'],
+                           IV_REPNAME=params['IV_REPNAME'], IV_VARNAME=params['IV_VARNAME'])
+            data['Success'] = "Old Background jobs logs are successfully deleted!"
+            module.exit_json(changed=True, meta=data)
+        except Exception as e:
+            data['Failure'] = "Failed to delete Old Background job logs: {}".format(e)
+            module.exit_json(changed=True, meta=data)
+
+
 # For setting users to Administer Lock and Unlock
 def bapi_user_lock(module, prefresh, params):
     data = dict()
@@ -50,43 +64,16 @@ def bapi_user_lock(module, prefresh, params):
         module.exit_json(changed=False, meta=data)
 
 
-def suspend_bg_jobs(module, prefresh, params):
-    if params:
-        response = prefresh.suspend_bg_jobs()
-        module.exit_json(changed=True, meta={'stdout': response})
-
-
-def export_printers(module, prefresh, params):
-    if params:
-        report = params['report']
-        variant_name = params['variant_name']
-        response = prefresh.export_printer_devices(report, variant_name)
-        module.exit_json(changed=True, meta={'stdout': response})
-
-
-def user_master_export(module, prefresh, params):
-    if params['pc3_ctc_val']:
-        response = prefresh.pc3_ctc_val()
-        module.exit_json(changed=True, meta={'stdout': response})
-    else:
-        report = params['report']
-        variant_name = params['variant_name']
-        response = prefresh.user_master_export(report, variant_name)
-        module.exit_json(changed=True, meta={'stdout': response})
-
-
-def fetch(module, postrefresh, params):
-    if params == 'bgd_val':
+def check_bg_jobs(module, postrefresh, params):
+    data = dict()
+    if params['fetch']:
         response = postrefresh.check_background_jobs()
-        module.exit_json(changed=True, meta={'stdout': response})
-
-
-def del_old_bg_jobs(module, postrefresh, params):
-    if params:
-        report = params['report']
-        variant_name = params['variant_name']
-        response = postrefresh.del_old_bg_jobs(report, variant_name)
-        module.exit_json(changed=True, meta={'stdout': response})
+        if response:
+            data['Message'] = "No BGD entry found!"
+            module.exit_json(changed=True, meta=data)
+        else:
+            data['Message'] = "Background work process is not set to 0. Please change it immediately"
+            module.exit_json(changed=False, meta=data)
 
 
 def main():
@@ -96,15 +83,11 @@ def main():
             lock_users=dict(action=dict(choices=['lock', 'unlock'], required=True),
                             exception_list=dict(required=True, type='list'), type='dict'),
             type='dict'),
-        suspend_bg_jobs=dict(type='bool'),
-        export_printers=dict(report=dict(required=True, type='str'),
-                             variant_name=dict(required=True, type='str'), type='dict'),
-        user_master_export=dict(report=dict(type='str'),
-                                variant_name=dict(type='str'),
-                                pc3_ctc_val=dict(default=True, type='bool'), type='dict'),
-        fetch=dict(choices=['bgd_val'], type='str'),
-        del_old_bg_jobs=dict(report=dict(required=True, type='str'),
-                             variant_name=dict(required=True, type='str'), type='dict')
+        TH_WPINFO=dict(fetch=dict(choices=['bgd_val'], type='str'), type='dict'),
+        SUBST_START_REPORT_IN_BATCH=dict(
+            IV_JOBNAME=dict(type='str'),
+            IV_REPNAME=dict(type='str'),
+            IV_VARNAME=dict(type='str'), type='dict')
     )
 
     module = AnsibleModule(
@@ -117,30 +100,19 @@ def main():
 
     prefresh = PreSystemRefresh()
     postrefresh = PostSystemRefresh()
+    functioncall = SAPFunctionCall()
 
     if module.params['bapi_user_lock']:
         params = module.params['bapi_user_lock']
         bapi_user_lock(module, prefresh, params)
 
-    if module.params['suspend_bg_jobs']:
-        params = module.params['suspend_bg_jobs']
-        suspend_bg_jobs(module, prefresh, params)
+    if module.params['TH_WPINFO']:
+        params = module.params['TH_WPINFO']
+        check_bg_jobs(module, postrefresh, params)
 
-    if module.params['export_printers']:
-        params = module.params['export_printers']
-        export_printers(module, prefresh, params)
-
-    if module.params['user_master_export']:
-        params = module.params['user_master_export']
-        user_master_export(module, prefresh, params)
-
-    if module.params['fetch']:
-        params = module.params['fetch']
-        fetch(module, postrefresh, params)
-
-    if module.params['del_old_bg_jobs']:
-        params = module.params['del_old_bg_jobs']
-        del_old_bg_jobs(module, postrefresh, params)
+    if module.params['SUBST_START_REPORT_IN_BATCH']:
+        params = module.params['SUBST_START_REPORT_IN_BATCH']
+        functioncall.del_old_bg_jobs(module, params)
 
 
 if __name__ == "__main__":
