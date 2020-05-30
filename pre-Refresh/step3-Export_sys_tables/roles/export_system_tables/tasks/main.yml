@@ -3,7 +3,7 @@
   - name: Insert Command
     sap_function_call:
       ZSXPG_COMMAND_INSERT:
-        NAME: 'SST_TABEXP'
+        NAME: 'SSTTABEXP'
         OPSYSTEM: 'Linux'
         OPCOMMAND: 'R3trans'
         PARAMETERS: '-w /tmp/exp_ecc.log /tmp/exp.ctl'
@@ -15,7 +15,7 @@
   - name: Execute Command
     sap_function_call:
       SXPG_COMMAND_EXECUTE:
-        NAME: "SST_TABEXP"
+        NAME: "SSTTABEXP"
     register: comm_execute
     tags: execute
 
