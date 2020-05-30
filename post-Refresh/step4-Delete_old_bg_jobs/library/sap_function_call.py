@@ -6,6 +6,25 @@ from ansible.module_utils.PostSystemRefresh import PostSystemRefresh
 
 class SAPFunctionCall(PreSystemRefresh):
 
+    def check_bg_jobs(self, module, params):
+        data = dict()
+        try:
+            output = self.conn.call("TH_WPINFO")
+        except Exception as e:
+            data['Failure'] = "Error while calling Function Module TH_WPINFO: {}".format(e)
+            module.exit_json(changed=False, meta=data)
+
+        wp_type = []
+        for type in output['WPLIST']:
+            wp_type.append(type['WP_TYP'])
+
+        if 'BGD' in wp_type:
+            data['Message'] = "No BGD entry found!"
+            module.exit_json(changed=True, meta=data)
+        else:
+            data['Message'] = "Background work process is not set to 0. Please change it immediately"
+            module.exit_json(changed=False, meta=data)
+
     def del_old_bg_jobs(self, module, params):
         data = dict()
         try:
@@ -15,7 +34,7 @@ class SAPFunctionCall(PreSystemRefresh):
             module.exit_json(changed=True, meta=data)
         except Exception as e:
             data['Failure'] = "Failed to delete Old Background job logs: {}".format(e)
-            module.exit_json(changed=True, meta=data)
+            module.exit_json(changed=False, meta=data)
 
 
 # For setting users to Administer Lock and Unlock
@@ -108,7 +127,7 @@ def main():
 
     if module.params['TH_WPINFO']:
         params = module.params['TH_WPINFO']
-        check_bg_jobs(module, postrefresh, params)
+        functioncall.check_bg_jobs(module, params)
 
     if module.params['SUBST_START_REPORT_IN_BATCH']:
         params = module.params['SUBST_START_REPORT_IN_BATCH']
