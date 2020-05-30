@@ -7,8 +7,14 @@ class SAPFunctionCall(PreSystemRefresh):
 
     def export_sys_tables_comm_insert(self, module, params):
         data = dict()
+        params_a = dict(
+            NAME=params['NAME'],
+            OPPSYS=params['OPPSYS'],
+            OPCOMMAND=params['OPCOMMAND'],
+            PARAMETERS=params['PARAMETERS']
+        )
         try:
-            self.conn.call("ZSXPG_COMMAND_INSERT", COMMAND=params)
+            self.conn.call("ZSXPG_COMMAND_INSERT", COMMAND=params_a)
             data["Success!"] = "Successfully inserted command {}".format(params['NAME'])
             module.exit_json(changed=True, meta=data)
         except Exception as e:
