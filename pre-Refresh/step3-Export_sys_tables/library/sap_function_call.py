@@ -12,10 +12,6 @@ class SAPFunctionCall(PreSystemRefresh):
             # OPSYSTEM=params['OPSYSTEM'],
             # OPCOMMAND=params['OPCOMMAND'],
             # PARAMETERS=params['PARAMETERS'],
-        #     NAME='SST_TABEXP',
-        #     OPSYSTEM='Linux',
-        #     OPCOMMAND='R3trans',
-        #     PARAMETERS='-w /tmp/exp_ecc.log /tmp/exp.ctl'
         # )
         params_a = dict(
             NAME='SST_TABEXP',
@@ -24,11 +20,9 @@ class SAPFunctionCall(PreSystemRefresh):
             PARAMETERS='-w /tmp/exp_ecc.log /tmp/exp.ctl'
         )
 
-
- #       module.exit_json(changed=False, meta=params_a)
+        module.exit_json(changed=False, meta=params_a)
         try:
-            self.conn.call("INST_EXECUTE_REPORT", PROGRAM='BTCTRNS1')
-            # self.conn.call("ZSXPG_COMMAND_INSERT", COMMAND=params_a)
+            self.conn.call("ZSXPG_COMMAND_INSERT", COMMAND=params_a)
             data["Success!"] = "Successfully inserted command {}".format(params['NAME'])
             module.exit_json(changed=True, meta=data)
         except Exception as e:
