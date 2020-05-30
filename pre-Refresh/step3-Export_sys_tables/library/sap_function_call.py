@@ -3,7 +3,7 @@ from ansible.module_utils.basic import *
 from ansible.module_utils.PreSystemRefresh import PreSystemRefresh
 
 
-class SapFunctionCall(PreSystemRefresh):
+class SAPFunctionCall(PreSystemRefresh):
 
     def export_sys_tables_comm_insert(self, module, params):
         data = dict()
@@ -128,7 +128,7 @@ def main():
         module.exit_json({"Mes": "CheckMode is not supported as of now!"})
 
     prefresh = PreSystemRefresh()
-    functioncall = SapFunctionCall()
+    functioncall = SAPFunctionCall()
 
     if module.params['bapi_user_lock']:
         params = module.params['bapi_user_lock']
@@ -147,7 +147,7 @@ def main():
         user_master_export(module, prefresh, params)
 
     if module.params['ZSXPG_COMMAND_INSERT']:
-        params = module.params['SXPG_COMMAND_INSERT']
+        params = module.params['ZSXPG_COMMAND_INSERT']
         functioncall.export_sys_tables_comm_insert(module, params)
 
     if module.params['SXPG_COMMAND_EXECUTE']:
