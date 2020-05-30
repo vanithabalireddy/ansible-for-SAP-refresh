@@ -1,9 +1,5 @@
 ---
 # tasks file for user_master_export
-  - name: copy exp.ctl file
-    copy: src=exp.ctl dest=/tmp/exp.ctl force=yes
-    tags: copy
-
   - name: Insert Command
     sap_function_call:
       ZSXPG_COMMAND_INSERT:

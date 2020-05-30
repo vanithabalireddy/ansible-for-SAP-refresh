@@ -1,7 +1,6 @@
-#- hosts: sap
-#  tasks:
-#    - name: copy exp.ctl file
-#      copy: src=/tmp/exp.ctl dest=/tmp/exp.ctl force=yes
+- hosts: sap
+  roles:
+    - role: copy_exp_ctl
 
 - hosts: localhost
   vars:
@@ -9,4 +8,3 @@
      ansible_python_interpreter: /usr/bin/python3
   roles:
     - role: export_system_tables
-      tags: export
