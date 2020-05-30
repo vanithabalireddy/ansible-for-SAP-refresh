@@ -3,6 +3,30 @@ from ansible.module_utils.basic import *
 from ansible.module_utils.PreSystemRefresh import PreSystemRefresh
 
 
+class SapFunctionCall(PreSystemRefresh):
+
+    def export_sys_tables_comm_insert(self, module, params):
+        data = dict()
+        try:
+            self.conn.call("ZSXPG_COMMAND_INSERT", COMMAND=params)
+            data["Success!"] = "Successfully inserted command {}".format(params['NAME'])
+            module.exit_json(changed=True, meta=data)
+        except Exception as e:
+            data["Failure!"] = "Failed to insert command {} = {}".format(params['NAME'], e)
+            module.exit_json(changed=False, meta=data)
+
+    def export_sys_tables_comm_execute(self, module, params):
+        command_name = params['NAME']
+        data = dict()
+        try:
+            self.conn.call("SXPG_COMMAND_EXECUTE", COMMAND=command_name)
+            data["Success!"] = "Successfully Executed command {} and exported system tables".format(params['NAME'])
+            module.exit_json(changed=True, meta=data)
+        except Exception as e:
+            data["Failure!"] = "Failed to Execute command {} = {}".format(params['NAME'], e)
+            module.exit_json(changed=False, meta=data)
+
+
 # For setting users to Administer Lock and Unlock
 def bapi_user_lock(module, prefresh, params):
     data = dict()
@@ -86,7 +110,13 @@ def main():
                              variant_name=dict(required=True, type='str'), type='dict'),
         user_master_export=dict(report=dict(type='str'),
                                 variant_name=dict(type='str'),
-                                pc3_ctc_val=dict(default=True, type='bool'), type='dict')
+                                pc3_ctc_val=dict(default=True, type='bool'), type='dict'),
+        ZSXPG_COMMAND_INSERT=dict(NAME=dict(type='str'),
+                                  OPPSYSTEM=dict(type='str'),
+                                  OPCOMMAND=dict(type='str'),
+                                  PARAMETERS=dict(type='str'), type='dict'),
+        SXPG_COMMAND_EXECUTE=dict(COMMAND=dict(type='str'), type='dict')
+
     )
 
     module = AnsibleModule(
@@ -98,6 +128,7 @@ def main():
         module.exit_json({"Mes": "CheckMode is not supported as of now!"})
 
     prefresh = PreSystemRefresh()
+    functioncall = SapFunctionCall()
 
     if module.params['bapi_user_lock']:
         params = module.params['bapi_user_lock']
@@ -114,6 +145,14 @@ def main():
     if module.params['user_master_export']:
         params = module.params['user_master_export']
         user_master_export(module, prefresh, params)
+
+    if module.params['ZSXPG_COMMAND_INSERT']:
+        params = module.params['SXPG_COMMAND_INSERT']
+        functioncall.export_sys_tables_comm_insert(module, params)
+
+    if module.params['SXPG_COMMAND_EXECUTE']:
+        params = module.params['SXPG_COMMAND_EXECUTE']
+        functioncall.export_sys_tables_comm_execute(module, params)
 
 
 if __name__ == "__main__":
