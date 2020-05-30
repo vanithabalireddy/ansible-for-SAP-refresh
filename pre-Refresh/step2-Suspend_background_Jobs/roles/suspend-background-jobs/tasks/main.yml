@@ -2,7 +2,8 @@
 # tasks file for system_user_lock
  - name: Suspend background jobs
    sap_function_call:
-        suspend_bg_jobs: True
+        INST_EXECUTE_REPORT:
+          PROGRAM: 'BTCTRNS1'
    register: suspend_bg_jobs
    tags: suspend_bg_jobs
 
