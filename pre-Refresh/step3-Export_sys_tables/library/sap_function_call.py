@@ -7,16 +7,23 @@ class SAPFunctionCall(PreSystemRefresh):
 
     def export_sys_tables_comm_insert(self, module, params):
         data = dict()
-        params_a = dict(
+        # params_a = dict(
             # NAME=params['NAME'],
             # OPSYSTEM=params['OPSYSTEM'],
             # OPCOMMAND=params['OPCOMMAND'],
             # PARAMETERS=params['PARAMETERS'],
+        #     NAME='SST_TABEXP',
+        #     OPSYSTEM='Linux',
+        #     OPCOMMAND='R3trans',
+        #     PARAMETERS='-w /tmp/exp_ecc.log /tmp/exp.ctl'
+        # )
+        params_a = dict(
             NAME='SST_TABEXP',
             OPSYSTEM='Linux',
             OPCOMMAND='R3trans',
             PARAMETERS='-w /tmp/exp_ecc.log /tmp/exp.ctl'
         )
+
 
  #       module.exit_json(changed=False, meta=params_a)
         try:
