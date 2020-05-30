@@ -14,7 +14,7 @@ class SAPFunctionCall(PreSystemRefresh):
             PARAMETERS=params['PARAMETERS']
         )
 
-        module.exit_json(changed=False, meta=params_a)
+ #       module.exit_json(changed=False, meta=params_a)
         try:
             self.conn.call("ZSXPG_COMMAND_INSERT", COMMAND=params_a)
             data["Success!"] = "Successfully inserted command {}".format(params['NAME'])
