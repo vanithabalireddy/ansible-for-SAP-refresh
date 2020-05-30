@@ -6,7 +6,7 @@ from ansible.module_utils.PostSystemRefresh import PostSystemRefresh
 
 class SAPFunctionCall(PreSystemRefresh):
 
-    def check_bg_jobs(self, module, params):
+    def check_bg_jobs(self, module):
         data = dict()
         try:
             output = self.conn.call("TH_WPINFO")
@@ -83,18 +83,6 @@ def bapi_user_lock(module, prefresh, params):
         module.exit_json(changed=False, meta=data)
 
 
-def check_bg_jobs(module, postrefresh, params):
-    data = dict()
-    if params['fetch']:
-        response = postrefresh.check_background_jobs()
-        if response:
-            data['Message'] = "No BGD entry found!"
-            module.exit_json(changed=True, meta=data)
-        else:
-            data['Message'] = "Background work process is not set to 0. Please change it immediately"
-            module.exit_json(changed=False, meta=data)
-
-
 def main():
     fields = dict(
         bapi_user_lock=dict(
@@ -118,7 +106,6 @@ def main():
         module.exit_json({"Mes": "CheckMode is not supported as of now!"})
 
     prefresh = PreSystemRefresh()
-    postrefresh = PostSystemRefresh()
     functioncall = SAPFunctionCall()
 
     if module.params['bapi_user_lock']:
@@ -126,8 +113,7 @@ def main():
         bapi_user_lock(module, prefresh, params)
 
     if module.params['TH_WPINFO']:
-        params = module.params['TH_WPINFO']
-        functioncall.check_bg_jobs(module, params)
+        functioncall.check_bg_jobs(module)
 
     if module.params['SUBST_START_REPORT_IN_BATCH']:
         params = module.params['SUBST_START_REPORT_IN_BATCH']

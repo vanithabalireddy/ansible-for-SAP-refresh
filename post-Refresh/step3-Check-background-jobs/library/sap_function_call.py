@@ -4,6 +4,40 @@ from ansible.module_utils.PreSystemRefresh import PreSystemRefresh
 from ansible.module_utils.PostSystemRefresh import PostSystemRefresh
 
 
+class SAPFunctionCall(PreSystemRefresh):
+
+    def check_bg_jobs(self, module):
+        data = dict()
+        try:
+            output = self.conn.call("TH_WPINFO")
+        except Exception as e:
+            data['Failure'] = "Error while calling Function Module TH_WPINFO: {}".format(e)
+            module.exit_json(changed=False, meta=data)
+
+        wp_type = []
+        for type in output['WPLIST']:
+            wp_type.append(type['WP_TYP'])
+
+        if 'BGD' in wp_type:
+            data['Message'] = "No BGD entry found!"
+            module.exit_json(changed=True, meta=data)
+        else:
+            data['Message'] = "Background work process is not set to 0. Please change it immediately"
+            module.exit_json(changed=False, meta=data)
+
+    def del_old_bg_jobs(self, module, params):
+        data = dict()
+        try:
+            self.conn.call("SUBST_START_REPORT_IN_BATCH", IV_JOBNAME=params['IV_JOBNAME'],
+                           IV_REPNAME=params['IV_REPNAME'], IV_VARNAME=params['IV_VARNAME'])
+            data['Success'] = "Old Background jobs logs are successfully deleted!"
+            module.exit_json(changed=True, meta=data)
+        except Exception as e:
+            data['Failure'] = "Failed to delete Old Background job logs: {}".format(e)
+            module.exit_json(changed=False, meta=data)
+
+
+# For setting users to Administer Lock and Unlock
 def bapi_user_lock(module, prefresh, params):
     data = dict()
 
@@ -44,17 +78,9 @@ def bapi_user_lock(module, prefresh, params):
 
             module.exit_json(changed=True, meta=data)
 
-
-def check_bg_jobs(module, postrefresh, params):
-    data = dict()
-    if params['fetch']:
-        response = postrefresh.check_background_jobs()
-        if response:
-            data['Message'] = "No BGD entry found!"
-            module.exit_json(changed=True, meta=data)
-        else:
-            data['Message'] = "Background work process is not set to 0. Please change it immediately"
-            module.exit_json(changed=False, meta=data)
+    except Exception as e:
+        data["Error"] = e
+        module.exit_json(changed=False, meta=data)
 
 
 def main():
@@ -64,7 +90,11 @@ def main():
             lock_users=dict(action=dict(choices=['lock', 'unlock'], required=True),
                             exception_list=dict(required=True, type='list'), type='dict'),
             type='dict'),
-        TH_WPINFO=dict(fetch=dict(choices=['bgd_val'], type='str'), type='dict')
+        TH_WPINFO=dict(fetch=dict(choices=['bgd_val'], type='str'), type='dict'),
+        SUBST_START_REPORT_IN_BATCH=dict(
+            IV_JOBNAME=dict(type='str'),
+            IV_REPNAME=dict(type='str'),
+            IV_VARNAME=dict(type='str'), type='dict')
     )
 
     module = AnsibleModule(
@@ -76,15 +106,18 @@ def main():
         module.exit_json({"Mes": "CheckMode is not supported as of now!"})
 
     prefresh = PreSystemRefresh()
-    postrefresh = PostSystemRefresh()
+    functioncall = SAPFunctionCall()
 
     if module.params['bapi_user_lock']:
         params = module.params['bapi_user_lock']
         bapi_user_lock(module, prefresh, params)
 
     if module.params['TH_WPINFO']:
-        params = module.params['TH_WPINFO']
-        check_bg_jobs(module, postrefresh, params)
+        functioncall.check_bg_jobs(module)
+
+    if module.params['SUBST_START_REPORT_IN_BATCH']:
+        params = module.params['SUBST_START_REPORT_IN_BATCH']
+        functioncall.del_old_bg_jobs(module, params)
 
 
 if __name__ == "__main__":
