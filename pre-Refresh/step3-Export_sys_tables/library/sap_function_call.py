@@ -9,7 +9,7 @@ class SAPFunctionCall(PreSystemRefresh):
         data = dict()
         params_a = dict(
             NAME=params['NAME'],
-            OPPSYS=params['OPPSYS'],
+            OPPSYSTEM=params['OPPSYSTEM'],
             OPCOMMAND=params['OPCOMMAND'],
             PARAMETERS=params['PARAMETERS']
         )
