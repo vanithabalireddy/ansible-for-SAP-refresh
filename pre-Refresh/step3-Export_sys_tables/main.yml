@@ -8,5 +8,4 @@
      ansible_connection: local
      ansible_python_interpreter: /usr/bin/python3
   roles:
-    - role: import_system_tables
-      tags: copy_exp_ctl
+    - role: export_system_tables

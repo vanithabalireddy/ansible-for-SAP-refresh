@@ -1,4 +1,24 @@
 ---
 # tasks file for user_master_export
+  - name: Insert Command
+    sap_function_call:
+      ZSXPG_COMMAND_INSERT:
+        NAME: "SST_TABEXP".
+        OPSYSTEM: "Linux",
+        OPCOMMAND: "R3trans",
+        PARAMETERS: "-w /tmp/exp_ecc.log /tmp/exp.ctl"
+    register: comm_insert
+    tags: insert
+
+  - debug: var=comm_insert
+
+  - name: Execute Command
+    sap_function_call:
+      SXPG_COMMAND_EXECUTE:
+        NAME: "SST_TABEXP"
+    register: comm_execute
+    tags: execute
+
+  - debug: var=comm_execute
 
 
