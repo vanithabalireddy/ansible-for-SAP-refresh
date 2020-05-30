@@ -67,36 +67,14 @@ class PreSystemRefresh:
                     pass
             else:
                 users_exempted.append(user)
-                #print("User: " + user + " is excepted from setting to Administer Lock.")
 
         return users_locked, errors, users_exempted
 
-    def suspend_bg_jobs(self):
-        try:
-            self.conn.call("INST_EXECUTE_REPORT", PROGRAM='BTCTRNS1')
-            return "Background Jobs are suspended!"
-        except Exception as e:
-            return "Failed to Suspend Background Jobs: {}".format(e)
+#    def suspend_bg_jobs(self):                 Handled in sap_function_call.py module
 
-    # Needs work around
-    def export_sys_tables(self):
-        params = dict(
-            NAME='ZTABEXP',
-            OPSYSTEM='Linux',
-            OPCOMMAND='R3trans',
-            PARAMETERS='-w /tmp/exp_ecc.log /tmp/exp.ctl'
-        )
+#    def export_sys_tables_cmd_insert(self):    Handled in sap_function_call.py module
 
-        try:
-            self.conn.call("ZSXPG_COMMAND_INSERT", COMMAND=params)
-        except Exception as e:
-            return "Error while inserting Command arguments: {}".format(e)
-
-        try:
-            self.conn.call("SXPG_COMMAND_EXECUTE", COMMANDNAME='ZTABEXP')
-            return "Successfully Exported Quality System Tables"
-        except Exception as e:
-            return "Error while exporting system tables: {}".format(e)
+#    def export_sys_tables_cmd_execute(self):   Handled in sap_function_call.py module
 
     def check_variant(self, report, variant_name):
         try:

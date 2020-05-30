@@ -10,7 +10,8 @@ class PreSystemRefresh:
         self.config.read(os.environ["HOME"] + '/.config/sap_config.cnf')
         self.creds = self.config['SAP']
 
-        self.conn = Connection(user=self.creds['user'], passwd=self.creds['passwd'], ashost=self.creds['ashost'], sysnr=self.creds['sysnr'], sid=self.creds['sid'], client=self.creds['client'])
+        self.conn = Connection(user=self.creds['user'], passwd=self.creds['passwd'], ashost=self.creds['ashost'],
+                               sysnr=self.creds['sysnr'], sid=self.creds['sid'], client=self.creds['client'])
 
     def users_list(self):
         try:
@@ -28,12 +29,12 @@ class PreSystemRefresh:
 
     def existing_locked_users(self):
         params = dict(
-                    PARAMETER='ISLOCKED',
-                    FIELD='LOCAL_LOCK',
-                    SIGN='I',
-                    OPTION='EQ',
-                    LOW='L'
-                    )
+            PARAMETER='ISLOCKED',
+            FIELD='LOCAL_LOCK',
+            SIGN='I',
+            OPTION='EQ',
+            LOW='L'
+        )
         try:
             user_list = self.conn.call("BAPI_USER_GETLIST", SELECTION_RANGE=[params])
         except Exception as e:
@@ -42,7 +43,7 @@ class PreSystemRefresh:
         locked_user_list = []
 
         for user in user_list['USERLIST']:
-                locked_user_list.append(user['USERNAME'])
+            locked_user_list.append(user['USERNAME'])
 
         return locked_user_list
 
@@ -67,41 +68,14 @@ class PreSystemRefresh:
                     pass
             else:
                 users_exempted.append(user)
-                #print("User: " + user + " is excepted from setting to Administer Lock.")
 
         return users_locked, errors, users_exempted
 
-    def suspend_bg_jobs(self):
-        try:
-            self.conn.call("INST_EXECUTE_REPORT", PROGRAM='BTCTRNS1')
-            return "Background Jobs are suspended!"
-        except Exception as e:
-            return "Failed to Suspend Background Jobs: {}".format(e)
+    #    def suspend_bg_jobs(self):                 Handled in sap_function_call.py module
 
-    # Needs work around
-    def export_sys_tables(self):
-        params = dict(
-            NAME='ZTABEXP',
-            OPSYSTEM='Linux',
-            OPCOMMAND='R3trans',
-            PARAMETERS='-w /tmp/exp_ecc.log /tmp/exp.ctl'
-        )
+    #    def export_sys_tables_cmd_insert(self):    Handled in sap_function_call.py module
 
-        try:
-            self.conn.call("ARCHIVFILE_CLIENT_TO_SERVER", PATH="", TARGETPATH='/tmp')
-        except Exception as e:
-            return "Error while copying exp.ctl file to SAP server: {}".format(e)
-
-        try:
-            self.conn.call("SXPG_COMMAND_INSERT", COMMAND=params)
-        except Exception as e:
-            return "Error while inserting Command arguments: {}".format(e)
-
-        try:
-            self.conn.call("SXPG_COMMAND_EXECUTE", COMMANDNAME='ZTABEXP')
-            return "Successfully Exported Quality System Tables"
-        except Exception as e:
-            return "Error while exporting system tables: {}".format(e)
+    #    def export_sys_tables_cmd_execute(self):   Handled in sap_function_call.py module
 
     def check_variant(self, report, variant_name):
         try:
@@ -115,11 +89,11 @@ class PreSystemRefresh:
             if key == 'VALUTAB':
                 var_content = value
 
-        for cont in var_content:        # Export Printer devices
+        for cont in var_content:  # Export Printer devices
             if cont['SELNAME'] == 'FILE' and cont['LOW'] == '/tmp/printers':
                 return True
 
-        for cont in var_content:        # User Master Export
+        for cont in var_content:  # User Master Export
             if cont['SELNAME'] == 'COPYCLI' and cont['LOW'] == self.creds['client']:
                 return True
 
@@ -139,7 +113,8 @@ class PreSystemRefresh:
 
     def create_variant(self, report, variant_name, desc, content, text, screen):
         try:
-            self.conn.call("RS_CREATE_VARIANT_RFC", CURR_REPORT=report, CURR_VARIANT=variant_name, VARI_DESC=desc, VARI_CONTENTS=content, VARI_TEXT=text, VSCREENS=screen)
+            self.conn.call("RS_CREATE_VARIANT_RFC", CURR_REPORT=report, CURR_VARIANT=variant_name, VARI_DESC=desc,
+                           VARI_CONTENTS=content, VARI_TEXT=text, VSCREENS=screen)
         except Exception as e:
             return "Variant {} Creation is Unsuccessful!! : {}".format(variant_name, e)
 
@@ -160,11 +135,11 @@ class PreSystemRefresh:
             return "Failed to delete variant {}".format(variant_name)
 
     def export_printer_devices(self, report, variant_name):
-            try:
-                self.conn.call("SUBST_START_REPORT_IN_BATCH", IV_JOBNAME=report, IV_REPNAME=report, IV_VARNAME=variant_name)
-                return "Exported printer devices Successfully"
-            except Exception as e:
-                return "Failed to export printer devices! {}".format(e)
+        try:
+            self.conn.call("SUBST_START_REPORT_IN_BATCH", IV_JOBNAME=report, IV_REPNAME=report, IV_VARNAME=variant_name)
+            return "Exported printer devices Successfully"
+        except Exception as e:
+            return "Failed to export printer devices! {}".format(e)
 
     def pc3_ctc_val(self):
         try:
@@ -180,7 +155,8 @@ class PreSystemRefresh:
                 result["pc3_val"] = pc3_val
 
         try:
-            output = self.conn.call("RFC_READ_TABLE", QUERY_TABLE='TMSPCONF', FIELDS=[{'FIELDNAME': 'NAME'}, {'FIELDNAME': 'SYSNAME'}, {'FIELDNAME': 'VALUE'}])
+            output = self.conn.call("RFC_READ_TABLE", QUERY_TABLE='TMSPCONF',
+                                    FIELDS=[{'FIELDNAME': 'NAME'}, {'FIELDNAME': 'SYSNAME'}, {'FIELDNAME': 'VALUE'}])
         except Exception as e:
             return "Failed while fetching TMC CTC Value: {}".format(e)
 
@@ -209,7 +185,6 @@ class PreSystemRefresh:
             return "User Master Export is Completed!"
         except Exception as e:
             return "User Master Export is Failed!! {}".format(e)
-
 
 # 1. System user lock               = Done
 # 2. Suspend background Jobs        = Done
