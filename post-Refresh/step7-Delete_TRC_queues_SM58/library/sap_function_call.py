@@ -9,10 +9,20 @@ class SAPFunctionCall(PreSystemRefresh):
         data = dict()
         try:
             self.conn.call("INST_EXECUTE_REPORT", PROGRAM=params['PROGRAM'])
-            data["Success!"] = "Background Jobs are Suspended!"
+            if params['PROGRAM'] == 'BTCTRNS1':
+                data["Success"] = "Background Jobs are Suspended!"
+            if params['PROGRAM'] == 'CSM_TAB_CLEAN':
+                data["Success"] = "Cleaned CCMS data!"
+            if params['PROGRAM'] == 'RSPO1043':
+                data["Success"] = "Spool Consistency is being checked!"
             module.exit_json(changed=True, meta=data)
         except Exception as e:
-            data["Failure!"] = "Failed to Suspend Background Jobs: {}".format(e)
+            if params['PROGRAM'] == 'BTCTRNS1':
+                data["Failed"] = "Failed to Suspend Background Jobs: {}".format(e)
+            if params['PROGRAM'] == 'CSM_TAB_CLEAN':
+                data["Failed"] = "Failed to clean CCMS data: {}".format(e)
+            if params['PROGRAM'] == 'RSPO1043':
+                data["Failed"] = "Failed to check spool consistency: {}".format(e)
             module.exit_json(changed=False, meta=data)
 
     def check_bg_jobs(self, module):
@@ -45,8 +55,6 @@ class SAPFunctionCall(PreSystemRefresh):
                 data['Success'] = "Successfully Deleted SMQ1 Outbound Queues!"
             if params['IV_REPNAME'] == 'RSTRFCID':
                 data['Success'] = "Successfully Deleted SMQ2 Outbound Queues!"
-            if params['IV_REPNAME'] == 'RSARFCDL':
-                data['Success'] = "Successfully Deleted TRC SM58 Queues!"
             module.exit_json(changed=True, meta=data)
         except Exception as e:
             if params['IV_REPNAME'] == 'RSBTCDEL':
@@ -55,8 +63,6 @@ class SAPFunctionCall(PreSystemRefresh):
                 data['Failure'] = "Failed to delete SMQ1 Outbound Queues: {}".format(e)
             if params['IV_REPNAME'] == 'RSTRFCID':
                 data['Failure'] = "Failed to delete SMQ2 Outbound Queues: {}".format(e)
-            if params['IV_REPNAME'] == 'RSARFCDL':
-                data['Failure'] = "Failed to delete TRC SM58 Queues: {}".format(e)
             module.exit_json(changed=False, meta=data)
 
 
