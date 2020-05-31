@@ -131,8 +131,6 @@ def main():
             IV_JOBNAME=dict(type='str'),
             IV_REPNAME=dict(type='str'),
             IV_VARNAME=dict(type='str'), type='dict'),
-        export_printers=dict(report=dict(required=True, type='str'),
-                             variant_name=dict(required=True, type='str'), type='dict'),
         user_master_export=dict(report=dict(type='str'),
                                 variant_name=dict(type='str'),
                                 pc3_ctc_val=dict(default=True, type='bool'), type='dict'),
