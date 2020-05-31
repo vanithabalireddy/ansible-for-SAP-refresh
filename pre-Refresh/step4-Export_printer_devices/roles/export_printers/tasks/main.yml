@@ -39,6 +39,3 @@
        report: "{{ report }}"
        variant_name: "{{ variant_name }}"
        action: delete
-
- - debug: var=client_value
-   tags: debug
