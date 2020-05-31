@@ -1,8 +1,6 @@
 #!/usr/bin/python
 from ansible.module_utils.basic import *
 from ansible.module_utils.PreSystemRefresh import PreSystemRefresh
-from ansible.module_utils.PostSystemRefresh import PostSystemRefresh
-
 
 class SAPFunctionCall(PreSystemRefresh):
 
