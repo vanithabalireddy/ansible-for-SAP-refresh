@@ -108,14 +108,6 @@ def bapi_user_lock(module, prefresh, params):
         module.fail_json(msg=err, error=to_native(e), exception=traceback.format_exc())
 
 
-def export_printers(module, prefresh, params):
-    if params:
-        report = params['report']
-        variant_name = params['variant_name']
-        response = prefresh.export_printer_devices(report, variant_name)
-        module.exit_json(changed=True, meta={'stdout': response})
-
-
 def user_master_export(module, prefresh, params):
     if params['pc3_ctc_val']:
         response = prefresh.pc3_ctc_val()
