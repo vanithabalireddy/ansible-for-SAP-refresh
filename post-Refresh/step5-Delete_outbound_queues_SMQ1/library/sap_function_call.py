@@ -6,6 +6,16 @@ from ansible.module_utils.PostSystemRefresh import PostSystemRefresh
 
 class SAPFunctionCall(PreSystemRefresh):
 
+    def suspend_bg_jobs(self, module, params):
+        data = dict()
+        try:
+            self.conn.call("INST_EXECUTE_REPORT", PROGRAM=params['PROGRAM'])
+            data["Success!"] = "Background Jobs are Suspended!"
+            module.exit_json(changed=True, meta=data)
+        except Exception as e:
+            data["Failure!"] = "Failed to Suspend Background Jobs: {}".format(e)
+            module.exit_json(changed=False, meta=data)
+
     def check_bg_jobs(self, module):
         data = dict()
         try:
@@ -90,6 +100,7 @@ def main():
             lock_users=dict(action=dict(choices=['lock', 'unlock'], required=True),
                             exception_list=dict(required=True, type='list'), type='dict'),
             type='dict'),
+        INST_EXECUTE_REPORT=dict(PROGRAM=dict(type='str'), type='dict'),
         TH_WPINFO=dict(fetch=dict(choices=['bgd_val'], type='str'), type='dict'),
         SUBST_START_REPORT_IN_BATCH=dict(
             IV_JOBNAME=dict(type='str'),
@@ -111,6 +122,10 @@ def main():
     if module.params['bapi_user_lock']:
         params = module.params['bapi_user_lock']
         bapi_user_lock(module, prefresh, params)
+
+    if module.params['INST_EXECUTE_REPORT']:
+        params = module.params['INST_EXECUTE_REPORT']
+        functioncall.suspend_bg_jobs(module, params)
 
     if module.params['TH_WPINFO']:
         functioncall.check_bg_jobs(module)
