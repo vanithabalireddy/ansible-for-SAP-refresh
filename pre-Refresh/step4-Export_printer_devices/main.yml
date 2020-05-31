@@ -7,6 +7,7 @@
       vars:
         report: "RSPOXDEV"
         variant_name: "SST_ZPRINT_EXP"
+        client_value: "{{ lookup('file', '$HOME/.config/sap_config.cnf') }}"
         client: 100
 
 
