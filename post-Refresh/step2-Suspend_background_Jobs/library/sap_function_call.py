@@ -35,15 +35,25 @@ class SAPFunctionCall(PreSystemRefresh):
             data['Message'] = "Background work process is not set to 0. Please change it immediately"
             module.exit_json(changed=False, meta=data)
 
-    def del_old_bg_jobs(self, module, params):
+    def execute_report(self, module, params):
         data = dict()
         try:
             self.conn.call("SUBST_START_REPORT_IN_BATCH", IV_JOBNAME=params['IV_JOBNAME'],
                            IV_REPNAME=params['IV_REPNAME'], IV_VARNAME=params['IV_VARNAME'])
-            data['Success'] = "Old Background jobs logs are successfully deleted!"
+            if params['IV_REPNAME'] == 'RSBTCDEL':
+                data['Success'] = "Old Background jobs logs are successfully deleted!"
+            if params['IV_REPNAME'] == 'RSTRFCQD':
+                data['Success'] = "Successfully Deleted SMQ1 Outbound Queues!"
+            if params['IV_REPNAME'] == 'RSTRFCID':
+                data['Success'] = "Successfully Deleted SMQ2 Outbound Queues!"
             module.exit_json(changed=True, meta=data)
         except Exception as e:
-            data['Failure'] = "Failed to delete Old Background job logs: {}".format(e)
+            if params['IV_REPNAME'] == 'RSBTCDEL':
+                data['Failure'] = "Failed to delete Old Background job logs: {}".format(e)
+            if params['IV_REPNAME'] == 'RSTRFCQD':
+                data['Failure'] = "Failed to delete SMQ1 Outbound Queues: {}".format(e)
+            if params['IV_REPNAME'] == 'RSTRFCID':
+                data['Failure'] = "Failed to delete SMQ2 Outbound Queues: {}".format(e)
             module.exit_json(changed=False, meta=data)
 
 
@@ -83,10 +93,8 @@ def bapi_user_lock(module, prefresh, params):
 
             locked_users, errors, excempted_users = prefresh.user_lock(user_list, exception_list, 'unlock')
 
-            data[
-                "User's who's current status is set to Lock(*including existing users that are locked)"] = exception_list
-            data[
-                "User's Unlocked with exception to the users who's status was already locked prior to the activity"] = locked_users
+            data["User's who's current status is set to Lock(*including existing users that are locked)"] = exception_list
+            data["User's Unlocked with exception to the users who's status was already locked prior to the activity"] = locked_users
 
             module.exit_json(changed=True, meta=data)
 
@@ -134,7 +142,7 @@ def main():
 
     if module.params['SUBST_START_REPORT_IN_BATCH']:
         params = module.params['SUBST_START_REPORT_IN_BATCH']
-        functioncall.del_old_bg_jobs(module, params)
+        functioncall.execute_report(module, params)
 
 
 if __name__ == "__main__":
