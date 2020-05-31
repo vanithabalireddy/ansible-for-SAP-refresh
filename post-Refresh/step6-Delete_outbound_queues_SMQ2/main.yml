@@ -3,10 +3,10 @@
      ansible_connection: local
      ansible_python_interpreter: /usr/bin/python3
   roles:
-    - role: del_old_bg_jobs
+    - role: del_SMQ2
       vars:
-        report: "RSBTCDEL"
-        variant_name: "SST_ZDELLOG"
+        report: "RSTRFCID"
+        variant_name: "SST_DELSMQ2"
         client: 100
 
 
