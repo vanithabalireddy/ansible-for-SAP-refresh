@@ -5,7 +5,7 @@ from ansible.module_utils.PreSystemRefresh import PreSystemRefresh
 
 class SAPFunctionCall(PreSystemRefresh):
 
-    def suspend_bg_jobs(self, module, params):
+    def inst_execute_report(self, module, params):
         data = dict()
         try:
             self.conn.call("INST_EXECUTE_REPORT", PROGRAM=params['PROGRAM'])
@@ -34,7 +34,7 @@ class SAPFunctionCall(PreSystemRefresh):
             data['Message'] = "Background work process is not set to 0. Please change it immediately"
             module.exit_json(changed=False, meta=data)
 
-    def execute_report(self, module, params):
+    def start_report_in_batch(self, module, params):
         data = dict()
         try:
             self.conn.call("SUBST_START_REPORT_IN_BATCH", IV_JOBNAME=params['IV_JOBNAME'],
@@ -134,14 +134,14 @@ def main():
 
     if module.params['INST_EXECUTE_REPORT']:
         params = module.params['INST_EXECUTE_REPORT']
-        functioncall.suspend_bg_jobs(module, params)
+        functioncall.inst_execute_report(module, params)
 
     if module.params['TH_WPINFO']:
         functioncall.check_bg_jobs(module)
 
     if module.params['SUBST_START_REPORT_IN_BATCH']:
         params = module.params['SUBST_START_REPORT_IN_BATCH']
-        functioncall.execute_report(module, params)
+        functioncall.start_report_in_batch(module, params)
 
 
 if __name__ == "__main__":
