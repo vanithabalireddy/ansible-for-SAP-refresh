@@ -116,23 +116,23 @@ class PreSystemRefresh:
             self.conn.call("RS_CREATE_VARIANT_RFC", CURR_REPORT=report, CURR_VARIANT=variant_name, VARI_DESC=desc,
                            VARI_CONTENTS=content, VARI_TEXT=text, VSCREENS=screen)
         except Exception as e:
-            return "Variant {} Creation is Unsuccessful!! : {}".format(variant_name, e)
+            return "Variant {} for report {} Creation is Unsuccessful!! : {}".format(variant_name, report, e)
 
         if self.check_variant(report, variant_name) is True:
-            return "Variant {} Successfully Created".format(variant_name)
+            return "Variant {} Successfully Created for report {}".format(variant_name, report)
         else:
-            return "Creation of variant {} is failed!!".format(variant_name)
+            return "Creation of variant {} for report {} is failed!!".format(variant_name, report)
 
     def delete_variant(self, report, variant_name):
         try:
             self.conn.call("RS_VARIANT_DELETE_RFC", REPORT=report, VARIANT=variant_name)
         except Exception as e:
-            return "Deletion of variant {} is failed!!: {}".format(variant_name, e)
+            return "Deletion of variant {} of report {} is failed!!: {}".format(variant_name, report, e)
 
         if self.check_variant(report, variant_name) is False:
-            return "Variant {} Successfully Deleted".format(variant_name)
+            return "Variant {} for report {} is Successfully Deleted".format(variant_name, report)
         else:
-            return "Failed to delete variant {}".format(variant_name)
+            return "Failed to delete variant {} for report {}".format(variant_name, report)
 
     def export_printer_devices(self, report, variant_name):
         try:

@@ -10,7 +10,8 @@ class PreSystemRefresh:
         self.config.read(os.environ["HOME"] + '/.config/sap_config.cnf')
         self.creds = self.config['SAP']
 
-        self.conn = Connection(user=self.creds['user'], passwd=self.creds['passwd'], ashost=self.creds['ashost'], sysnr=self.creds['sysnr'], sid=self.creds['sid'], client=self.creds['client'])
+        self.conn = Connection(user=self.creds['user'], passwd=self.creds['passwd'], ashost=self.creds['ashost'],
+                               sysnr=self.creds['sysnr'], sid=self.creds['sid'], client=self.creds['client'])
 
     def users_list(self):
         try:
@@ -28,12 +29,12 @@ class PreSystemRefresh:
 
     def existing_locked_users(self):
         params = dict(
-                    PARAMETER='ISLOCKED',
-                    FIELD='LOCAL_LOCK',
-                    SIGN='I',
-                    OPTION='EQ',
-                    LOW='L'
-                    )
+            PARAMETER='ISLOCKED',
+            FIELD='LOCAL_LOCK',
+            SIGN='I',
+            OPTION='EQ',
+            LOW='L'
+        )
         try:
             user_list = self.conn.call("BAPI_USER_GETLIST", SELECTION_RANGE=[params])
         except Exception as e:
@@ -42,7 +43,7 @@ class PreSystemRefresh:
         locked_user_list = []
 
         for user in user_list['USERLIST']:
-                locked_user_list.append(user['USERNAME'])
+            locked_user_list.append(user['USERNAME'])
 
         return locked_user_list
 
@@ -70,11 +71,11 @@ class PreSystemRefresh:
 
         return users_locked, errors, users_exempted
 
-#    def suspend_bg_jobs(self):                 Handled in sap_function_call.py module
+    #    def suspend_bg_jobs(self):                 Handled in sap_function_call.py module
 
-#    def export_sys_tables_cmd_insert(self):    Handled in sap_function_call.py module
+    #    def export_sys_tables_cmd_insert(self):    Handled in sap_function_call.py module
 
-#    def export_sys_tables_cmd_execute(self):   Handled in sap_function_call.py module
+    #    def export_sys_tables_cmd_execute(self):   Handled in sap_function_call.py module
 
     def check_variant(self, report, variant_name):
         try:
@@ -88,23 +89,23 @@ class PreSystemRefresh:
             if key == 'VALUTAB':
                 var_content = value
 
-        for cont in var_content:        # Export Printer devices
+        for cont in var_content:            # Export Printer devices
             if cont['SELNAME'] == 'FILE' and cont['LOW'] == '/tmp/printers':
                 return True
 
-        for cont in var_content:        # User Master Export
+        for cont in var_content:            # User Master Export
             if cont['SELNAME'] == 'COPYCLI' and cont['LOW'] == self.creds['client']:
                 return True
 
-        for cont in var_content:
+        for cont in var_content:            # Delete_old_bg_jobs
             if cont['SELNAME'] == 'FORCE' and cont['LOW'] == 'X':
                 return True
 
-        for cont in var_content:
+        for cont in var_content:            # Delete_outbound_queues_SMQ1
             if cont['SELNAME'] == 'DISPLAY' and cont['LOW'] == 'X':
                 return True
 
-        for cont in var_content:
+        for cont in var_content:            # Delete_outbound_queues_SMQ2
             if cont['SELNAME'] == 'SET_EXEC' and cont['LOW'] == 'X':
                 return True
 
@@ -112,32 +113,33 @@ class PreSystemRefresh:
 
     def create_variant(self, report, variant_name, desc, content, text, screen):
         try:
-            self.conn.call("RS_CREATE_VARIANT_RFC", CURR_REPORT=report, CURR_VARIANT=variant_name, VARI_DESC=desc, VARI_CONTENTS=content, VARI_TEXT=text, VSCREENS=screen)
+            self.conn.call("RS_CREATE_VARIANT_RFC", CURR_REPORT=report, CURR_VARIANT=variant_name, VARI_DESC=desc,
+                           VARI_CONTENTS=content, VARI_TEXT=text, VSCREENS=screen)
         except Exception as e:
-            return "Variant {} Creation is Unsuccessful!! : {}".format(variant_name, e)
+            return "Variant {} for report {} Creation is Unsuccessful!! : {}".format(variant_name, report, e)
 
         if self.check_variant(report, variant_name) is True:
-            return "Variant {} Successfully Created".format(variant_name)
+            return "Variant {} Successfully Created for report {}".format(variant_name, report)
         else:
-            return "Creation of variant {} is failed!!".format(variant_name)
+            return "Creation of variant {} for report {} is failed!!".format(variant_name, report)
 
     def delete_variant(self, report, variant_name):
         try:
             self.conn.call("RS_VARIANT_DELETE_RFC", REPORT=report, VARIANT=variant_name)
         except Exception as e:
-            return "Deletion of variant {} is failed!!: {}".format(variant_name, e)
+            return "Deletion of variant {} of report {} is failed!!: {}".format(variant_name, report, e)
 
         if self.check_variant(report, variant_name) is False:
-            return "Variant {} Successfully Deleted".format(variant_name)
+            return "Variant {} for report {} is Successfully Deleted".format(variant_name, report)
         else:
-            return "Failed to delete variant {}".format(variant_name)
+            return "Failed to delete variant {} for report {}".format(variant_name, report)
 
     def export_printer_devices(self, report, variant_name):
-            try:
-                self.conn.call("SUBST_START_REPORT_IN_BATCH", IV_JOBNAME=report, IV_REPNAME=report, IV_VARNAME=variant_name)
-                return "Exported printer devices Successfully"
-            except Exception as e:
-                return "Failed to export printer devices! {}".format(e)
+        try:
+            self.conn.call("SUBST_START_REPORT_IN_BATCH", IV_JOBNAME=report, IV_REPNAME=report, IV_VARNAME=variant_name)
+            return "Exported printer devices Successfully"
+        except Exception as e:
+            return "Failed to export printer devices! {}".format(e)
 
     def pc3_ctc_val(self):
         try:
@@ -153,7 +155,8 @@ class PreSystemRefresh:
                 result["pc3_val"] = pc3_val
 
         try:
-            output = self.conn.call("RFC_READ_TABLE", QUERY_TABLE='TMSPCONF', FIELDS=[{'FIELDNAME': 'NAME'}, {'FIELDNAME': 'SYSNAME'}, {'FIELDNAME': 'VALUE'}])
+            output = self.conn.call("RFC_READ_TABLE", QUERY_TABLE='TMSPCONF',
+                                    FIELDS=[{'FIELDNAME': 'NAME'}, {'FIELDNAME': 'SYSNAME'}, {'FIELDNAME': 'VALUE'}])
         except Exception as e:
             return "Failed while fetching TMC CTC Value: {}".format(e)
 
@@ -182,7 +185,6 @@ class PreSystemRefresh:
             return "User Master Export is Completed!"
         except Exception as e:
             return "User Master Export is Failed!! {}".format(e)
-
 
 # 1. System user lock               = Done
 # 2. Suspend background Jobs        = Done
