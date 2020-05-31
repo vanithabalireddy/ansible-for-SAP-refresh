@@ -4,7 +4,6 @@ from ansible.module_utils.PreSystemRefresh import PreSystemRefresh
 
 
 class SAPFunctionCall(PreSystemRefresh):
-
     data = dict()
     err = str()
 
@@ -18,6 +17,22 @@ class SAPFunctionCall(PreSystemRefresh):
             if params['PROGRAM'] == 'BTCTRNS1':
                 self.err = "Failed to Suspend Background Jobs"
             module.fail_json(msg=self.err, error=to_native(e), exception=traceback.format_exc())
+
+    def start_report_in_batch(self, module, params):
+        try:
+            self.conn.call("SUBST_START_REPORT_IN_BATCH", IV_JOBNAME=params['IV_JOBNAME'],
+                           IV_REPNAME=params['IV_REPNAME'], IV_VARNAME=params['IV_VARNAME'])
+            if params['IV_REPNAME'] == 'RSPOXDEV':
+                self.data['Success'] = "Printer devices are Successfully exported!"
+            if params['IV_REPNAME'] == 'ZRSCLXCOP':
+                self.data['Success'] = "User Master Export is Successfully Completed!"
+            module.exit_json(changed=True, meta=self.data)
+        except Exception as e:
+            if params['IV_REPNAME'] == 'RSPOXDEV':
+                self.err = "Failed to Export Printer devices"
+            if params['IV_REPNAME'] == 'ZRSCLXCOP':
+                self.err = "User Master Export is Failed!"
+            module.fail_json(msg=self.err, Error=to_native(e), exception=traceback.format_exc())
 
     def export_sys_tables_comm_insert(self, module, params):
         args = dict(
@@ -81,22 +96,16 @@ def bapi_user_lock(module, prefresh, params):
 
             locked_users, errors, excempted_users = prefresh.user_lock(user_list, exception_list, 'unlock')
 
-            data["User's who's current status is set to Lock(*including existing users that are locked)"] = exception_list
-            data["User's Unlocked with exception to the users who's status was already locked prior to the activity"] = locked_users
+            data[
+                "User's who's current status is set to Lock(*including existing users that are locked)"] = exception_list
+            data[
+                "User's Unlocked with exception to the users who's status was already locked prior to the activity"] = locked_users
 
             module.exit_json(changed=True, meta=data)
 
     except Exception as e:
         err = e
         module.fail_json(msg=err, error=to_native(e), exception=traceback.format_exc())
-
-
-def export_printers(module, prefresh, params):
-    if params:
-        report = params['report']
-        variant_name = params['variant_name']
-        response = prefresh.export_printer_devices(report, variant_name)
-        module.exit_json(changed=True, meta={'stdout': response})
 
 
 def user_master_export(module, prefresh, params):
@@ -118,8 +127,10 @@ def main():
                             exception_list=dict(required=True, type='list'), type='dict'),
             type='dict'),
         INST_EXECUTE_REPORT=dict(PROGRAM=dict(type='str'), type='dict'),
-        export_printers=dict(report=dict(required=True, type='str'),
-                             variant_name=dict(required=True, type='str'), type='dict'),
+        SUBST_START_REPORT_IN_BATCH=dict(
+            IV_JOBNAME=dict(type='str'),
+            IV_REPNAME=dict(type='str'),
+            IV_VARNAME=dict(type='str'), type='dict'),
         user_master_export=dict(report=dict(type='str'),
                                 variant_name=dict(type='str'),
                                 pc3_ctc_val=dict(default=True, type='bool'), type='dict'),
@@ -150,9 +161,9 @@ def main():
         params = module.params['INST_EXECUTE_REPORT']
         functioncall.inst_execute_report(module, params)
 
-    if module.params['export_printers']:
-        params = module.params['export_printers']
-        export_printers(module, prefresh, params)
+    if module.params['SUBST_START_REPORT_IN_BATCH']:
+        params = module.params['SUBST_START_REPORT_IN_BATCH']
+        functioncall.start_report_in_batch(module, params)
 
     if module.params['user_master_export']:
         params = module.params['user_master_export']
