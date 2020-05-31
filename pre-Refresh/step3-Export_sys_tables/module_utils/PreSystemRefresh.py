@@ -17,7 +17,7 @@ class PreSystemRefresh:
         try:
             tables = self.conn.call("RFC_READ_TABLE", QUERY_TABLE='USR02', FIELDS=[{'FIELDNAME': 'BNAME'}])
         except Exception as e:
-            return "Error while fetching user's list from USR02 table: {}".format(e)
+            return "Failed to fetch user's list from USR02 table: {}".format(e)
 
         users = []
 
@@ -53,7 +53,7 @@ class PreSystemRefresh:
         elif action == "unlock":
             func_module = 'BAPI_USER_UNLOCK'
         else:
-            return "Please pass third argument ['lock' | 'unlock']"
+            return "Failed! Please pass argument ['lock' | 'unlock']"
 
         users_locked = []
         errors = dict()
@@ -116,18 +116,18 @@ class PreSystemRefresh:
             self.conn.call("RS_CREATE_VARIANT_RFC", CURR_REPORT=report, CURR_VARIANT=variant_name, VARI_DESC=desc,
                            VARI_CONTENTS=content, VARI_TEXT=text, VSCREENS=screen)
         except Exception as e:
-            return "Variant {} for report {} Creation is Unsuccessful!! : {}".format(variant_name, report, e)
+            return "Variant {} for report {} Creation is Failed! : {}".format(variant_name, report, e)
 
         if self.check_variant(report, variant_name) is True:
             return "Variant {} Successfully Created for report {}".format(variant_name, report)
         else:
-            return "Creation of variant {} for report {} is failed!!".format(variant_name, report)
+            return "Creation of variant {} for report {} is Failed!!".format(variant_name, report)
 
     def delete_variant(self, report, variant_name):
         try:
             self.conn.call("RS_VARIANT_DELETE_RFC", REPORT=report, VARIANT=variant_name)
         except Exception as e:
-            return "Deletion of variant {} of report {} is failed!!: {}".format(variant_name, report, e)
+            return "Deletion of variant {} of report {} is Failed!: {}".format(variant_name, report, e)
 
         if self.check_variant(report, variant_name) is False:
             return "Variant {} for report {} is Successfully Deleted".format(variant_name, report)
