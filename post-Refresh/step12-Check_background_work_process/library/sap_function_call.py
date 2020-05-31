@@ -38,10 +38,10 @@ class SAPFunctionCall(PreSystemRefresh):
             wp_type.append(type['WP_TYP'])
 
         if 'BGD' in wp_type:
-            self.data['result'] = "True"
+            self.data['result'] = True
             module.exit_json(changed=True, meta=self.data)
         else:
-            self.data['result'] = "False"
+            self.data['result'] = False
             module.exit_json(changed=True, meta=self.data)
 
     def start_report_in_batch(self, module, params):

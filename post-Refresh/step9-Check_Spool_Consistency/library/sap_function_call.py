@@ -38,11 +38,11 @@ class SAPFunctionCall(PreSystemRefresh):
             wp_type.append(type['WP_TYP'])
 
         if 'BGD' in wp_type:
-            self.data['Message'] = "No BGD entry found!"
+            self.data['result'] = True
             module.exit_json(changed=True, meta=self.data)
         else:
-            self.err = "Background work process is not set to 0. Please change it immediately"
-            module.fail_json(msg=self.err, exception=traceback.format_exc())
+            self.data['result'] = False
+            module.exit_json(changed=True, meta=self.data)
 
     def start_report_in_batch(self, module, params):
         try:
