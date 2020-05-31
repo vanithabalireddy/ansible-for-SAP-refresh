@@ -1,6 +1,7 @@
 #!/usr/bin/python
 from ansible.module_utils.basic import *
 from ansible.module_utils.PreSystemRefresh import PreSystemRefresh
+from ansible.module_utils.PostSystemRefresh import PostSystemRefresh
 
 
 class SAPFunctionCall(PreSystemRefresh):
@@ -15,32 +16,34 @@ class SAPFunctionCall(PreSystemRefresh):
             data["Failure!"] = "Failed to Suspend Background Jobs: {}".format(e)
             module.exit_json(changed=False, meta=data)
 
-    def export_sys_tables_comm_insert(self, module, params):
+    def check_bg_jobs(self, module):
         data = dict()
-        args = dict(
-            NAME=params['NAME'],
-            OPSYSTEM=params['OPSYSTEM'],
-            OPCOMMAND=params['OPCOMMAND'],
-            PARAMETERS=params['PARAMETERS']
-        )
-
         try:
-            self.conn.call("ZSXPG_COMMAND_INSERT", COMMAND=args)
-            data["Success!"] = "Successfully inserted command {}".format(params['NAME'])
-            module.exit_json(changed=True, meta=data)
+            output = self.conn.call("TH_WPINFO")
         except Exception as e:
-            data["Failure!"] = "Failed to insert command {} = {}".format(params['NAME'], e)
+            data['Failure'] = "Error while calling Function Module TH_WPINFO: {}".format(e)
             module.exit_json(changed=False, meta=data)
 
-    def export_sys_tables_comm_execute(self, module, params):
-        command_name = params['NAME']
+        wp_type = []
+        for type in output['WPLIST']:
+            wp_type.append(type['WP_TYP'])
+
+        if 'BGD' in wp_type:
+            data['Message'] = "No BGD entry found!"
+            module.exit_json(changed=True, meta=data)
+        else:
+            data['Message'] = "Background work process is not set to 0. Please change it immediately"
+            module.exit_json(changed=False, meta=data)
+
+    def del_old_bg_jobs(self, module, params):
         data = dict()
         try:
-            self.conn.call("SXPG_COMMAND_EXECUTE", COMMAND=command_name)
-            data["Success!"] = "Successfully Executed command {} and exported system tables".format(params['NAME'])
+            self.conn.call("SUBST_START_REPORT_IN_BATCH", IV_JOBNAME=params['IV_JOBNAME'],
+                           IV_REPNAME=params['IV_REPNAME'], IV_VARNAME=params['IV_VARNAME'])
+            data['Success'] = "Old Background jobs logs are successfully deleted!"
             module.exit_json(changed=True, meta=data)
         except Exception as e:
-            data["Failure!"] = "Failed to Execute command {} = {}".format(params['NAME'], e)
+            data['Failure'] = "Failed to delete Old Background job logs: {}".format(e)
             module.exit_json(changed=False, meta=data)
 
 
@@ -80,33 +83,16 @@ def bapi_user_lock(module, prefresh, params):
 
             locked_users, errors, excempted_users = prefresh.user_lock(user_list, exception_list, 'unlock')
 
-            data["User's who's current status is set to Lock(*including existing users that are locked)"] = exception_list
-            data["User's Unlocked with exception to the users who's status was already locked prior to the activity"] = locked_users
+            data[
+                "User's who's current status is set to Lock(*including existing users that are locked)"] = exception_list
+            data[
+                "User's Unlocked with exception to the users who's status was already locked prior to the activity"] = locked_users
 
             module.exit_json(changed=True, meta=data)
 
     except Exception as e:
         data["Error"] = e
         module.exit_json(changed=False, meta=data)
-
-
-def export_printers(module, prefresh, params):
-    if params:
-        report = params['report']
-        variant_name = params['variant_name']
-        response = prefresh.export_printer_devices(report, variant_name)
-        module.exit_json(changed=True, meta={'stdout': response})
-
-
-def user_master_export(module, prefresh, params):
-    if params['pc3_ctc_val']:
-        response = prefresh.pc3_ctc_val()
-        module.exit_json(changed=True, meta={'stdout': response})
-    else:
-        report = params['report']
-        variant_name = params['variant_name']
-        response = prefresh.user_master_export(report, variant_name)
-        module.exit_json(changed=True, meta={'stdout': response})
 
 
 def main():
@@ -117,17 +103,11 @@ def main():
                             exception_list=dict(required=True, type='list'), type='dict'),
             type='dict'),
         INST_EXECUTE_REPORT=dict(PROGRAM=dict(type='str'), type='dict'),
-        export_printers=dict(report=dict(required=True, type='str'),
-                             variant_name=dict(required=True, type='str'), type='dict'),
-        user_master_export=dict(report=dict(type='str'),
-                                variant_name=dict(type='str'),
-                                pc3_ctc_val=dict(default=True, type='bool'), type='dict'),
-        ZSXPG_COMMAND_INSERT=dict(NAME=dict(type='str'),
-                                  OPSYSTEM=dict(type='str'),
-                                  OPCOMMAND=dict(type='str'),
-                                  PARAMETERS=dict(type='str'), type='dict'),
-        SXPG_COMMAND_EXECUTE=dict(COMMAND=dict(type='str'), type='dict')
-
+        TH_WPINFO=dict(fetch=dict(choices=['bgd_val'], type='str'), type='dict'),
+        SUBST_START_REPORT_IN_BATCH=dict(
+            IV_JOBNAME=dict(type='str'),
+            IV_REPNAME=dict(type='str'),
+            IV_VARNAME=dict(type='str'), type='dict')
     )
 
     module = AnsibleModule(
@@ -149,21 +129,12 @@ def main():
         params = module.params['INST_EXECUTE_REPORT']
         functioncall.suspend_bg_jobs(module, params)
 
-    if module.params['export_printers']:
-        params = module.params['export_printers']
-        export_printers(module, prefresh, params)
+    if module.params['TH_WPINFO']:
+        functioncall.check_bg_jobs(module)
 
-    if module.params['user_master_export']:
-        params = module.params['user_master_export']
-        user_master_export(module, prefresh, params)
-
-    if module.params['ZSXPG_COMMAND_INSERT']:
-        params = module.params['ZSXPG_COMMAND_INSERT']
-        functioncall.export_sys_tables_comm_insert(module, params)
-
-    if module.params['SXPG_COMMAND_EXECUTE']:
-        params = module.params['SXPG_COMMAND_EXECUTE']
-        functioncall.export_sys_tables_comm_execute(module, params)
+    if module.params['SUBST_START_REPORT_IN_BATCH']:
+        params = module.params['SUBST_START_REPORT_IN_BATCH']
+        functioncall.del_old_bg_jobs(module, params)
 
 
 if __name__ == "__main__":
