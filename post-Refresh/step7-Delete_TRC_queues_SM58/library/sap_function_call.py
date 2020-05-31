@@ -45,6 +45,8 @@ class SAPFunctionCall(PreSystemRefresh):
                 data['Success'] = "Successfully Deleted SMQ1 Outbound Queues!"
             if params['IV_REPNAME'] == 'RSTRFCID':
                 data['Success'] = "Successfully Deleted SMQ2 Outbound Queues!"
+            if params['IV_REPNAME'] == 'RSARFCDL':
+                data['Success'] = "Successfully Deleted TRC SM58 Queues!"
             module.exit_json(changed=True, meta=data)
         except Exception as e:
             if params['IV_REPNAME'] == 'RSBTCDEL':
@@ -53,6 +55,8 @@ class SAPFunctionCall(PreSystemRefresh):
                 data['Failure'] = "Failed to delete SMQ1 Outbound Queues: {}".format(e)
             if params['IV_REPNAME'] == 'RSTRFCID':
                 data['Failure'] = "Failed to delete SMQ2 Outbound Queues: {}".format(e)
+            if params['IV_REPNAME'] == 'RSARFCDL':
+                data['Failure'] = "Failed to delete TRC SM58 Queues: {}".format(e)
             module.exit_json(changed=False, meta=data)
 
 
