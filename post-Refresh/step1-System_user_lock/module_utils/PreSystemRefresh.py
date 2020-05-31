@@ -89,23 +89,23 @@ class PreSystemRefresh:
             if key == 'VALUTAB':
                 var_content = value
 
-        for cont in var_content:  # Export Printer devices
+        for cont in var_content:            # Export Printer devices
             if cont['SELNAME'] == 'FILE' and cont['LOW'] == '/tmp/printers':
                 return True
 
-        for cont in var_content:  # User Master Export
+        for cont in var_content:            # User Master Export
             if cont['SELNAME'] == 'COPYCLI' and cont['LOW'] == self.creds['client']:
                 return True
 
-        for cont in var_content:
+        for cont in var_content:            # Delete_old_bg_jobs
             if cont['SELNAME'] == 'FORCE' and cont['LOW'] == 'X':
                 return True
 
-        for cont in var_content:
+        for cont in var_content:            # Delete_outbound_queues_SMQ1
             if cont['SELNAME'] == 'DISPLAY' and cont['LOW'] == 'X':
                 return True
 
-        for cont in var_content:
+        for cont in var_content:            # Delete_outbound_queues_SMQ2
             if cont['SELNAME'] == 'SET_EXEC' and cont['LOW'] == 'X':
                 return True
 
