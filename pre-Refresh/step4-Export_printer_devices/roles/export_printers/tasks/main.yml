@@ -22,9 +22,10 @@
 
  - name: Export printer devices
    sap_function_call:
-     export_printers:
-         report: "{{ report }}"
-         variant_name: "{{ variant_name }}"
+     SUBST_START_REPORT_IN_BATCH:
+         IV_JOBNAME: "{{ report }}"
+         IV_REPNAME: "{{ report }}"
+         IV_VARNAME: "{{ variant_name }}"
    register: export_printers
 
  - debug: var=export_printers

@@ -18,6 +18,22 @@ class SAPFunctionCall(PreSystemRefresh):
                 self.err = "Failed to Suspend Background Jobs"
             module.fail_json(msg=self.err, error=to_native(e), exception=traceback.format_exc())
 
+    def start_report_in_batch(self, module, params):
+        try:
+            self.conn.call("SUBST_START_REPORT_IN_BATCH", IV_JOBNAME=params['IV_JOBNAME'],
+                           IV_REPNAME=params['IV_REPNAME'], IV_VARNAME=params['IV_VARNAME'])
+            if params['IV_REPNAME'] == 'RSPOXDEV':
+                self.data['Success'] = "Printer devices are Successfully exported!"
+            if params['IV_REPNAME'] == 'ZRSCLXCOP':
+                self.data['Success'] = "User Master Export is Successfully Completed!"
+            module.exit_json(changed=True, meta=self.data)
+        except Exception as e:
+            if params['IV_REPNAME'] == 'RSPOXDEV':
+                self.err = "Failed to Export Printer devices"
+            if params['IV_REPNAME'] == 'ZRSCLXCOP':
+                self.err = "User Master Export is Failed!"
+            module.fail_json(msg=self.err, Error=to_native(e), exception=traceback.format_exc())
+
     def export_sys_tables_comm_insert(self, module, params):
         args = dict(
             NAME=params['NAME'],
@@ -119,6 +135,10 @@ def main():
                             exception_list=dict(required=True, type='list'), type='dict'),
             type='dict'),
         INST_EXECUTE_REPORT=dict(PROGRAM=dict(type='str'), type='dict'),
+        SUBST_START_REPORT_IN_BATCH=dict(
+            IV_JOBNAME=dict(type='str'),
+            IV_REPNAME=dict(type='str'),
+            IV_VARNAME=dict(type='str'), type='dict'),
         export_printers=dict(report=dict(required=True, type='str'),
                              variant_name=dict(required=True, type='str'), type='dict'),
         user_master_export=dict(report=dict(type='str'),
@@ -151,9 +171,9 @@ def main():
         params = module.params['INST_EXECUTE_REPORT']
         functioncall.inst_execute_report(module, params)
 
-    if module.params['export_printers']:
-        params = module.params['export_printers']
-        export_printers(module, prefresh, params)
+    if module.params['SUBST_START_REPORT_IN_BATCH']:
+        params = module.params['SUBST_START_REPORT_IN_BATCH']
+        functioncall.start_report_in_batch(module, params)
 
     if module.params['user_master_export']:
         params = module.params['user_master_export']
