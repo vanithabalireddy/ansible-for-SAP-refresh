@@ -20,15 +20,15 @@
        action: create
    when: var_check.stdout == "False"
 
- - name: Delete old background Jobs
+ - name: Delete Outbound Queues SMQ2
    sap_function_call:
      SUBST_START_REPORT_IN_BATCH:
-         IV_JOBNAME: "{{ report }}"
+         IV_JOBNAME: "DELETE_SMQ2_QUEUES"
          IV_REPNAME: "{{ report }}"
          IV_VARNAME: "{{ variant_name }}"
-   register: del_old_bg_jobs
+   register: del_SMQ2
 
- - debug: var=del_old_bg_jobs
+ - debug: var=del_SMQ2
 
  - name: Waiting for the above task to delete old background jobs
    pause:
