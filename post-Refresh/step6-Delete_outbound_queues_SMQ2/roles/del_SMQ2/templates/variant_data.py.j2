@@ -10,18 +10,11 @@ desc = dict(
     VARIANT=variant_name
 )
 
-content = [{'SELNAME': 'JOBNAME', 'KIND': 'P', 'LOW': '*'},
-           {'SELNAME': 'USERNAME', 'KIND': 'P', 'LOW': '*'},
-           {'SELNAME': 'FRM_DATE', 'KIND': 'P', 'LOW': ''},
-           {'SELNAME': 'FRM_TIME', 'KIND': 'P', 'LOW': ''},
-           {'SELNAME': 'TO_DATE', 'KIND': 'P', 'LOW': ''},
-           {'SELNAME': 'TO_TIME', 'KIND': 'P', 'LOW': ''},
-           {'SELNAME': 'ENDDATE', 'KIND': 'P', 'LOW': ''},
-           {'SELNAME': 'ENDTIME', 'KIND': 'P', 'LOW': ''},
-           {'SELNAME': 'FIN', 'KIND': 'P', 'LOW': 'X'},
-           {'SELNAME': 'ABORT', 'KIND': 'P', 'LOW': 'X'},
-           {'SELNAME': 'FORCE', 'KIND': 'P', 'LOW': 'X'}]
+content = [{'SELNAME': 'TID', 'KIND': 'P', 'LOW': '*'},
+           {'SELNAME': 'PACKAGE', 'KIND': 'P', 'LOW': '10.000'},
+           {'SELNAME': 'DISPLAY', 'KIND': 'P', 'LOW': 'X'}]
 
-text = [{'MANDT': client, 'LANGU': 'EN', 'REPORT': report, 'VARIANT':variant_name, 'VTEXT': 'Delete background jobs logs'}]
+text = [{'MANDT': client, 'LANGU': 'EN', 'REPORT': report, 'VARIANT': variant_name,
+         'VTEXT': 'Delete all outbound Queues'}]
 
 screen = [{'DYNNR': '1000', 'KIND': 'P'}]
