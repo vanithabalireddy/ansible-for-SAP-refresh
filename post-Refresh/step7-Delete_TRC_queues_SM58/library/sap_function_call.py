@@ -4,66 +4,65 @@ from ansible.module_utils.PreSystemRefresh import PreSystemRefresh
 
 
 class SAPFunctionCall(PreSystemRefresh):
+    data = dict()
+    err = str()
 
     def inst_execute_report(self, module, params):
-        data = dict()
         try:
             self.conn.call("INST_EXECUTE_REPORT", PROGRAM=params['PROGRAM'])
             if params['PROGRAM'] == 'BTCTRNS1':
-                data["Success"] = "Background Jobs are Suspended!"
+                self.data["Success"] = "Background Jobs are Suspended!"
             if params['PROGRAM'] == 'CSM_TAB_CLEAN':
-                data["Success"] = "Cleaned CCMS data!"
+                self.data["Success"] = "Cleaned CCMS data!"
             if params['PROGRAM'] == 'RSPO1043':
-                data["Success"] = "Spool Consistency is being checked!"
-            module.exit_json(changed=True, meta=data)
+                self.data["Success"] = "Spool Consistency is being checked!"
+            module.exit_json(changed=True, meta=self.data)
         except Exception as e:
             if params['PROGRAM'] == 'BTCTRNS1':
-                data["Failed"] = "Failed to Suspend Background Jobs: {}".format(e)
+                self.err = "Failed to Suspend Background Jobs"
             if params['PROGRAM'] == 'CSM_TAB_CLEAN':
-                data["Failed"] = "Failed to clean CCMS data: {}".format(e)
+                self.err = "Failed to clean CCMS data"
             if params['PROGRAM'] == 'RSPO1043':
-                data["Failed"] = "Failed to check spool consistency: {}".format(e)
-            module.exit_json(changed=False, meta=data)
+                self.err = "Failed to check spool consistency"
+            module.fail_json(msg=self.err, error=to_native(e), exception=traceback.format_exc())
 
     def check_bg_jobs(self, module):
-        data = dict()
         try:
             output = self.conn.call("TH_WPINFO")
         except Exception as e:
-            data['Failure'] = "Error while calling Function Module TH_WPINFO: {}".format(e)
-            module.exit_json(changed=False, meta=data)
+            self.err = "Error while calling Function Module TH_WPINFO"
+            module.fail_json(msg=self.err, Error=to_native(e), exception=traceback.format_exc())
 
         wp_type = []
         for type in output['WPLIST']:
             wp_type.append(type['WP_TYP'])
 
         if 'BGD' in wp_type:
-            data['Message'] = "No BGD entry found!"
-            module.exit_json(changed=True, meta=data)
+            self.data['Message'] = "No BGD entry found!"
+            module.exit_json(changed=True, meta=self.data)
         else:
-            data['Message'] = "Background work process is not set to 0. Please change it immediately"
-            module.exit_json(changed=False, meta=data)
+            self.err = "Background work process is not set to 0. Please change it immediately"
+            module.fail_json(msg=self.err, exception=traceback.format_exc())
 
     def start_report_in_batch(self, module, params):
-        data = dict()
         try:
             self.conn.call("SUBST_START_REPORT_IN_BATCH", IV_JOBNAME=params['IV_JOBNAME'],
                            IV_REPNAME=params['IV_REPNAME'], IV_VARNAME=params['IV_VARNAME'])
             if params['IV_REPNAME'] == 'RSBTCDEL':
-                data['Success'] = "Old Background jobs logs are successfully deleted!"
+                self.data['Success'] = "Old Background jobs logs are successfully deleted!"
             if params['IV_REPNAME'] == 'RSTRFCQD':
-                data['Success'] = "Successfully Deleted SMQ1 Outbound Queues!"
+                self.data['Success'] = "Successfully Deleted SMQ1 Outbound Queues!"
             if params['IV_REPNAME'] == 'RSTRFCID':
-                data['Success'] = "Successfully Deleted SMQ2 Outbound Queues!"
-            module.exit_json(changed=True, meta=data)
+                self.data['Success'] = "Successfully Deleted SMQ2 Outbound Queues!"
+            module.exit_json(changed=True, meta=self.data)
         except Exception as e:
             if params['IV_REPNAME'] == 'RSBTCDEL':
-                data['Failure'] = "Failed to delete Old Background job logs: {}".format(e)
+                self.err = "Failed to delete Old Background job logs"
             if params['IV_REPNAME'] == 'RSTRFCQD':
-                data['Failure'] = "Failed to delete SMQ1 Outbound Queues: {}".format(e)
+                self.err = "Failed to delete SMQ1 Outbound Queues"
             if params['IV_REPNAME'] == 'RSTRFCID':
-                data['Failure'] = "Failed to delete SMQ2 Outbound Queues: {}".format(e)
-            module.exit_json(changed=False, meta=data)
+                self.err = "Failed to delete SMQ2 Outbound Queues"
+            module.fail_json(msg=self.err, Error=to_native(e), exception=traceback.format_exc())
 
 
 # For setting users to Administer Lock and Unlock
@@ -108,8 +107,8 @@ def bapi_user_lock(module, prefresh, params):
             module.exit_json(changed=True, meta=data)
 
     except Exception as e:
-        data["Error"] = e
-        module.exit_json(changed=False, meta=data)
+        err = e
+        module.fail_json(msg=err, Error=to_native(e), exception=traceback.format_exc())
 
 
 def main():

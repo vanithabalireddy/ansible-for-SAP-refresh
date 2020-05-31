@@ -4,19 +4,21 @@ from ansible.module_utils.PreSystemRefresh import PreSystemRefresh
 
 
 class SAPFunctionCall(PreSystemRefresh):
+    data = dict()
+    err = str()
 
-    def suspend_bg_jobs(self, module, params):
-        data = dict()
+    def inst_execute_report(self, module, params):
         try:
             self.conn.call("INST_EXECUTE_REPORT", PROGRAM=params['PROGRAM'])
-            data["Success!"] = "Background Jobs are Suspended!"
-            module.exit_json(changed=True, meta=data)
+            if params['PROGRAM'] == 'BTCTRNS1':
+                self.data["Success"] = "Background Jobs are Suspended!"
+            module.exit_json(changed=True, meta=self.data)
         except Exception as e:
-            data["Failure!"] = "Failed to Suspend Background Jobs: {}".format(e)
-            module.exit_json(changed=False, meta=data)
+            if params['PROGRAM'] == 'BTCTRNS1':
+                self.err = "Failed to Suspend Background Jobs"
+            module.fail_json(msg=self.err, error=to_native(e), exception=traceback.format_exc())
 
     def export_sys_tables_comm_insert(self, module, params):
-        data = dict()
         args = dict(
             NAME=params['NAME'],
             OPSYSTEM=params['OPSYSTEM'],
@@ -26,22 +28,20 @@ class SAPFunctionCall(PreSystemRefresh):
 
         try:
             self.conn.call("ZSXPG_COMMAND_INSERT", COMMAND=args)
-            data["Success!"] = "Successfully inserted command {}".format(params['NAME'])
-            module.exit_json(changed=True, meta=data)
+            self.data["Success!"] = "Successfully inserted command {}".format(params['NAME'])
+            module.exit_json(changed=True, meta=self.data)
         except Exception as e:
-            data["Failure!"] = "Failed to insert command {} = {}".format(params['NAME'], e)
-            module.exit_json(changed=False, meta=data)
+            self.err = "Failed to insert command {}".format(params['NAME'])
+            module.fail_json(msg=self.err, error=to_native(e), exception=traceback.format_exc())
 
     def export_sys_tables_comm_execute(self, module, params):
-        command_name = params['NAME']
-        data = dict()
         try:
-            self.conn.call("SXPG_COMMAND_EXECUTE", COMMAND=command_name)
-            data["Success!"] = "Successfully Executed command {} and exported system tables".format(params['NAME'])
-            module.exit_json(changed=True, meta=data)
+            self.conn.call("SXPG_COMMAND_EXECUTE", COMMAND=params['NAME'])
+            self.data["Success!"] = "Successfully Executed command {} and exported system tables".format(params['NAME'])
+            module.exit_json(changed=True, meta=self.data)
         except Exception as e:
-            data["Failure!"] = "Failed to Execute command {} = {}".format(params['NAME'], e)
-            module.exit_json(changed=False, meta=data)
+            self.err = "Failed to Execute command {}".format(params['NAME'])
+            module.fail_json(msg=self.err, error=to_native(e), exception=traceback.format_exc())
 
 
 # For setting users to Administer Lock and Unlock
@@ -80,14 +80,16 @@ def bapi_user_lock(module, prefresh, params):
 
             locked_users, errors, excempted_users = prefresh.user_lock(user_list, exception_list, 'unlock')
 
-            data["User's who's current status is set to Lock(*including existing users that are locked)"] = exception_list
-            data["User's Unlocked with exception to the users who's status was already locked prior to the activity"] = locked_users
+            data[
+                "User's who's current status is set to Lock(*including existing users that are locked)"] = exception_list
+            data[
+                "User's Unlocked with exception to the users who's status was already locked prior to the activity"] = locked_users
 
             module.exit_json(changed=True, meta=data)
 
     except Exception as e:
-        data["Error"] = e
-        module.exit_json(changed=False, meta=data)
+        err = e
+        module.fail_json(msg=err, error=to_native(e), exception=traceback.format_exc())
 
 
 def export_printers(module, prefresh, params):
@@ -147,7 +149,7 @@ def main():
 
     if module.params['INST_EXECUTE_REPORT']:
         params = module.params['INST_EXECUTE_REPORT']
-        functioncall.suspend_bg_jobs(module, params)
+        functioncall.inst_execute_report(module, params)
 
     if module.params['export_printers']:
         params = module.params['export_printers']
