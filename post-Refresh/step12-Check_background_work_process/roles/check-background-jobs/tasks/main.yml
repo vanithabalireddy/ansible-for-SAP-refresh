@@ -1,0 +1,13 @@
+---
+# tasks file for user_master_export
+
+ - name: Check background Jobs
+   sap_function_call:
+      TH_WPINFO:
+         fetch: bgd_val
+   register: bgd_val
+
+ - debug: var=bgd_val
+
+ - fail:
+     msg: "Background work process is not set. Please change parameter value rdisp rdisp/wp_no_btc not equal to 0."
