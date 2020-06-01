@@ -52,7 +52,7 @@ class SAPFunctionCall(PreSystemRefresh):
 
     def export_sys_tables_comm_execute(self, module, params):
         try:
-            self.conn.call("SXPG_COMMAND_EXECUTE", COMMAND=params['NAME'])
+            self.conn.call("SXPG_COMMAND_EXECUTE", COMMANDNAME=params['NAME'])
             self.data["Success!"] = "Successfully Executed command {} and exported system tables".format(params['NAME'])
             module.exit_json(changed=True, meta=self.data)
         except Exception as e:
