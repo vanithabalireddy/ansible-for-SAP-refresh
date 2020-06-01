@@ -1,6 +1,8 @@
 - hosts: sap
   roles:
     - role: copy_exp_ctl
+      vars:
+        client: 100
 
 - hosts: localhost
   vars:
