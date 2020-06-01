@@ -4,15 +4,14 @@
     template:
       src: exp.ctl
       dest: /tmp/exp.ctl
-      user: pc3adm
-      group: pc3adm
+      group: sapsys
       owner: pc3adm
       force: yes
-#
-#  - name: Execute Command
-#    command: R3trans -w /tmp/exp_ecc.log /tmp/exp.ctl
-#    become: yes
-#    become_user: pc3adm
-#    register: comm_execute
-#
-#  - debug: var=comm_execute
+
+  - name: Execute Command
+    command: R3trans -w /tmp/exp_ecc.log /tmp/exp.ctl
+    become: yes
+    become_user: pc3adm
+    register: comm_execute
+
+  - debug: var=comm_execute
