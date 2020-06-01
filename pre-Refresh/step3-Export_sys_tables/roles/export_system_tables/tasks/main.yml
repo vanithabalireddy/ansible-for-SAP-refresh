@@ -25,4 +25,6 @@
 
   - debug: var=comm_execute
 
+  - name: Execute Command
+    command: "R3trans -w /tmp/exp_ecc.log /tmp/exp.ctl"
 
