@@ -8,23 +8,7 @@
         OPCOMMAND: 'R3trans'
         PARAMETERS: '-w /tmp/exp_ecc.log /tmp/exp.ctl'
     register: comm_insert
-    tags:
-      - export
-      - insert
 
   - debug: var=comm_insert
 
-  - name: Execute Command
-    sap_function_call:
-      SXPG_COMMAND_EXECUTE:
-        NAME: "ZTABEXP"
-    register: comm_execute
-    tags:
-      - export
-      - execute
-
-  - debug: var=comm_execute
-
-  - name: Execute Command
-    command: "R3trans -w /tmp/exp_ecc.log /tmp/exp.ctl"
 
