@@ -27,14 +27,14 @@
 
  - debug: var=lock
 
- - name: Unlock Users
-   sap_function_call:
-     BAPI_USER_LOCK:
-       lock_users:
-         exception_list: ['SAP*']
-         action: unlock
-   register: unlock
-
- - debug: var=unlock
+# - name: Unlock Users
+#   sap_function_call:
+#     BAPI_USER_LOCK:
+#       lock_users:
+#         exception_list: "{{ exception_list }}"
+#         action: unlock
+#   register: unlock
+#
+# - debug: var=unlock
 
 
