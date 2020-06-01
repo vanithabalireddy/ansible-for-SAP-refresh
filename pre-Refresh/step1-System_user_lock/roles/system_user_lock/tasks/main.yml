@@ -3,7 +3,7 @@
 
  - name: Fetch entire system user list
    sap_function_call:
-     bapi_user_lock:
+     BAPI_USER_LOCK:
        fetch: users
    register: users
 
@@ -11,7 +11,7 @@
 
  - name: Fetch existing Administer locked user list
    sap_function_call:
-     bapi_user_lock:
+     BAPI_USER_LOCK:
        fetch: locked_users
    register: locked_users
 
@@ -19,7 +19,7 @@
 
  - name: Lock Users
    sap_function_call:
-     bapi_user_lock:
+     BAPI_USER_LOCK:
        lock_users:
          exception_list: "{{ exception_list }}"
          action: lock
@@ -29,7 +29,7 @@
 
  - name: Unlock Users
    sap_function_call:
-     bapi_user_lock:
+     BAPI_USER_LOCK:
        lock_users:
          exception_list: ['SAP*']
          action: unlock

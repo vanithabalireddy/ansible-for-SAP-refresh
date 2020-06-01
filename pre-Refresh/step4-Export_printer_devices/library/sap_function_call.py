@@ -121,7 +121,7 @@ def user_master_export(module, prefresh, params):
 
 def main():
     fields = dict(
-        bapi_user_lock=dict(
+        BAPI_USER_LOCK=dict(
             fetch=dict(choices=['users', 'locked_users'], type='str'),
             lock_users=dict(action=dict(choices=['lock', 'unlock'], required=True),
                             exception_list=dict(required=True, type='list'), type='dict'),
@@ -153,8 +153,8 @@ def main():
     prefresh = PreSystemRefresh()
     functioncall = SAPFunctionCall()
 
-    if module.params['bapi_user_lock']:
-        params = module.params['bapi_user_lock']
+    if module.params['BAPI_USER_LOCK']:
+        params = module.params['BAPI_USER_LOCK']
         bapi_user_lock(module, prefresh, params)
 
     if module.params['INST_EXECUTE_REPORT']:
