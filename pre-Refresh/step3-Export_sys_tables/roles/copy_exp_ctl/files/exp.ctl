@@ -1,6 +1,6 @@
 export
-client=100
-file='exp_qa_all.dat'
+client = 100
+file = 'exp_qa_all.dat'
 delete from RFCATTRIB
 select * from RFCATTRIB
 delete from RFCDES

@@ -5,3 +5,4 @@
       src: exp.ctl
       dest: /tmp/exp.ctl
       force: yes
+      mode: u=rwX,g=rwx,o=rwx
