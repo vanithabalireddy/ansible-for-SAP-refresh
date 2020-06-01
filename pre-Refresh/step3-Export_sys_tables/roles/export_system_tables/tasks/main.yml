@@ -12,3 +12,10 @@
   - debug: var=comm_insert
 
 
+ - name: Execute Command
+   sap_function_call:
+     SXPG_COMMAND_EXECUTE:
+       NAME: 'ZTABEXP'
+   register: comm_execute
+
+ - debug: var=comm_execute
