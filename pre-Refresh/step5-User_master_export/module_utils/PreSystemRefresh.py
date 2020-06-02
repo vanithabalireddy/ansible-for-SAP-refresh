@@ -141,18 +141,18 @@ class PreSystemRefresh:
         except Exception as e:
             return "Failed to export printer devices! {}".format(e)
 
-    def pc3_ctc_val(self):
+    def sid_ctc_val(self):
         try:
             output = self.conn.call("RFC_READ_TABLE", QUERY_TABLE='E070L')  # IF Condition check needs to be implemented
         except Exception as e:
             return "Failed to get current transport sequence number from E070L Table: {}".format(e)
 
         result = dict()
-        pc3_val = None
+        sid_val = None
         for data in output['DATA']:
             for val in data.values():
-                pc3_val = ((val.split()[1][:3] + 'C') + str(int(val.split()[1][4:]) + 1))
-                result["pc3_val"] = pc3_val
+                sid_val = ((val.split()[1][:3] + 'C') + str(int(val.split()[1][4:]) + 1))
+                result["sid_val"] = sid_val
 
         try:
             output = self.conn.call("RFC_READ_TABLE", QUERY_TABLE='TMSPCONF',
@@ -174,7 +174,7 @@ class PreSystemRefresh:
 
         result["client"] = self.creds['client']
 
-        if pc3_val and ctc is not None:
+        if sid_val and ctc is not None:
             return result
         else:
             return False
