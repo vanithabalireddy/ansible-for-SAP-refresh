@@ -9,14 +9,6 @@
 
  - debug: var=users
 
- - name: Fetch existing Administer locked user list
-   sap_function_call:
-     BAPI_USER_LOCK:
-       fetch: locked_users
-   register: locked_users
-
- - debug: var=locked_users
-
  - name: Lock Users
    sap_function_call:
      BAPI_USER_LOCK:
