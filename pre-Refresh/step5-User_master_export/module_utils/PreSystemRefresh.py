@@ -175,7 +175,7 @@ class PreSystemRefresh:
         result["client"] = self.creds['client']
         result["sid_val"] = self.creds['sid']
 
-        if sid_val and ctc is not None:
+        if trans_val and ctc is not None:
             return result
         else:
             return False
