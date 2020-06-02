@@ -5,11 +5,11 @@
    sap_function_call:
      user_master_export:
        sid_ctc_val: True
-   register: sid_ctc_val
+   register: result
    tags: ctc
 
 
- - debug: var=sid_ctc_val.meta.stdout
+ - debug: var=result.meta.stdout
    tags: ctc
 
  - name: Copy Variables templates containing variant details
@@ -18,8 +18,9 @@
         dest: "{{ playbook_dir }}/module_utils/user_master_export.py"
         force: yes
    vars:
-     sid_val: "{{ sid_ctc_val.meta.stdout.sid_val }}"
-     ctc_val: "{{ ctc_ctc_val.meta.stdout.ctc_val }}"
+     sid_val: "{{ result.meta.stdout.sid_val }}"
+     sid_ctc_val: "{{ result.meta.stdout.sid_ctc_val }}"
+     trans_val: "{{ result.meta.stdout.trans_val }}"
    tags: ctc
 
  - name: Check Variant

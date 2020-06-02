@@ -148,11 +148,11 @@ class PreSystemRefresh:
             return "Failed to get current transport sequence number from E070L Table: {}".format(e)
 
         result = dict()
-        sid_val = None
+        trans_val = None
         for data in output['DATA']:
             for val in data.values():
-                sid_val = ((val.split()[1][:3] + 'C') + str(int(val.split()[1][4:]) + 1))
-                result["sid_val"] = sid_val
+                trans_val = ((val.split()[1][:3] + 'C') + str(int(val.split()[1][4:]) + 1))
+                result["trans_val"] = trans_val
 
         try:
             output = self.conn.call("RFC_READ_TABLE", QUERY_TABLE='TMSPCONF',
@@ -166,13 +166,14 @@ class PreSystemRefresh:
                 ctc = field['WA'].split()[2]
 
         if ctc is '1':
-            ctc_val = self.creds['sid'] + '.' + self.creds['client']
-            result["ctc_val"] = ctc_val
+            sid_ctc_val = self.creds['sid'] + '.' + self.creds['client']
+            result["sid_ctc_val"] = sid_ctc_val
         else:
-            ctc_val = self.creds['sid']
-            result["ctc_val"] = ctc_val
+            sid_ctc_val = self.creds['sid']
+            result["sid_ctc_val"] = sid_ctc_val
 
         result["client"] = self.creds['client']
+        result["sid_val"] = self.creds['sid']
 
         if sid_val and ctc is not None:
             return result
