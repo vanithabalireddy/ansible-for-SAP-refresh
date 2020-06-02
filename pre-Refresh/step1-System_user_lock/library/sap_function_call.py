@@ -109,8 +109,8 @@ def bapi_user_lock(module, prefresh, params):
 
 
 def user_master_export(module, prefresh, params):
-    if params['pc3_ctc_val']:
-        response = prefresh.pc3_ctc_val()
+    if params['sid_ctc_val']:
+        response = prefresh.sid_ctc_val()
         module.exit_json(changed=True, meta={'stdout': response})
     else:
         report = params['report']
@@ -133,7 +133,7 @@ def main():
             IV_VARNAME=dict(type='str'), type='dict'),
         user_master_export=dict(report=dict(type='str'),
                                 variant_name=dict(type='str'),
-                                pc3_ctc_val=dict(default=True, type='bool'), type='dict'),
+                                sid_ctc_val=dict(default=True, type='bool'), type='dict'),
         ZSXPG_COMMAND_INSERT=dict(NAME=dict(type='str'),
                                   OPSYSTEM=dict(type='str'),
                                   OPCOMMAND=dict(type='str'),
