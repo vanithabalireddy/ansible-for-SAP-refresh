@@ -4,7 +4,7 @@
  - name: Fetch pc3_val and ctc_val
    sap_function_call:
      user_master_export:
-       pc3_ctc_val: True
+       sid_ctc_val: True
    register: pc3_ctc_val
    tags: ctc
 
@@ -18,7 +18,7 @@
         dest: "{{ playbook_dir }}/module_utils/user_master_export.py"
         force: yes
    vars:
-     pc3_val: "{{ pc3_ctc_val.meta.stdout.pc3_val }}"
+     pc3_val: "{{ pc3_ctc_val.meta.stdout.sid_val }}"
      ctc_val: "{{ pc3_ctc_val.meta.stdout.ctc_val }}"
    tags: ctc
 
@@ -46,7 +46,7 @@
  - name: User Master Export
    sap_function_call:
      user_master_export:
-       pc3_ctc_val: False
+       sid_ctc_val: False
        report: "{{ report }}"
        variant_name: "{{ variant_name }}"
    register: user_master_export
