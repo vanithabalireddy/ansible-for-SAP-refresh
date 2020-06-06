@@ -18,7 +18,7 @@
         dest: "{{ playbook_dir }}/module_utils/variant_data.py"
         force: yes
    vars:
-     sid_val: "{{ result.meta.stdout.sid_val }}"
+     client: "{{ result.meta.stdout.client }}"
      sid_ctc_val: "{{ result.meta.stdout.sid_ctc_val }}"
      trans_val: "{{ result.meta.stdout.trans_val }}"
    tags: ctc
