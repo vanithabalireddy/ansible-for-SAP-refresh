@@ -3,8 +3,7 @@
 
  - name: Fetch pc3_val and ctc_val
    sap_function_call:
-     user_master_export:
-       sid_ctc_val: True
+     fetch: sid_ctc_val
    register: result
    tags: ctc
 
@@ -43,13 +42,21 @@
        variant_name: "{{ variant_name }}"
        action: create
    when: var_check.stdout == "False"
-
- - name: User Master Export
+#
+# - name: User Master Export
+#   sap_function_call:
+#     user_master_export:
+#       sid_ctc_val: False
+#       report: "{{ report }}"
+#       variant_name: "{{ variant_name }}"
+#   register: user_master_export
+#
+ - name: User Master export
    sap_function_call:
-     user_master_export:
-       sid_ctc_val: False
-       report: "{{ report }}"
-       variant_name: "{{ variant_name }}"
+     SUBST_START_REPORT_IN_BATCH:
+         IV_JOBNAME: "{{ report }}"
+         IV_REPNAME: "{{ report }}"
+         IV_VARNAME: "{{ variant_name }}"
    register: user_master_export
 
  - debug: var=user_master_export
