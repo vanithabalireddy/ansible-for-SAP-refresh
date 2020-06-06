@@ -97,7 +97,7 @@ class SAPFunctionCall(PreSystemRefresh):
 
         if trans_val and ctc is not None:
             self.data = result
-            module.exit_json(changed=True, meta=self.data)
+            module.exit_json(changed=True, stdout=self.data)
         else:
             self.err = "Failed to fetch {}".format(params['sys_params'])
             module.fail_json(msg=self.err, error=to_native(), exception=traceback.format_exc())
