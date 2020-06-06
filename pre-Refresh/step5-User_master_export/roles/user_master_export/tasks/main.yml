@@ -3,7 +3,7 @@
 
  - name: Fetch pc3_val and ctc_val
    sap_function_call:
-     fetch: sid_ctc_val
+     fetch: sys_params
    register: result
    tags: ctc
 
@@ -17,9 +17,9 @@
         dest: "{{ playbook_dir }}/module_utils/variant_data.py"
         force: yes
    vars:
-     client: "{{ result.stdout.client }}"
-     sid_ctc_val: "{{ result.stdout.sid_ctc_val }}"
-     trans_val: "{{ result.stdout.trans_val }}"
+     client: "{{ result.meta.stdout.client }}"
+     sid_ctc_val: "{{ result.meta.stdout.sid_ctc_val }}"
+     trans_val: "{{ result.meta.stdout.trans_val }}"
    tags: ctc
 
  - name: Check Variant
