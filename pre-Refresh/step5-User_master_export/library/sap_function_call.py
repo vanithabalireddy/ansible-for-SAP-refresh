@@ -60,7 +60,7 @@ class SAPFunctionCall(PreSystemRefresh):
             module.fail_json(msg=self.err, error=to_native(e), exception=traceback.format_exc())
 
     def fetch(self, module, params):
-        if params['sys_params']:
+        if params == 'sys_params':
             try:
                 output = self.conn.call("RFC_READ_TABLE", QUERY_TABLE='E070L')  # IF Condition check needs to be implemented
             except Exception as e:

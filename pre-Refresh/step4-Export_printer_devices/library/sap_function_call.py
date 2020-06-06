@@ -60,10 +60,9 @@ class SAPFunctionCall(PreSystemRefresh):
             module.fail_json(msg=self.err, error=to_native(e), exception=traceback.format_exc())
 
     def fetch(self, module, params):
-        if params['sys_params']:
+        if params == 'sys_params':
             try:
-                output = self.conn.call("RFC_READ_TABLE",
-                                        QUERY_TABLE='E070L')  # IF Condition check needs to be implemented
+                output = self.conn.call("RFC_READ_TABLE", QUERY_TABLE='E070L')  # IF Condition check needs to be implemented
             except Exception as e:
                 self.err = "Failed while querying E070L Table: {}".format(e)
                 module.fail_json(msg=self.err, error=to_native(e), exception=traceback.format_exc())
@@ -77,8 +76,7 @@ class SAPFunctionCall(PreSystemRefresh):
 
             try:
                 output = self.conn.call("RFC_READ_TABLE", QUERY_TABLE='TMSPCONF',
-                                        FIELDS=[{'FIELDNAME': 'NAME'}, {'FIELDNAME': 'SYSNAME'},
-                                                {'FIELDNAME': 'VALUE'}])
+                                        FIELDS=[{'FIELDNAME': 'NAME'}, {'FIELDNAME': 'SYSNAME'}, {'FIELDNAME': 'VALUE'}])
             except Exception as e:
                 self.err = "Failed while fetching TMC CTC Value: {}".format(e)
                 module.fail_json(msg=self.err, error=to_native(e), exception=traceback.format_exc())
