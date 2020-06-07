@@ -19,6 +19,8 @@
    template:
      src: existing_locked_users
      dest: /tmp/existing_locked_users
+     force: yes
+     backup: yes
    vars:
      EXISTING_LOCKED_USERS: "{{ locked_users.meta.EXISTING_LOCKED_USERS }}"
 
