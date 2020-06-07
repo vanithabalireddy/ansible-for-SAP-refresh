@@ -34,7 +34,7 @@ class PreSystemRefresh:
             self.data['stdout'] = False
             module.fail_json(msg=self.err, error=to_native(e), exception=traceback.format_exc())
 
-    def existing_locked_users(self):
+    def existing_locked_users(self, module):
         params = dict(
             PARAMETER='ISLOCKED',
             FIELD='LOCAL_LOCK',
@@ -57,7 +57,7 @@ class PreSystemRefresh:
             self.data['stdout'] = False
             module.fail_json(msg=self.err, error=to_native(e), exception=traceback.format_exc())
 
-    def bapi_user_lock(self, users_list, exception_user_list):
+    def bapi_user_lock(self, module, users_list, exception_user_list):
         users_locked = []
         errors = dict()
         users_exempted = []
@@ -78,7 +78,7 @@ class PreSystemRefresh:
 
         module.exit_json(changed=True, meta=self.data)
 
-    def bapi_user_unlock(self, users_list, exception_user_list):
+    def bapi_user_unlock(self, module, users_list, exception_user_list):
         users_locked = []
         errors = dict()
         users_exempted = []
