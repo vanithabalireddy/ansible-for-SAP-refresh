@@ -220,7 +220,7 @@ class PreSystemRefresh:
                 self.err = "Failed to fetch {}".format(params['sys_params'])
                 module.fail_json(msg=self.err, error=to_native(), exception=traceback.format_exc())
 
-    def check_variant(self, report, variant_name):
+    def check_variant(self, module, report, variant_name):
         try:
             output = self.conn.call("RS_VARIANT_CONTENTS_RFC", REPORT=report, VARIANT=variant_name)
         except Exception as e:
