@@ -27,15 +27,13 @@ def main():
     prefresh = PreSystemRefresh()
 
     if action == "create":
-        result = prefresh.create_variant(report, variant_name, desc, content, text, screen)
+        prefresh.create_variant(module, report, variant_name, desc, content, text, screen)
     elif action == "delete":
-        result = prefresh.delete_variant(report, variant_name)
+        prefresh.delete_variant(module, report, variant_name)
     elif action == "check":
-        result = prefresh.check_variant(report, variant_name)
+        prefresh.check_variant(module, report, variant_name)
     else:
         raise AnsibleError("action parameters supports only [create|delete|check]")
-
-    module.exit_json(changed=True, stdout="{}".format(result))
 
 
 if __name__ == "__main__":
