@@ -6,4 +6,3 @@
     - role: system_user_lock
       vars:
         exception_list: ['SST_TRNG', 'KRISHNA', 'BJOERN', 'DDIC', 'DBISWAS', 'GIRIDR', 'MRAM']
-#        exception_list: ['SAP*']
