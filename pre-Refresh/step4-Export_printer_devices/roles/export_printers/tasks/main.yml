@@ -18,7 +18,7 @@
        report: "{{ report }}"
        variant_name: "{{ variant_name }}"
        action: delete
-   when: var_check.meta.stdout == "True"
+   when: var_check.meta.stdout == True
 
  - name: Create Variant
    variant:
@@ -34,7 +34,7 @@
          IV_REPNAME: "{{ report }}"
          IV_VARNAME: "{{ variant_name }}"
    register: export_printers
-   when: var_create.meta.stdout == "True"
+   when: var_create.meta.stdout == True
 
  - debug: var=export_printers
 

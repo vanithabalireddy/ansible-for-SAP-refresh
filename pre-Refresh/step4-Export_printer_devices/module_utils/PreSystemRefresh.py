@@ -274,17 +274,13 @@ class PreSystemRefresh:
     def delete_variant(self, module, report, variant_name):
         try:
             self.conn.call("RS_VARIANT_DELETE_RFC", REPORT=report, VARIANT=variant_name)
+            self.data['Success'] = "Variant {} for report {} is Successfully Deleted".format(variant_name, report)
+            self.data['stdout'] = True
+            module.exit_json(changed=True, meta=self.data)
         except Exception as e:
             self.err = "Deletion of variant {} of report {} is Failed!: {}".format(variant_name, report, e)
             module.fail_json(msg=self.err, error=to_native(), exception=traceback.format_exc())
 
-        if self.check_variant(report, variant_name) is False:
-            self.data['Success'] = "Variant {} for report {} is Successfully Deleted".format(variant_name, report)
-            self.data['stdout'] = True
-            module.exit_json(changed=True, meta=self.data)
-        else:
-            self.err = "Failed to delete variant {} for report {}".format(variant_name, report)
-            module.fail_json(msg=self.err, error=to_native(), exception=traceback.format_exc())
 
 # 1. System user lock               = Done
 # 2. Suspend background Jobs        = Done
