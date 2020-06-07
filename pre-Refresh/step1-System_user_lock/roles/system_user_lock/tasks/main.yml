@@ -3,38 +3,45 @@
 
  - name: Fetch entire system user list
    sap_function_call:
-     BAPI_USER_LOCK:
-       fetch: users
+     FETCH: sys_users
    register: users
 
  - debug: var=users
 
- - name: Fetch existing Administer locked user list
-   sap_function_call:
-     BAPI_USER_LOCK:
-       fetch: locked_users
-   register: locked_users
-
- - debug: var=locked_users
-
- - name: Lock Users
-   sap_function_call:
-     BAPI_USER_LOCK:
-       lock_users:
-         exception_list: "{{ exception_list }}"
-         action: lock
-   register: lock
-
- - debug: var=lock
-
-# - name: Unlock Users
+# - name: Fetch entire system user list
+#   sap_function_call:
+#     BAPI_USER_LOCK:
+#       fetch: users
+#   register: users
+#
+# - debug: var=users
+#
+# - name: Fetch existing Administer locked user list
+#   sap_function_call:
+#     BAPI_USER_LOCK:
+#       fetch: locked_users
+#   register: locked_users
+#
+# - debug: var=locked_users
+#
+# - name: Lock Users
 #   sap_function_call:
 #     BAPI_USER_LOCK:
 #       lock_users:
 #         exception_list: "{{ exception_list }}"
-#         action: unlock
-#   register: unlock
+#         action: lock
+#   register: lock
 #
-# - debug: var=unlock
-
-
+# - debug: var=lock
+#
+## - name: Unlock Users
+##   sap_function_call:
+##     BAPI_USER_LOCK:
+##       lock_users:
+##         exception_list: "{{ exception_list }}"
+##         action: unlock
+##   register: unlock
+##
+## - debug: var=unlock
+#
+#
