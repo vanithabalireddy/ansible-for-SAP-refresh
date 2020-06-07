@@ -23,7 +23,7 @@
 
  - debug: var=lock
 
- - name: Lock Users
+ - name: Unlock Users
    sap_function_call:
      BAPI_USER_UNLOCK:
        EXCEPTION_USERS: "['SAP*']"
