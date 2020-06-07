@@ -7,19 +7,17 @@ from ansible.module_utils.PostSystemRefresh import PostSystemRefresh
 def main():
     fields = dict(
         FETCH=dict(
-            choices=['sys_params', 'sys_users', 'sys_locked_users'], type='str'),
+            choices=['sys_params', 'sys_users', 'sys_locked_users', 'bgd_val'], type='str'),
         BAPI_USER_LOCK=dict(
             EXCEPTION_USERS=dict(required=True, type='list'), type='dict'),
         BAPI_USER_UNLOCK=dict(
             EXCEPTION_USERS=dict(required=True, type='list'), type='dict'),
         INST_EXECUTE_REPORT=dict(
-            PROGRAM=dict(type='str'), type='dict'),
-        TH_WPINFO=dict(
-            fetch=dict(choices=['bgd_val'], type='str'), type='dict'),
+            PROGRAM=dict(required=True, type='str'), type='dict'),
         SUBST_START_REPORT_IN_BATCH=dict(
-            IV_JOBNAME=dict(type='str'),
-            IV_REPNAME=dict(type='str'),
-            IV_VARNAME=dict(type='str'), type='dict')
+            IV_JOBNAME=dict(required=True, type='str'),
+            IV_REPNAME=dict(required=True, type='str'),
+            IV_VARNAME=dict(required=True, type='str'), type='dict')
     )
 
     module = AnsibleModule(
@@ -41,6 +39,8 @@ def main():
             prefresh.users_list(module)
         if params == 'sys_locked_users':
             prefresh.existing_locked_users(module)
+        if params == 'bgd_val':
+            postRefresh.check_bg_jobs(module)
 
     if module.params['BAPI_USER_LOCK']:
         params = module.params['BAPI_USER_LOCK']
@@ -53,9 +53,6 @@ def main():
     if module.params['INST_EXECUTE_REPORT']:
         params = module.params['INST_EXECUTE_REPORT']
         postRefresh.inst_execute_report(module, params)
-
-    if module.params['TH_WPINFO']:
-        postRefresh.check_bg_jobs(module)
 
     if module.params['SUBST_START_REPORT_IN_BATCH']:
         params = module.params['SUBST_START_REPORT_IN_BATCH']
