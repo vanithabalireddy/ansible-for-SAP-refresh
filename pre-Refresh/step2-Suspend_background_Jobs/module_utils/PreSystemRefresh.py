@@ -224,7 +224,8 @@ class PreSystemRefresh:
         try:
             output = self.conn.call("RS_VARIANT_CONTENTS_RFC", REPORT=report, VARIANT=variant_name)
         except Exception as e:
-            return "Failed to check variant {}: {}".format(variant_name, e)
+            self.err = "Failed while checking variant existance {}: {}".format(variant_name, e)
+            module.fail_json(msg=self.err, error=to_native(), exception=traceback.format_exc())
 
         var_content = []
 
@@ -258,6 +259,7 @@ class PreSystemRefresh:
                 module.exit_json(changed=True, meta=self.data)
 
         self.data['stdout'] = False
+        self.data['mes'] = "variant {} for report {} doesn't exist!".format(variant_name, report)
         module.exit_json(changed=False, meta=self.data)
 
     def create_variant(self, module, report, variant_name, desc, content, text, screen):
