@@ -25,6 +25,7 @@
        report: "{{ report }}"
        variant_name: "{{ variant_name }}"
        action: create
+   register: var_create
 
  - name: Export printer devices
    sap_function_call:
@@ -33,6 +34,7 @@
          IV_REPNAME: "{{ report }}"
          IV_VARNAME: "{{ variant_name }}"
    register: export_printers
+   when: var_create.meta.stdout == "True"
 
  - debug: var=export_printers
 

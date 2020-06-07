@@ -264,16 +264,11 @@ class PreSystemRefresh:
         try:
             self.conn.call("RS_CREATE_VARIANT_RFC", CURR_REPORT=report, CURR_VARIANT=variant_name, VARI_DESC=desc,
                            VARI_CONTENTS=content, VARI_TEXT=text, VSCREENS=screen)
-        except Exception as e:
-            self.err = "Variant {} for report {} Creation is Failed! : {}".format(variant_name, report, e)
-            module.fail_json(msg=self.err, error=to_native(), exception=traceback.format_exc())
-
-        if self.check_variant(report, variant_name) is True:
             self.data['Success'] = "Variant {} Successfully Created for report {}".format(variant_name, report)
             self.data['stdout'] = True
             module.exit_json(changed=True, meta=self.data)
-        else:
-            self.err = "Creation of variant {} for report {} is Failed!!".format(variant_name, report)
+        except Exception as e:
+            self.err = "Variant {} for report {} Creation is Failed! : {}".format(variant_name, report, e)
             module.fail_json(msg=self.err, error=to_native(), exception=traceback.format_exc())
 
     def delete_variant(self, module, report, variant_name):
