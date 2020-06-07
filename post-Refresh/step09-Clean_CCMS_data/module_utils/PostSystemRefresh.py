@@ -54,6 +54,8 @@ class PostSystemRefresh(PreSystemRefresh):
                 self.data['Success'] = "Successfully Deleted SMQ1 Outbound Queues!"
             if params['IV_REPNAME'] == 'RSTRFCID':
                 self.data['Success'] = "Successfully Deleted SMQ2 Outbound Queues!"
+            if params['IV_REPNAME'] == 'RSARFCDL':
+                self.data['Success'] = "Successfully Deleted SM58 TRC Queues!"
             module.exit_json(changed=True, meta=self.data)
         except Exception as e:
             if params['IV_REPNAME'] == 'RSBTCDEL':
@@ -62,4 +64,6 @@ class PostSystemRefresh(PreSystemRefresh):
                 self.err = "Failed to delete SMQ1 Outbound Queues"
             if params['IV_REPNAME'] == 'RSTRFCID':
                 self.err = "Failed to delete SMQ2 Outbound Queues"
+            if params['IV_REPNAME'] == 'RSARFCDL':
+                self.err = "Failed to delete SM58 TRC Queues"
             module.fail_json(msg=self.err, Error=to_native(e), exception=traceback.format_exc())
