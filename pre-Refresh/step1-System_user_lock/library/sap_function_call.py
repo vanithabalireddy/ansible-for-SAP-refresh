@@ -189,9 +189,9 @@ def main():
         if params == 'sys_params':
             functioncall.fetch(module, params)
         if params == 'sys_users':
-            prefresh.users_list()
+            prefresh.users_list(module)
         if params == 'sys_locked_users':
-            prefresh.existing_locked_users()
+            prefresh.existing_locked_users(module)
 
     if module.params['BAPI_USER_LOCK']:
         params = module.params['BAPI_USER_LOCK']

@@ -19,7 +19,7 @@ class PreSystemRefresh:
             self.err = "Failed when connecting to SAP application, please check the creds passed!"
             module.fail_json(msg=self.err, error=to_native(e), exception=traceback.format_exc())
 
-    def users_list(self):
+    def users_list(self, module):
         users = []
         try:
             tables = self.conn.call("RFC_READ_TABLE", QUERY_TABLE='USR02', FIELDS=[{'FIELDNAME': 'BNAME'}])
