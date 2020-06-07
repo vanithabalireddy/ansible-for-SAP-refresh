@@ -3,8 +3,7 @@
 
  - name: Check background Jobs
    sap_function_call:
-      TH_WPINFO:
-         fetch: bgd_val
+      FETCH: bgd_val
    register: bgd_val
 
  - debug:
