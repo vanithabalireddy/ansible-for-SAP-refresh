@@ -154,7 +154,7 @@ def bapi_user_lock(module, prefresh, params):
 
 def main():
     fields = dict(
-        FETCH=dict(choices=['sys_params'], type='str'),
+        FETCH=dict(choices=['sys_params', 'sys_users', 'sys_locked_users'], type='str'),
         BAPI_USER_LOCK=dict(
             fetch=dict(choices=['users', 'locked_users'], type='str'),
             lock_users=dict(action=dict(choices=['lock', 'unlock'], required=True),
@@ -186,7 +186,12 @@ def main():
 
     if module.params['FETCH']:
         params = module.params['FETCH']
-        functioncall.fetch(module, params)
+        if params == 'sys_params':
+            functioncall.fetch(module, params)
+        if params == 'sys_users':
+            prefresh.users_list()
+        if params == 'sys_locked_users':
+            prefresh.existing_locked_users()
 
     if module.params['BAPI_USER_LOCK']:
         params = module.params['BAPI_USER_LOCK']

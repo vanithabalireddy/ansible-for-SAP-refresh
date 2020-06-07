@@ -4,28 +4,35 @@ import os
 
 
 class PreSystemRefresh:
+    data = dict()
+    err = str()
 
     def __init__(self):
         self.config = ConfigParser()
         self.config.read(os.environ["HOME"] + '/.config/sap_config.cnf')
         self.creds = self.config['SAP']
 
-        self.conn = Connection(user=self.creds['user'], passwd=self.creds['passwd'], ashost=self.creds['ashost'],
-                               sysnr=self.creds['sysnr'], sid=self.creds['sid'], client=self.creds['client'])
+        try:
+            self.conn = Connection(user=self.creds['user'], passwd=self.creds['passwd'], ashost=self.creds['ashost'],
+                                   sysnr=self.creds['sysnr'], sid=self.creds['sid'], client=self.creds['client'])
+        except Exception as e:
+            self.err = "Failed when connecting to SAP application, please check the creds passed!"
+            module.fail_json(msg=self.err, error=to_native(e), exception=traceback.format_exc())
 
     def users_list(self):
+        users = []
         try:
             tables = self.conn.call("RFC_READ_TABLE", QUERY_TABLE='USR02', FIELDS=[{'FIELDNAME': 'BNAME'}])
+            for data in tables['DATA']:
+                for names in data.values():
+                    users.append(names)
+            self.data['users'] = users
+            self.data['stdout'] = True
+            module.exit_json(changed=True, meta=self.data)
         except Exception as e:
-            return "Failed to fetch user's list from USR02 table: {}".format(e)
-
-        users = []
-
-        for data in tables['DATA']:
-            for names in data.values():
-                users.append(names)
-
-        return users
+            self.err = "Failed to fetch user's list from USR02 table: {}".format(e)
+            self.data['stdout'] = False
+            module.fail_json(msg=self.err, error=to_native(e), exception=traceback.format_exc())
 
     def existing_locked_users(self):
         params = dict(
@@ -37,15 +44,60 @@ class PreSystemRefresh:
         )
         try:
             user_list = self.conn.call("BAPI_USER_GETLIST", SELECTION_RANGE=[params])
+            locked_user_list = []
+
+            for user in user_list['USERLIST']:
+                locked_user_list.append(user['USERNAME'])
+
+            self.data['existing_locked_users'] = locked_user_list
+            self.data['stdout'] = True
+            module.exit_json(changed=True, meta=self.data)
         except Exception as e:
-            return "Failed to get already locked user list: {}".format(e)
+            self.err = "Failed to get existing locked user list: {}".format(e)
+            self.data['stdout'] = False
+            module.fail_json(msg=self.err, error=to_native(e), exception=traceback.format_exc())
 
-        locked_user_list = []
+    def bapi_user_lock(self, users_list, exception_user_list):
+        users_locked = []
+        errors = dict()
+        users_exempted = []
+        for user in users_list:
+            if user not in exception_user_list:
+                try:
+                    self.conn.call('BAPI_USER_LOCK', USERNAME=user)
+                    users_locked.append(user)
+                except Exception as e:
+                    errors[user] = e
+                    pass
+            else:
+                users_exempted.append(user)
 
-        for user in user_list['USERLIST']:
-            locked_user_list.append(user['USERNAME'])
+        self.data['users_locked'] = users_locked
+        self.data['errors'] = errors
+        self.data['users_exempted'] = users_exempted
 
-        return locked_user_list
+        module.exit_json(changed=True, meta=self.data)
+
+    def bapi_user_unlock(self, users_list, exception_user_list):
+        users_locked = []
+        errors = dict()
+        users_exempted = []
+        for user in users_list:
+            if user not in exception_user_list:
+                try:
+                    self.conn.call('BAPI_USER_UNLOCK', USERNAME=user)
+                    users_locked.append(user)
+                except Exception as e:
+                    errors[user] = e
+                    pass
+            else:
+                users_exempted.append(user)
+
+        self.data['users_locked'] = users_locked
+        self.data['errors'] = errors
+        self.data['users_exempted'] = users_exempted
+
+        module.exit_json(changed=True, meta=self.data)
 
     def user_lock(self, user_list, except_users_list, action):
         if action == "lock":
