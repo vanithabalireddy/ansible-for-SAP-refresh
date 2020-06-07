@@ -26,7 +26,7 @@ class PreSystemRefresh:
             for data in tables['DATA']:
                 for names in data.values():
                     users.append(names)
-            self.data['users'] = users
+            self.data['USERS'] = users
             self.data['stdout'] = True
             module.exit_json(changed=True, meta=self.data)
         except Exception as e:
@@ -49,7 +49,7 @@ class PreSystemRefresh:
             for user in user_list['USERLIST']:
                 locked_user_list.append(user['USERNAME'])
 
-            self.data['existing_locked_users'] = locked_user_list
+            self.data['EXISTING_LOCKED_USERS'] = locked_user_list
             self.data['stdout'] = True
             module.exit_json(changed=True, meta=self.data)
         except Exception as e:
