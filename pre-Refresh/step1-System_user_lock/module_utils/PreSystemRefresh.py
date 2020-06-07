@@ -57,20 +57,40 @@ class PreSystemRefresh:
             self.data['stdout'] = False
             module.fail_json(msg=self.err, error=to_native(e), exception=traceback.format_exc())
 
-    def bapi_user_lock(self, module, users_list, exception_user_list):
+    def fetch_users(self):
+        try:
+            tables = self.conn.call("RFC_READ_TABLE", QUERY_TABLE='USR02', FIELDS=[{'FIELDNAME': 'BNAME'}])
+        except Exception as e:
+            return None
+
+        users = []
+
+        for data in tables['DATA']:
+            for names in data.values():
+                users.append(names)
+
+        return users
+
+    def bapi_user_lock(self, module, params):
+        users_list = self.fetch_users()
         users_locked = []
         errors = dict()
         users_exempted = []
-        for user in users_list:
-            if user not in exception_user_list:
-                try:
-                    self.conn.call('BAPI_USER_LOCK', USERNAME=user)
-                    users_locked.append(user)
-                except Exception as e:
-                    errors[user] = e
-                    pass
-            else:
-                users_exempted.append(user)
+        if users_list:
+            for user in users_list:
+                if user not in params['EXCEPTION_USERS']:
+                    try:
+                        self.conn.call('BAPI_USER_LOCK', USERNAME=user)
+                        users_locked.append(user)
+                    except Exception as e:
+                        errors[user] = e
+                        pass
+                else:
+                    users_exempted.append(user)
+        else:
+            self.err = "Failed to get entire user list before locking users: {}".format(e)
+            self.data['stdout'] = False
+            module.fail_json(msg=self.err, error=to_native(e), exception=traceback.format_exc())
 
         self.data['users_locked'] = users_locked
         self.data['errors'] = errors
@@ -78,20 +98,26 @@ class PreSystemRefresh:
 
         module.exit_json(changed=True, meta=self.data)
 
-    def bapi_user_unlock(self, module, users_list, exception_user_list):
+    def bapi_user_unlock(self, module, params):
+        users_list = self.fetch_users()
         users_locked = []
         errors = dict()
         users_exempted = []
-        for user in users_list:
-            if user not in exception_user_list:
-                try:
-                    self.conn.call('BAPI_USER_UNLOCK', USERNAME=user)
-                    users_locked.append(user)
-                except Exception as e:
-                    errors[user] = e
-                    pass
-            else:
-                users_exempted.append(user)
+        if users_list:
+            for user in users_list:
+                if user not in params['EXCEPTION_USERS']:
+                    try:
+                        self.conn.call('BAPI_USER_UNLOCK', USERNAME=user)
+                        users_locked.append(user)
+                    except Exception as e:
+                        errors[user] = e
+                        pass
+                else:
+                    users_exempted.append(user)
+        else:
+            self.err = "Failed to get entire user list before unlocking the users: {}".format(e)
+            self.data['stdout'] = False
+            module.fail_json(msg=self.err, error=to_native(e), exception=traceback.format_exc())
 
         self.data['users_locked'] = users_locked
         self.data['errors'] = errors

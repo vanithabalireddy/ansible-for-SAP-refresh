@@ -154,23 +154,25 @@ def bapi_user_lock(module, prefresh, params):
 
 def main():
     fields = dict(
-        FETCH=dict(choices=['sys_params', 'sys_users', 'sys_locked_users'], type='str'),
+        FETCH=dict(
+            choices=['sys_params', 'sys_users', 'sys_locked_users'], type='str'),
         BAPI_USER_LOCK=dict(
-            fetch=dict(choices=['users', 'locked_users'], type='str'),
-            lock_users=dict(action=dict(choices=['lock', 'unlock'], required=True),
-                            exception_list=dict(required=True, type='list'), type='dict'),
-            type='dict'),
-        INST_EXECUTE_REPORT=dict(PROGRAM=dict(type='str'), type='dict'),
+            EXCEPTION_USERS=dict(required=True, type='list'), type='dict'),
+        BAPI_USER_UNLOCK=dict(
+            EXCEPTION_USERS=dict(required=True, type='list'), type='dict'),
+        INST_EXECUTE_REPORT=dict(
+            PROGRAM=dict(required=True, type='str'), type='dict'),
         SUBST_START_REPORT_IN_BATCH=dict(
-            IV_JOBNAME=dict(type='str'),
-            IV_REPNAME=dict(type='str'),
-            IV_VARNAME=dict(type='str'), type='dict'),
-        ZSXPG_COMMAND_INSERT=dict(NAME=dict(type='str'),
-                                  OPSYSTEM=dict(type='str'),
-                                  OPCOMMAND=dict(type='str'),
-                                  PARAMETERS=dict(type='str'), type='dict'),
-        SXPG_COMMAND_EXECUTE=dict(COMMAND=dict(type='str'), type='dict')
-
+            IV_JOBNAME=dict(required=True, type='str'),
+            IV_REPNAME=dict(required=True, type='str'),
+            IV_VARNAME=dict(required=True, type='str'), type='dict'),
+        ZSXPG_COMMAND_INSERT=dict(
+            NAME=dict(required=True, type='str'),
+            OPSYSTEM=dict(required=True, type='str'),
+            OPCOMMAND=dict(required=True, type='str'),
+            PARAMETERS=dict(required=True, type='str'), type='dict'),
+        SXPG_COMMAND_EXECUTE=dict(
+            COMMAND=dict(required=True, type='str'), type='dict')
     )
 
     module = AnsibleModule(
@@ -195,7 +197,7 @@ def main():
 
     if module.params['BAPI_USER_LOCK']:
         params = module.params['BAPI_USER_LOCK']
-        bapi_user_lock(module, prefresh, params)
+        prefresh.bapi_user_lock(module, params)
 
     if module.params['INST_EXECUTE_REPORT']:
         params = module.params['INST_EXECUTE_REPORT']

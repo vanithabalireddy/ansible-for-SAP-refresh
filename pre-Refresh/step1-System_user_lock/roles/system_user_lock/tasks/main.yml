@@ -14,6 +14,22 @@
    register: locked_users
 
  - debug: var=locked_users
+   
+ - name: Lock Users
+   sap_function_call:
+     BAPI_USER_LOCK:
+       EXCEPTION_USERS: "{{ exception_list }}"
+   register: lock
+
+ - debug: var=lock
+
+ - name: Lock Users
+   sap_function_call:
+     BAPI_USER_UNLOCK:
+       EXCEPTION_USERS: "['SAP*']"
+   register: lock
+
+ - debug: var=lock
 
 # - name: Fetch entire system user list
 #   sap_function_call:
