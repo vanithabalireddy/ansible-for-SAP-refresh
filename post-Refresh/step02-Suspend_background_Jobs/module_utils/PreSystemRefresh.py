@@ -89,23 +89,23 @@ class PreSystemRefresh:
             if key == 'VALUTAB':
                 var_content = value
 
-        for cont in var_content:            # Export Printer devices
+        for cont in var_content:  # Export Printer devices
             if cont['SELNAME'] == 'FILE' and cont['LOW'] == '/tmp/printers':
                 return True
 
-        for cont in var_content:            # User Master Export
+        for cont in var_content:  # User Master Export
             if cont['SELNAME'] == 'COPYCLI' and cont['LOW'] == self.creds['client']:
                 return True
 
-        for cont in var_content:            # Delete_old_bg_jobs
+        for cont in var_content:  # Delete_old_bg_jobs
             if cont['SELNAME'] == 'FORCE' and cont['LOW'] == 'X':
                 return True
 
-        for cont in var_content:            # Delete_outbound_queues_SMQ1
+        for cont in var_content:  # Delete_outbound_queues_SMQ1
             if cont['SELNAME'] == 'DISPLAY' and cont['LOW'] == 'X':
                 return True
 
-        for cont in var_content:            # Delete_outbound_queues_SMQ2
+        for cont in var_content:  # Delete_outbound_queues_SMQ2
             if cont['SELNAME'] == 'SET_EXEC' and cont['LOW'] == 'X':
                 return True
 
@@ -134,57 +134,11 @@ class PreSystemRefresh:
         else:
             return "Failed to delete variant {} for report {}".format(variant_name, report)
 
-    def export_printer_devices(self, report, variant_name):
-        try:
-            self.conn.call("SUBST_START_REPORT_IN_BATCH", IV_JOBNAME=report, IV_REPNAME=report, IV_VARNAME=variant_name)
-            return "Exported printer devices Successfully"
-        except Exception as e:
-            return "Failed to export printer devices! {}".format(e)
+    #   def export_printer_devices(self, report, variant_name): Handled in sap_function_call.py module
 
-    def pc3_ctc_val(self):
-        try:
-            output = self.conn.call("RFC_READ_TABLE", QUERY_TABLE='E070L')  # IF Condition check needs to be implemented
-        except Exception as e:
-            return "Failed to get current transport sequence number from E070L Table: {}".format(e)
+    #   def sid_ctc_val(self):  Handled in sap_function_call.py module
 
-        result = dict()
-        pc3_val = None
-        for data in output['DATA']:
-            for val in data.values():
-                pc3_val = ((val.split()[1][:3] + 'C') + str(int(val.split()[1][4:]) + 1))
-                result["pc3_val"] = pc3_val
-
-        try:
-            output = self.conn.call("RFC_READ_TABLE", QUERY_TABLE='TMSPCONF',
-                                    FIELDS=[{'FIELDNAME': 'NAME'}, {'FIELDNAME': 'SYSNAME'}, {'FIELDNAME': 'VALUE'}])
-        except Exception as e:
-            return "Failed while fetching TMC CTC Value: {}".format(e)
-
-        ctc = None
-        for field in output['DATA']:
-            if field['WA'].split()[0] == 'CTC' and field['WA'].split()[1] == self.creds['sid']:
-                ctc = field['WA'].split()[2]
-
-        if ctc is '1':
-            ctc_val = self.creds['sid'] + '.' + self.creds['client']
-            result["ctc_val"] = ctc_val
-        else:
-            ctc_val = self.creds['sid']
-            result["ctc_val"] = ctc_val
-
-        result["client"] = self.creds['client']
-
-        if pc3_val and ctc is not None:
-            return result
-        else:
-            return False
-
-    def user_master_export(self, report, variant_name):
-        try:
-            self.conn.call("SUBST_START_REPORT_IN_BATCH", IV_JOBNAME=report, IV_REPNAME=report, IV_VARNAME=variant_name)
-            return "User Master Export is Completed!"
-        except Exception as e:
-            return "User Master Export is Failed!! {}".format(e)
+    #   def user_master_export(self, report, variant_name): Handled in sap_function_call.py module
 
 # 1. System user lock               = Done
 # 2. Suspend background Jobs        = Done
