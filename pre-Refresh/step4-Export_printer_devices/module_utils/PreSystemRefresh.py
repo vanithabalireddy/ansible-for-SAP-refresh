@@ -32,7 +32,6 @@ class PreSystemRefresh:
             module.exit_json(changed=True, meta=self.data)
         except Exception as e:
             self.err = "Failed to fetch user's list from USR02 table: {}".format(e)
-            self.data['stdout'] = False
             module.fail_json(msg=self.err, error=to_native(e), exception=traceback.format_exc())
 
     def existing_locked_users(self, module):
@@ -55,7 +54,6 @@ class PreSystemRefresh:
             module.exit_json(changed=True, meta=self.data)
         except Exception as e:
             self.err = "Failed to get existing locked user list: {}".format(e)
-            self.data['stdout'] = False
             module.fail_json(msg=self.err, error=to_native(e), exception=traceback.format_exc())
 
     def fetch_users(self):
@@ -90,7 +88,6 @@ class PreSystemRefresh:
                     users_exempted.append(user)
         else:
             self.err = "Failed to get entire user list before locking users: {}".format(e)
-            self.data['stdout'] = False
             module.fail_json(msg=self.err, error=to_native(e), exception=traceback.format_exc())
 
         self.data['USERS_LOCKED'] = users_locked
@@ -117,7 +114,6 @@ class PreSystemRefresh:
                     users_exempted.append(user)
         else:
             self.err = "Failed to get entire user list before unlocking the users: {}".format(e)
-            self.data['stdout'] = False
             module.fail_json(msg=self.err, error=to_native(e), exception=traceback.format_exc())
 
         self.data['USERS_UNLOCKED'] = users_locked
@@ -238,48 +234,62 @@ class PreSystemRefresh:
 
         for cont in var_content:  # Export Printer devices
             if cont['SELNAME'] == 'FILE' and cont['LOW'] == '/tmp/printers':
-                return True
+                self.data['stdout'] = True
+                module.exit_json(changed=True, meta=self.data)
 
         for cont in var_content:  # User Master Export
             if cont['SELNAME'] == 'COPYCLI' and cont['LOW'] == self.creds['client']:
-                return True
+                self.data['stdout'] = True
+                module.exit_json(changed=True, meta=self.data)
 
         for cont in var_content:  # Delete_old_bg_jobs
             if cont['SELNAME'] == 'FORCE' and cont['LOW'] == 'X':
-                return True
+                self.data['stdout'] = True
+                module.exit_json(changed=True, meta=self.data)
 
         for cont in var_content:  # Delete_outbound_queues_SMQ1
             if cont['SELNAME'] == 'DISPLAY' and cont['LOW'] == 'X':
-                return True
+                self.data['stdout'] = True
+                module.exit_json(changed=True, meta=self.data)
 
         for cont in var_content:  # Delete_outbound_queues_SMQ2
             if cont['SELNAME'] == 'SET_EXEC' and cont['LOW'] == 'X':
-                return True
+                self.data['stdout'] = True
+                module.exit_json(changed=True, meta=self.data)
 
-        return False
+        self.data['stdout'] = False
+        module.exit_json(changed=False, meta=self.data)
 
-    def create_variant(self, report, variant_name, desc, content, text, screen):
+    def create_variant(self, module, report, variant_name, desc, content, text, screen):
         try:
             self.conn.call("RS_CREATE_VARIANT_RFC", CURR_REPORT=report, CURR_VARIANT=variant_name, VARI_DESC=desc,
                            VARI_CONTENTS=content, VARI_TEXT=text, VSCREENS=screen)
         except Exception as e:
-            return "Variant {} for report {} Creation is Failed! : {}".format(variant_name, report, e)
+            self.err = "Variant {} for report {} Creation is Failed! : {}".format(variant_name, report, e)
+            module.fail_json(msg=self.err, error=to_native(), exception=traceback.format_exc())
 
         if self.check_variant(report, variant_name) is True:
-            return "Variant {} Successfully Created for report {}".format(variant_name, report)
+            self.data['Success'] = "Variant {} Successfully Created for report {}".format(variant_name, report)
+            self.data['stdout'] = True
+            module.exit_json(changed=True, meta=self.data)
         else:
-            return "Creation of variant {} for report {} is Failed!!".format(variant_name, report)
+            self.err = "Creation of variant {} for report {} is Failed!!".format(variant_name, report)
+            module.fail_json(msg=self.err, error=to_native(), exception=traceback.format_exc())
 
-    def delete_variant(self, report, variant_name):
+    def delete_variant(self, module, report, variant_name):
         try:
             self.conn.call("RS_VARIANT_DELETE_RFC", REPORT=report, VARIANT=variant_name)
         except Exception as e:
-            return "Deletion of variant {} of report {} is Failed!: {}".format(variant_name, report, e)
+            self.err = "Deletion of variant {} of report {} is Failed!: {}".format(variant_name, report, e)
+            module.fail_json(msg=self.err, error=to_native(), exception=traceback.format_exc())
 
         if self.check_variant(report, variant_name) is False:
-            return "Variant {} for report {} is Successfully Deleted".format(variant_name, report)
+            self.data['Success'] = "Variant {} for report {} is Successfully Deleted".format(variant_name, report)
+            self.data['stdout'] = True
+            module.exit_json(changed=True, meta=self.data)
         else:
-            return "Failed to delete variant {} for report {}".format(variant_name, report)
+            self.err = "Failed to delete variant {} for report {}".format(variant_name, report)
+            module.fail_json(msg=self.err, error=to_native(), exception=traceback.format_exc())
 
 # 1. System user lock               = Done
 # 2. Suspend background Jobs        = Done
