@@ -25,7 +25,6 @@
        report: "{{ report }}"
        variant_name: "{{ variant_name }}"
        action: create
-   when: var_check.meta.stdout == "False"
 
  - name: Export printer devices
    sap_function_call:
