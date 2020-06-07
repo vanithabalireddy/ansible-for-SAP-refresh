@@ -1,6 +1,6 @@
 export
 client = {{ client }}
-file = 'exp_qa_all.dat'
+file = '/tmp/exp_qa_all.dat'
 delete from RFCATTRIB
 select * from RFCATTRIB
 delete from RFCDES

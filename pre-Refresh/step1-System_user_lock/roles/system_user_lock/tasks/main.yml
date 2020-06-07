@@ -15,6 +15,13 @@
 
  - debug: var=locked_users
 
+ - name: Storing existing users list
+   template:
+     src: existing_locked_users
+     dest: /tmp/existing_locked_users
+   vars:
+     EXISTING_LOCKED_USERS: "{{ locked_users.meta.stdout.EXISTING_LOCKED_USERS }}"
+
  - name: Lock Users
    sap_function_call:
      BAPI_USER_LOCK:
@@ -31,40 +38,3 @@
 
  - debug: var=lock
 
-# - name: Fetch entire system user list
-#   sap_function_call:
-#     BAPI_USER_LOCK:
-#       fetch: users
-#   register: users
-#
-# - debug: var=users
-#
-# - name: Fetch existing Administer locked user list
-#   sap_function_call:
-#     BAPI_USER_LOCK:
-#       fetch: locked_users
-#   register: locked_users
-#
-# - debug: var=locked_users
-#
-# - name: Lock Users
-#   sap_function_call:
-#     BAPI_USER_LOCK:
-#       lock_users:
-#         exception_list: "{{ exception_list }}"
-#         action: lock
-#   register: lock
-#
-# - debug: var=lock
-#
-## - name: Unlock Users
-##   sap_function_call:
-##     BAPI_USER_LOCK:
-##       lock_users:
-##         exception_list: "{{ exception_list }}"
-##         action: unlock
-##   register: unlock
-##
-## - debug: var=unlock
-#
-#
