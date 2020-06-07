@@ -1,33 +1,40 @@
 from pyrfc import Connection
 from configparser import ConfigParser
+from ansible.module_utils.basic import *
 import os
 
 
 class PreSystemRefresh:
+    data = dict()
+    err = str()
 
     def __init__(self):
         self.config = ConfigParser()
         self.config.read(os.environ["HOME"] + '/.config/sap_config.cnf')
         self.creds = self.config['SAP']
 
-        self.conn = Connection(user=self.creds['user'], passwd=self.creds['passwd'], ashost=self.creds['ashost'],
-                               sysnr=self.creds['sysnr'], sid=self.creds['sid'], client=self.creds['client'])
+        try:
+            self.conn = Connection(user=self.creds['user'], passwd=self.creds['passwd'], ashost=self.creds['ashost'],
+                                   sysnr=self.creds['sysnr'], sid=self.creds['sid'], client=self.creds['client'])
+        except Exception as e:
+            self.err = "Failed when connecting to SAP application, please check the creds passed!"
+            module.fail_json(msg=self.err, error=to_native(e), exception=traceback.format_exc())
 
-    def users_list(self):
+    def users_list(self, module):
+        users = []
         try:
             tables = self.conn.call("RFC_READ_TABLE", QUERY_TABLE='USR02', FIELDS=[{'FIELDNAME': 'BNAME'}])
+            for data in tables['DATA']:
+                for names in data.values():
+                    users.append(names)
+            self.data['USERS'] = users
+            self.data['stdout'] = True
+            module.exit_json(changed=True, meta=self.data)
         except Exception as e:
-            return "Failed to fetch user's list from USR02 table: {}".format(e)
+            self.err = "Failed to fetch user's list from USR02 table: {}".format(e)
+            module.fail_json(msg=self.err, error=to_native(e), exception=traceback.format_exc())
 
-        users = []
-
-        for data in tables['DATA']:
-            for names in data.values():
-                users.append(names)
-
-        return users
-
-    def existing_locked_users(self):
+    def existing_locked_users(self, module):
         params = dict(
             PARAMETER='ISLOCKED',
             FIELD='LOCAL_LOCK',
@@ -37,51 +44,188 @@ class PreSystemRefresh:
         )
         try:
             user_list = self.conn.call("BAPI_USER_GETLIST", SELECTION_RANGE=[params])
+            locked_user_list = []
+
+            for user in user_list['USERLIST']:
+                locked_user_list.append(user['USERNAME'])
+
+            self.data['EXISTING_LOCKED_USERS'] = locked_user_list
+            self.data['stdout'] = True
+            module.exit_json(changed=True, meta=self.data)
         except Exception as e:
-            return "Failed to get already locked user list: {}".format(e)
+            self.err = "Failed to get existing locked user list: {}".format(e)
+            module.fail_json(msg=self.err, error=to_native(e), exception=traceback.format_exc())
 
-        locked_user_list = []
+    def fetch_users(self):
+        try:
+            tables = self.conn.call("RFC_READ_TABLE", QUERY_TABLE='USR02', FIELDS=[{'FIELDNAME': 'BNAME'}])
+        except Exception as e:
+            return None
 
-        for user in user_list['USERLIST']:
-            locked_user_list.append(user['USERNAME'])
+        users = []
 
-        return locked_user_list
+        for data in tables['DATA']:
+            for names in data.values():
+                users.append(names)
 
-    def user_lock(self, user_list, except_users_list, action):
-        if action == "lock":
-            func_module = 'BAPI_USER_LOCK'
-        elif action == "unlock":
-            func_module = 'BAPI_USER_UNLOCK'
-        else:
-            return "Failed! Please pass argument ['lock' | 'unlock']"
+        return users
 
+    def bapi_user_lock(self, module, params):
+        users_list = self.fetch_users()
         users_locked = []
         errors = dict()
         users_exempted = []
-        for user in user_list:
-            if user not in except_users_list:
-                try:
-                    self.conn.call(func_module, USERNAME=user)
-                    users_locked.append(user)
-                except Exception as e:
-                    errors[user] = e
-                    pass
+        if users_list:
+            for user in users_list:
+                if user not in params['EXCEPTION_USERS']:
+                    try:
+                        self.conn.call('BAPI_USER_LOCK', USERNAME=user)
+                        users_locked.append(user)
+                    except Exception as e:
+                        errors[user] = e
+                        pass
+                else:
+                    users_exempted.append(user)
+        else:
+            self.err = "Failed to get entire user list before locking users: {}".format(e)
+            module.fail_json(msg=self.err, error=to_native(e), exception=traceback.format_exc())
+
+        self.data['USERS_LOCKED'] = users_locked
+        self.data['ERRORS'] = errors
+        self.data['EXCEPTION_USERS'] = users_exempted
+
+        module.exit_json(changed=True, meta=self.data)
+
+    def bapi_user_unlock(self, module, params):
+        users_list = self.fetch_users()
+        users_locked = []
+        errors = dict()
+        users_exempted = []
+        if users_list:
+            for user in users_list:
+                if user not in params['EXCEPTION_USERS']:
+                    try:
+                        self.conn.call('BAPI_USER_UNLOCK', USERNAME=user)
+                        users_locked.append(user)
+                    except Exception as e:
+                        errors[user] = e
+                        pass
+                else:
+                    users_exempted.append(user)
+        else:
+            self.err = "Failed to get entire user list before unlocking the users: {}".format(e)
+            module.fail_json(msg=self.err, error=to_native(e), exception=traceback.format_exc())
+
+        self.data['USERS_UNLOCKED'] = users_locked
+        self.data['ERRORS'] = errors
+        self.data['EXCEPTION_USERS'] = users_exempted
+
+        module.exit_json(changed=True, meta=self.data)
+
+    def inst_execute_report(self, module, params):
+        try:
+            self.conn.call("INST_EXECUTE_REPORT", PROGRAM=params['PROGRAM'])
+            if params['PROGRAM'] == 'BTCTRNS1':
+                self.data["Success"] = "Background Jobs are Suspended!"
+            module.exit_json(changed=True, meta=self.data)
+        except Exception as e:
+            if params['PROGRAM'] == 'BTCTRNS1':
+                self.err = "Failed to Suspend Background Jobs"
+            module.fail_json(msg=self.err, error=to_native(e), exception=traceback.format_exc())
+
+    def start_report_in_batch(self, module, params):
+        try:
+            self.conn.call("SUBST_START_REPORT_IN_BATCH", IV_JOBNAME=params['IV_JOBNAME'],
+                           IV_REPNAME=params['IV_REPNAME'], IV_VARNAME=params['IV_VARNAME'])
+            if params['IV_REPNAME'] == 'RSPOXDEV':
+                self.data['Success'] = "Printer devices are Successfully exported!"
+            if params['IV_REPNAME'] == 'ZRSCLXCOP':
+                self.data['Success'] = "User Master Export is Successfully Completed!"
+            module.exit_json(changed=True, meta=self.data)
+        except Exception as e:
+            if params['IV_REPNAME'] == 'RSPOXDEV':
+                self.err = "Failed to Export Printer devices"
+            if params['IV_REPNAME'] == 'ZRSCLXCOP':
+                self.err = "User Master Export is Failed!"
+            module.fail_json(msg=self.err, Error=to_native(e), exception=traceback.format_exc())
+
+    def export_sys_tables_comm_insert(self, module, params):
+        args = dict(
+            NAME=params['NAME'],
+            OPSYSTEM=params['OPSYSTEM'],
+            OPCOMMAND=params['OPCOMMAND'],
+            PARAMETERS=params['PARAMETERS']
+        )
+
+        try:
+            self.conn.call("ZSXPG_COMMAND_INSERT", COMMAND=args)
+            self.data["Success!"] = "Successfully inserted command {}".format(params['NAME'])
+            module.exit_json(changed=True, meta=self.data)
+        except Exception as e:
+            self.err = "Failed to insert command {}".format(params['NAME'])
+            module.fail_json(msg=self.err, error=to_native(e), exception=traceback.format_exc())
+
+    def export_sys_tables_comm_execute(self, module, params):
+        try:
+            self.conn.call("SXPG_COMMAND_EXECUTE", COMMANDNAME=params['NAME'])
+            self.data["Success!"] = "Successfully Executed command {} and exported system tables".format(params['NAME'])
+            module.exit_json(changed=True, meta=self.data)
+        except Exception as e:
+            self.err = "Failed to Execute command {}".format(params['NAME'])
+            module.fail_json(msg=self.err, error=to_native(e), exception=traceback.format_exc())
+
+    def fetch(self, module, params):
+        if params == 'sys_params':
+            try:
+                output = self.conn.call("RFC_READ_TABLE",
+                                        QUERY_TABLE='E070L')  # IF Condition check needs to be implemented
+            except Exception as e:
+                self.err = "Failed while querying E070L Table: {}".format(e)
+                module.fail_json(msg=self.err, error=to_native(e), exception=traceback.format_exc())
+
+            result = dict()
+            trans_val = None
+            for data in output['DATA']:
+                for val in data.values():
+                    trans_val = ((val.split()[1][:3] + 'C') + str(int(val.split()[1][4:]) + 1))
+                    result["trans_val"] = trans_val
+
+            try:
+                output = self.conn.call("RFC_READ_TABLE", QUERY_TABLE='TMSPCONF',
+                                        FIELDS=[{'FIELDNAME': 'NAME'}, {'FIELDNAME': 'SYSNAME'},
+                                                {'FIELDNAME': 'VALUE'}])
+            except Exception as e:
+                self.err = "Failed while fetching TMC CTC Value: {}".format(e)
+                module.fail_json(msg=self.err, error=to_native(e), exception=traceback.format_exc())
+
+            ctc = None
+            for field in output['DATA']:
+                if field['WA'].split()[0] == 'CTC' and field['WA'].split()[1] == self.creds['sid']:
+                    ctc = field['WA'].split()[2]
+
+            if ctc is '1':
+                sid_ctc_val = self.creds['sid'] + '.' + self.creds['client']
+                result["sid_ctc_val"] = sid_ctc_val
             else:
-                users_exempted.append(user)
+                sid_ctc_val = self.creds['sid']
+                result["sid_ctc_val"] = sid_ctc_val
 
-        return users_locked, errors, users_exempted
+            result["client"] = self.creds['client']
+            result["sid_val"] = self.creds['sid']
 
-    #    def suspend_bg_jobs(self):                 Handled in sap_function_call.py module
+            if trans_val and ctc is not None:
+                self.data['stdout'] = result
+                module.exit_json(changed=True, meta=self.data)
+            else:
+                self.err = "Failed to fetch {}".format(params['sys_params'])
+                module.fail_json(msg=self.err, error=to_native(), exception=traceback.format_exc())
 
-    #    def export_sys_tables_cmd_insert(self):    Handled in sap_function_call.py module
-
-    #    def export_sys_tables_cmd_execute(self):   Handled in sap_function_call.py module
-
-    def check_variant(self, report, variant_name):
+    def check_variant(self, module, report, variant_name):
         try:
             output = self.conn.call("RS_VARIANT_CONTENTS_RFC", REPORT=report, VARIANT=variant_name)
         except Exception as e:
-            return "Failed to check variant {}: {}".format(variant_name, e)
+            self.err = "Failed while checking variant existance {}: {}".format(variant_name, e)
+            module.fail_json(msg=self.err, error=to_native(), exception=traceback.format_exc())
 
         var_content = []
 
@@ -91,54 +235,54 @@ class PreSystemRefresh:
 
         for cont in var_content:  # Export Printer devices
             if cont['SELNAME'] == 'FILE' and cont['LOW'] == '/tmp/printers':
-                return True
+                self.data['stdout'] = True
+                module.exit_json(changed=True, meta=self.data)
 
         for cont in var_content:  # User Master Export
             if cont['SELNAME'] == 'COPYCLI' and cont['LOW'] == self.creds['client']:
-                return True
+                self.data['stdout'] = True
+                module.exit_json(changed=True, meta=self.data)
 
         for cont in var_content:  # Delete_old_bg_jobs
             if cont['SELNAME'] == 'FORCE' and cont['LOW'] == 'X':
-                return True
+                self.data['stdout'] = True
+                module.exit_json(changed=True, meta=self.data)
 
         for cont in var_content:  # Delete_outbound_queues_SMQ1
             if cont['SELNAME'] == 'DISPLAY' and cont['LOW'] == 'X':
-                return True
+                self.data['stdout'] = True
+                module.exit_json(changed=True, meta=self.data)
 
         for cont in var_content:  # Delete_outbound_queues_SMQ2
             if cont['SELNAME'] == 'SET_EXEC' and cont['LOW'] == 'X':
-                return True
+                self.data['stdout'] = True
+                module.exit_json(changed=True, meta=self.data)
 
-        return False
+        self.data['stdout'] = False
+        self.data['mes'] = "variant {} for report {} doesn't exist!".format(variant_name, report)
+        module.exit_json(changed=False, meta=self.data)
 
-    def create_variant(self, report, variant_name, desc, content, text, screen):
+    def create_variant(self, module, report, variant_name, desc, content, text, screen):
         try:
             self.conn.call("RS_CREATE_VARIANT_RFC", CURR_REPORT=report, CURR_VARIANT=variant_name, VARI_DESC=desc,
                            VARI_CONTENTS=content, VARI_TEXT=text, VSCREENS=screen)
+            self.data['Success'] = "Variant {} Successfully Created for report {}".format(variant_name, report)
+            self.data['stdout'] = True
+            module.exit_json(changed=True, meta=self.data)
         except Exception as e:
-            return "Variant {} for report {} Creation is Failed! : {}".format(variant_name, report, e)
+            self.err = "Variant {} for report {} Creation is Failed! : {}".format(variant_name, report, e)
+            module.fail_json(msg=self.err, error=to_native(), exception=traceback.format_exc())
 
-        if self.check_variant(report, variant_name) is True:
-            return "Variant {} Successfully Created for report {}".format(variant_name, report)
-        else:
-            return "Creation of variant {} for report {} is Failed!!".format(variant_name, report)
-
-    def delete_variant(self, report, variant_name):
+    def delete_variant(self, module, report, variant_name):
         try:
             self.conn.call("RS_VARIANT_DELETE_RFC", REPORT=report, VARIANT=variant_name)
+            self.data['Success'] = "Variant {} for report {} is Successfully Deleted".format(variant_name, report)
+            self.data['stdout'] = True
+            module.exit_json(changed=True, meta=self.data)
         except Exception as e:
-            return "Deletion of variant {} of report {} is Failed!: {}".format(variant_name, report, e)
+            self.err = "Deletion of variant {} of report {} is Failed!: {}".format(variant_name, report, e)
+            module.fail_json(msg=self.err, error=to_native(), exception=traceback.format_exc())
 
-        if self.check_variant(report, variant_name) is False:
-            return "Variant {} for report {} is Successfully Deleted".format(variant_name, report)
-        else:
-            return "Failed to delete variant {} for report {}".format(variant_name, report)
-
-    #   def export_printer_devices(self, report, variant_name): Handled in sap_function_call.py module
-
-    #   def sid_ctc_val(self):  Handled in sap_function_call.py module
-
-    #   def user_master_export(self, report, variant_name): Handled in sap_function_call.py module
 
 # 1. System user lock               = Done
 # 2. Suspend background Jobs        = Done
