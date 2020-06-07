@@ -14,7 +14,7 @@
    register: locked_users
 
  - debug: var=locked_users
-   
+
  - name: Lock Users
    sap_function_call:
      BAPI_USER_LOCK:

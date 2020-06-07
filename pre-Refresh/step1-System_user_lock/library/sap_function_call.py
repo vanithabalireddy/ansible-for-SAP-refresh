@@ -199,6 +199,10 @@ def main():
         params = module.params['BAPI_USER_LOCK']
         prefresh.bapi_user_lock(module, params)
 
+    if module.params['BAPI_USER_UNLOCK']:
+        params = module.params['BAPI_USER_UNLOCK']
+        prefresh.bapi_user_unlock(module, params)
+
     if module.params['INST_EXECUTE_REPORT']:
         params = module.params['INST_EXECUTE_REPORT']
         functioncall.inst_execute_report(module, params)
