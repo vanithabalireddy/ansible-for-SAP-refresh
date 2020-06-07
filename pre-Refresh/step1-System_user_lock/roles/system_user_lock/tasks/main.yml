@@ -20,7 +20,7 @@
      src: existing_locked_users
      dest: /tmp/existing_locked_users
    vars:
-     EXISTING_LOCKED_USERS: "{{ locked_users.meta.stdout.EXISTING_LOCKED_USERS }}"
+     EXISTING_LOCKED_USERS: "{{ locked_users.meta.EXISTING_LOCKED_USERS }}"
 
  - name: Lock Users
    sap_function_call:
