@@ -285,7 +285,6 @@ class PreSystemRefresh:
             self.err = "Deletion of variant {} of report {} is Failed!: {}".format(variant_name, report, e)
             module.fail_json(msg=self.err, error=to_native(), exception=traceback.format_exc())
 
-
 # 1. System user lock               = Done
 # 2. Suspend background Jobs        = Done
 # 3. Export Quality System Tables   = Not Done # Funciton module is not callable
