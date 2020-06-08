@@ -63,11 +63,11 @@ def main():
 
     if module.params['ZSXPG_COMMAND_INSERT']:
         params = module.params['ZSXPG_COMMAND_INSERT']
-        prefresh.export_sys_tables_comm_insert(module, params)
+        prefresh.command_insert(module, params)
 
     if module.params['SXPG_COMMAND_EXECUTE']:
-        params = module.params['SXPG_COMMAND_EXECUTE']
-        prefresh.export_sys_tables_comm_execute(module, params)
+        params = module.execute['SXPG_COMMAND_EXECUTE']
+        prefresh.command_execute(module, params)
 
 
 if __name__ == "__main__":

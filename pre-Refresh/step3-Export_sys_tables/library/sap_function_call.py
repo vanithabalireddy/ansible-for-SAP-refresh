@@ -55,7 +55,7 @@ def main():
 
     if module.params['INST_EXECUTE_REPORT']:
         params = module.params['INST_EXECUTE_REPORT']
-        prefresh.command_execute(module, params)
+        prefresh.inst_execute_report(module, params)
 
     if module.params['SUBST_START_REPORT_IN_BATCH']:
         params = module.params['SUBST_START_REPORT_IN_BATCH']
@@ -63,11 +63,11 @@ def main():
 
     if module.params['ZSXPG_COMMAND_INSERT']:
         params = module.params['ZSXPG_COMMAND_INSERT']
-        prefresh.command_execute(module, params)
+        prefresh.command_insert(module, params)
 
     if module.params['SXPG_COMMAND_EXECUTE']:
-        params = module.params['SXPG_COMMAND_EXECUTE']
-        prefresh.export_sys_tables_comm_execute(module, params)
+        params = module.execute['SXPG_COMMAND_EXECUTE']
+        prefresh.command_execute(module, params)
 
 
 if __name__ == "__main__":

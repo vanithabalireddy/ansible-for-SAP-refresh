@@ -17,7 +17,14 @@ def main():
         SUBST_START_REPORT_IN_BATCH=dict(
             IV_JOBNAME=dict(required=True, type='str'),
             IV_REPNAME=dict(required=True, type='str'),
-            IV_VARNAME=dict(required=True, type='str'), type='dict')
+            IV_VARNAME=dict(required=True, type='str'), type='dict'),
+        ZSXPG_COMMAND_INSERT=dict(
+            NAME=dict(required=True, type='str'),
+            OPSYSTEM=dict(required=True, type='str'),
+            OPCOMMAND=dict(required=True, type='str'),
+            PARAMETERS=dict(required=True, type='str'), type='dict'),
+        SXPG_COMMAND_EXECUTE=dict(
+            COMMAND=dict(required=True, type='str'), type='dict')
     )
 
     module = AnsibleModule(
@@ -57,6 +64,14 @@ def main():
     if module.params['SUBST_START_REPORT_IN_BATCH']:
         params = module.params['SUBST_START_REPORT_IN_BATCH']
         postRefresh.start_report_in_batch(module, params)
+
+    if module.params['ZSXPG_COMMAND_INSERT']:
+        params = module.params['ZSXPG_COMMAND_INSERT']
+        prefresh.command_insert(module, params)
+
+    if module.params['SXPG_COMMAND_EXECUTE']:
+        params = module.execute['SXPG_COMMAND_EXECUTE']
+        prefresh.command_execute(module, params)
 
 
 if __name__ == "__main__":
