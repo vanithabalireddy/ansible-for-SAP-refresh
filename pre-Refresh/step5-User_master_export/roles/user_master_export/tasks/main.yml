@@ -4,7 +4,7 @@
  - name: Fetch pc3_val and ctc_val
    sap_function_call:
      FETCH: sys_params
-   register: result
+   register: sys_params
    tags: ctc
 
 
@@ -21,6 +21,15 @@
      sid_ctc_val: "{{ result.meta.stdout.sid_ctc_val }}"
      trans_val: "{{ result.meta.stdout.trans_val }}"
    tags: ctc
+
+ - name: Storing transport number
+   template:
+     src: transport_number
+     dest: ../transport_number.txt
+     force: yes
+     backup: yes
+   vars:
+     TRANSPORT_NUMBER: "{{ sys_params.meta.stdout.bin_path }}"
 
  - name: Check Variant
    variant:
@@ -63,4 +72,3 @@
        report: "{{ report }}"
        variant_name: "{{ variant_name }}"
        action: delete
-
