@@ -29,7 +29,7 @@
      force: yes
      backup: yes
    vars:
-     TRANSPORT_NUMBER: "{{ sys_params.meta.stdout.bin_path }}"
+     TRANSPORT_NUMBER: "{{ sys_params.meta.stdout.trans_val }}"
 
  - name: Check Variant
    variant:
