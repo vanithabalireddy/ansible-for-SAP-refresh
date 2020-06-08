@@ -149,7 +149,7 @@ class PreSystemRefresh:
                 self.err = "User Master Export is Failed!"
             module.fail_json(msg=self.err, Error=to_native(e), exception=traceback.format_exc())
 
-    def export_sys_tables_comm_insert(self, module, params):
+    def command_insert(self, module, params):
         args = dict(
             NAME=params['NAME'],
             OPSYSTEM=params['OPSYSTEM'],
@@ -165,7 +165,7 @@ class PreSystemRefresh:
             self.err = "Failed to insert command {}".format(params['NAME'])
             module.fail_json(msg=self.err, error=to_native(e), exception=traceback.format_exc())
 
-    def export_sys_tables_comm_execute(self, module, params):
+    def command_execute(self, module, params):
         try:
             self.conn.call("SXPG_COMMAND_EXECUTE", COMMANDNAME=params['NAME'])
             self.data["Success!"] = "Successfully Executed command {} and exported system tables".format(params['NAME'])
