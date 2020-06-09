@@ -7,7 +7,6 @@
    register: sys_params
    tags: ctc
 
-
  - debug: var=sys_params.meta.stdout
    tags: ctc
 
@@ -21,15 +20,6 @@
      sid_ctc_val: "{{ sys_params.meta.stdout.sid_ctc_val }}"
      trans_val: "{{ sys_params.meta.stdout.trans_val }}"
    tags: ctc
-
- - name: Storing transport number
-   template:
-     src: transport_number
-     dest: /tmp/transport_number
-     force: yes
-     backup: yes
-   vars:
-     TRANSPORT_NUMBER: "{{ sys_params.meta.stdout.trans_val }}"
 
  - name: Check Variant
    variant:
@@ -72,3 +62,18 @@
        report: "{{ report }}"
        variant_name: "{{ variant_name }}"
        action: delete
+
+ - name: Fetch transport number of user master export
+   sap_function_call:
+     FETCH: sys_params
+   register: sys_params
+   tags: ctc
+
+ - name: Storing transport number
+   template:
+     src: transport_number
+     dest: /tmp/transport_number
+     force: yes
+     backup: yes
+   vars:
+     TRANSPORT_NUMBER: "{{ sys_params.meta.stdout.UME_Trans_No }}"
