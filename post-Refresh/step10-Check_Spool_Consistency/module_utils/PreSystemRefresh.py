@@ -191,6 +191,22 @@ class PreSystemRefresh:
                     result["trans_val"] = trans_val
 
             try:
+                trans_output = self.conn.call("RFC_READ_TABLE", QUERY_TABLE='E070',
+                                              OPTIONS=[{"TEXT": "TRFUNCTION EQ 'M' AND AS4USER EQ 'DDIC'"}])  # IF Condition check needs to be implemented
+            except Exception as e:
+                return "Failed to get current transport sequence number from E070L Table: {}".format(e)
+
+            trans = []
+            for data in trans_output['DATA']:
+                for val in data.values():
+                    if str(self.creds['sid'] + 'KT') in val.split()[0]:
+                        trans.append(val.split()[0])
+
+            trans.sort(reverse=True)
+            transport_number = trans[0]
+            result['UME_Trans_No'] = transport_number
+
+            try:
                 output = self.conn.call("RFC_READ_TABLE", QUERY_TABLE='TMSPCONF')
             except Exception as e:
                 self.err = "Failed while fetching TMC CTC Value: {}".format(e)
