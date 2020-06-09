@@ -56,6 +56,12 @@ class PostSystemRefresh(PreSystemRefresh):
                 self.data['Success'] = "Successfully Deleted SMQ2 Outbound Queues!"
             if params['IV_REPNAME'] == 'RSARFCDL':
                 self.data['Success'] = "Successfully Deleted SM58 TRC Queues!"
+            if params['IV_REPNAME'] == 'ZRSCLXCOP':
+                self.data['Success'] = "Successfully Executed Reports in Batch to Imported printer devices!"
+            if params['IV_REPNAME'] == 'RSPOXDEV':
+                self.data['Success'] = "Printer devices are Successfully Imported!"
+            if params['IV_REPNAME'] == 'STC_SC_UI_BDLS':
+                self.data['Success'] = "Successfully converted the logical system names of tables from production SID to quality!"
             module.exit_json(changed=True, meta=self.data)
         except Exception as e:
             if params['IV_REPNAME'] == 'RSBTCDEL':
@@ -66,4 +72,10 @@ class PostSystemRefresh(PreSystemRefresh):
                 self.err = "Failed to delete SMQ2 Outbound Queues"
             if params['IV_REPNAME'] == 'RSARFCDL':
                 self.err = "Failed to delete SM58 TRC Queues"
+            if params['IV_REPNAME'] == 'ZRSCLXCOP':
+                self.data['Success'] = "Failed to Execute Report in Batch to Import printer devices"
+            if params['IV_REPNAME'] == 'RSPOXDEV':
+                self.data['Success'] = "Failed to Import Printer devices!"
+            if params['IV_REPNAME'] == 'STC_SC_UI_BDLS':
+                self.data['Success'] = "Failed to convert the logical system names of tables from production SID to quality!"
             module.fail_json(msg=self.err, Error=to_native(e), exception=traceback.format_exc())
