@@ -3,9 +3,6 @@
      ansible_connection: local
      ansible_python_interpreter: /usr/bin/python3
   roles:
-    - role: user_master_import
-      vars:
-        report: "ZRSCLXCOP"
-        variant_name: "ZUSR_IMP"
+    - role: zscreen_login_info_change
 
 
