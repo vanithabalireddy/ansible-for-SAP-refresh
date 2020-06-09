@@ -1,0 +1,18 @@
+---
+# tasks file for user_master_export
+  - name: copy exp.ctl file
+    template:
+      src: exp.ctl
+      dest: /tmp/exp.ctl
+      group: sapsys
+      owner: pc3adm
+      force: yes
+
+#  - name: Execute Command
+#    command: R3trans -w /tmp/exp_ecc.log /tmp/exp.ctl
+#    become: yes
+#    become_user: pc3adm
+#    register: comm_execute
+#
+#  - debug: var=comm_execute
+#
