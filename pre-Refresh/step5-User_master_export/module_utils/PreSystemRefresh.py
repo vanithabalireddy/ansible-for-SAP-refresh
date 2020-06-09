@@ -13,12 +13,8 @@ class PreSystemRefresh:
         self.config.read(os.environ["HOME"] + '/.config/sap_config.cnf')
         self.creds = self.config['SAP']
 
-        try:
-            self.conn = Connection(user=self.creds['user'], passwd=self.creds['passwd'], ashost=self.creds['ashost'],
-                                   sysnr=self.creds['sysnr'], sid=self.creds['sid'], client=self.creds['client'])
-        except Exception as e:
-            self.err = "Failed when connecting to SAP application, please check the creds passed!"
-            module.fail_json(msg=self.err, error=to_native(e), exception=traceback.format_exc())
+        self.conn = Connection(user=self.creds['user'], passwd=self.creds['passwd'], ashost=self.creds['ashost'],
+                               sysnr=self.creds['sysnr'], sid=self.creds['sid'], client=self.creds['client'])
 
     def users_list(self, module):
         users = []
@@ -71,7 +67,7 @@ class PreSystemRefresh:
         return users
 
     def bapi_user_lock(self, module, params):
-        users_list = self.fetch_users()
+        users_list = params['ALL_USERS']
         users_locked = []
         errors = dict()
         users_exempted = []

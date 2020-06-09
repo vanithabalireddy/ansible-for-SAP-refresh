@@ -8,9 +8,11 @@ def main():
         FETCH=dict(
             choices=['sys_params', 'sys_users', 'sys_locked_users'], type='str'),
         BAPI_USER_LOCK=dict(
-            EXCEPTION_USERS=dict(required=True, type='list'), type='dict'),
+            EXCEPTION_USERS=dict(required=True, type='list'),
+            ALL_USERS=dict(required=True, type='list'), type='dict'),
         BAPI_USER_UNLOCK=dict(
-            EXCEPTION_USERS=dict(required=True, type='list'), type='dict'),
+            EXCEPTION_USERS=dict(required=True, type='list'),
+            ALL_USERS=dict(required=True, type='list'), type='dict'),
         INST_EXECUTE_REPORT=dict(
             PROGRAM=dict(required=True, type='str'), type='dict'),
         SUBST_START_REPORT_IN_BATCH=dict(
