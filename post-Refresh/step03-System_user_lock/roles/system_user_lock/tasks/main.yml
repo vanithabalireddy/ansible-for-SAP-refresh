@@ -18,7 +18,7 @@
  - name: Storing existing users list
    template:
      src: existing_locked_users
-     dest: /tmp/existing_locked_users
+     dest: /tmp/post_existing_locked_users
      force: yes
      backup: yes
    vars:
@@ -28,15 +28,16 @@
    sap_function_call:
      BAPI_USER_LOCK:
        EXCEPTION_USERS: "{{ exception_list }}"
+       ALL_USERS: users
    register: lock
 
  - debug: var=lock
 
- - name: Unlock Users
-   sap_function_call:
-     BAPI_USER_UNLOCK:
-       EXCEPTION_USERS: "{{lookup('file', '/tmp/existing_locked_users')}}"
-   register: lock
-
- - debug: var=lock
-
+# - name: Unlock Users
+#   sap_function_call:
+#     BAPI_USER_UNLOCK:
+#       EXCEPTION_USERS: "{{lookup('file', '/tmp/existing_locked_users')}}"
+#   register: lock
+#
+# - debug: var=lock
+#
