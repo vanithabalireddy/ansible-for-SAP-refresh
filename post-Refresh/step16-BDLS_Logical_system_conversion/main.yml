@@ -1,0 +1,15 @@
+- hosts: localhost
+  vars:
+     ansible_connection: local
+     ansible_python_interpreter: /usr/bin/python3
+  roles:
+    - role: export_printers
+      vars:
+        report: "STC_SC_UI_BDLS"
+        variant_name: "Z_PRDTOQA"
+        prod_client: 200
+        prod_sid: PV3
+        P_CNT: 10.000.000
+        P_PROC: 5
+
+

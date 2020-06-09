@@ -1,11 +1,10 @@
 #!/usr/bin/python
 
-report = {{ report }}
-variant_name = {{ variant_name }}
-client = "{{ client }}"
+report = "{{ report }}"
+variant_name = "{{ variant_name }}"
 
 desc = dict(
-    MANDT=client,
+    MANDT="{{ client }}",
     REPORT=report,
     VARIANT=variant_name
 )
@@ -19,7 +18,7 @@ content = [{'SELNAME': 'COPYCLI', 'KIND': 'P', 'LOW': '{{ client }}'},
            {'SELNAME': 'PROFIL', 'KIND': 'P', 'LOW': 'SAP_USER'},
            {'SELNAME': 'TARGET', 'KIND': 'P', 'LOW': '{{ sid_ctc_val }}'}]
 
-text = [{'MANDT': client, 'LANGU': 'EN', 'REPORT': report, 'VARIANT': variant_name,
+text = [{'MANDT': '{{ client }}', 'LANGU': 'EN', 'REPORT': report, 'VARIANT': variant_name,
          'VTEXT': 'User Master Import'}]
 
 screen = [{'DYNN': '1000', 'KIND': 'P'}]
