@@ -1,5 +1,10 @@
 ---
 # tasks file for user_master_export
+  - name: Fetch sys_params (client, sid, bin_path, trans_val, sid_ctc_val)
+    sap_function_call:
+      FETCH: sys_params
+    register: sys_params
+
   - name: copy exp.ctl file
     template:
       src: exp.ctl
@@ -7,12 +12,5 @@
       group: sapsys
       owner: pc3adm
       force: yes
-
-#  - name: Execute Command
-#    command: R3trans -w /tmp/exp_ecc.log /tmp/exp.ctl
-#    become: yes
-#    become_user: pc3adm
-#    register: comm_execute
-#
-#  - debug: var=comm_execute
-#
+    vars:
+      client: "{{ sys_params.meta.stdout.client }}"
