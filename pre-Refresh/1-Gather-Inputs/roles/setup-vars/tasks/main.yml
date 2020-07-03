@@ -1,0 +1,16 @@
+---
+# tasks file for system_user_lock
+ - name: Create sap_config.cnf file in $HOME/.config/sap_config.cnf
+   template:
+     src: sap_config.cnf
+     dest: "{{ ansible_env.HOME }}/.config/sap_config.cnf"
+     force: yes
+
+ - set_fact:
+     source_sap_sid: "{{ source_sap_sid }}"
+     source_sap_client: "{{ source_sap_client }}"
+     target_sap_sid: "{{ target_sap_sid }}"
+     target_sap_client: "{{ target_sap_client }}"
+     backup_file_system: "{{ backup_file_system }}"
+     exception_list: "{{ exception_list }}"
+     cacheable: yes

@@ -1,0 +1,18 @@
+- hosts: localhost
+  vars:
+     ansible_connection: local
+     ansible_python_interpreter: /usr/bin/python3
+  roles:
+    - role: setup-vars
+      vars:
+        source_sap_user: MRAM
+        source_sap_passwd: Sap@123
+        source_sap_hostname: sstsap06
+        source_sap_sysnr: PC3
+        source_sap_sid: 01
+        source_sap_client: 100
+        source_sap_ip_addr: 52.207.1.100
+        target_sap_sid: 02
+        target_sap_client: 200
+        backup_file_system: /tmp/test
+        exception_list: ['MRAM', 'GIRIDR']
