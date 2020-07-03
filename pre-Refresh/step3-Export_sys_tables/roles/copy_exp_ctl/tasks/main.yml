@@ -5,12 +5,14 @@
       FETCH: sys_params
     register: sys_params
 
+  - debug: var=sys_params
+
   - name: copy exp.ctl file
     template:
       src: exp.ctl
       dest: /tmp/exp.ctl
       group: sapsys
-      owner: pc3adm
+      owner: "{{ sys_params.meta.stdout.sid }}adm"
       force: yes
     vars:
       client: "{{ sys_params.meta.stdout.client }}"
