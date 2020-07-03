@@ -27,7 +27,7 @@
    sap_function_call:
      BAPI_USER_LOCK:
        EXCEPTION_USERS: "{{ exception_list }}"
-       ALL_USERS: "{{ users }}"
+       ALL_USERS: "{{ users.meta.USERS }}"
    register: lock
 
  - debug: var=lock
