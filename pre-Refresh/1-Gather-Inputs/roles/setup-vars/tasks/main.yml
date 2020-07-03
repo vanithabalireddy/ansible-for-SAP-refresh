@@ -5,3 +5,20 @@
      src: sap_config.ini
      dest: "{{ ansible_env.HOME }}/.config/sap_config.ini"
      force: yes
+
+ - name: Adding an entry in /etc/hosts
+   win_hosts:
+     state: present
+     canonical_name: "{{ lookup('ini', 'ashost section=SAP file={{ ansible_env.HOME }}/.config/sap_config.ini') }}"
+     ip_address: "{{ lookup('ini', 'target_ip_addr section=SAP file={{ ansible_env.HOME }}/.config/sap_config.ini') }}"
+   when: ansible_facts['distribution'] == "Windows"
+   tags: hostupdate
+
+ - name: Adding an entry in /etc/hosts
+   lineinfile:
+     dest: /etc/hosts
+     insertafter: EOF
+     line: "{{ lookup('ini', 'target_ip_addr section=SAP file={{ ansible_env.HOME }}/.config/sap_config.ini') }}\t{{ lookup('ini', 'ashost section=SAP file={{ ansible_env.HOME }}/.config/sap_config.ini') }}"
+     state: present
+   when: ansible_facts['distribution'] != "Windows"
+   tags: hostupdate
