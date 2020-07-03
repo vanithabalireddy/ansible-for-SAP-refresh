@@ -1,7 +1,0 @@
-[SAP]
-user = {{ source_sap_user }}
-passwd = {{ source_sap_passwd }}
-ashost = {{ source_sap_hostname }}
-sysnr = {{ source_sap_sysnr }}
-sid = {{ source_sap_sid }}
-client = {{ source_sap_client }}
