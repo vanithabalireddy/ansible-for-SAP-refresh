@@ -68,7 +68,7 @@ def main():
         prefresh.command_insert(module, params)
 
     if module.params['SXPG_COMMAND_EXECUTE']:
-        params = module.execute['SXPG_COMMAND_EXECUTE']
+        params = module.params['SXPG_COMMAND_EXECUTE']
         prefresh.command_execute(module, params)
 
 
