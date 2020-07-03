@@ -1,17 +1,10 @@
 ---
 # tasks file for user_master_export
-  - name: Fetch sys_params (client, sid, bin_path, trans_val, sid_ctc_val)
-    sap_function_call:
-      FETCH: sys_params
-    register: sys_params
-
   - name: Copy Variables templates containing variant details
     template:
       src: variant_data.py.j2
       dest: "{{playbook_dir}}/module_utils/variant_data.py"
       force: yes
-    vars:
-      client: "{{ sys_params.meta.stdout.client }}"
 
   - name: Check Variant
     variant:

@@ -5,5 +5,5 @@
       src: exp.ctl
       dest: /tmp/exp.ctl
       group: sapsys
-      owner: "{{ owner }}"
+      owner: "{{ lookup('ini', 'sid section=SAP file={{ ansible_env.HOME }}/.config/sap_config.ini') }}adm"
       force: yes
