@@ -2,6 +2,6 @@
 # tasks file for system_user_lock
  - name: Create sap_config.cnf file in $HOME/.config/sap_config.cnf
    template:
-     src: sap_config.cnf
+     src: sap_config.ini
      dest: "{{ ansible_env.HOME }}/.config/sap_config.ini"
      force: yes
