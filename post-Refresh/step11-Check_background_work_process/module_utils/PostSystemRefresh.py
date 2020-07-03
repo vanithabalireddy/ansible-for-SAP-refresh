@@ -57,7 +57,7 @@ class PostSystemRefresh(PreSystemRefresh):
             if params['IV_REPNAME'] == 'RSARFCDL':
                 self.data['Success'] = "Successfully Deleted SM58 TRC Queues!"
             if params['IV_REPNAME'] == 'ZRSCLXCOP':
-                self.data['Success'] = "Successfully Executed Reports in Batch to Imported printer devices!"
+                self.data['Success'] = "Successfully Executed Reports in Batch for User Master Import!"
             if params['IV_REPNAME'] == 'RSPOXDEV':
                 self.data['Success'] = "Printer devices are Successfully Imported!"
             if params['IV_REPNAME'] == 'STC_SC_UI_BDLS':
@@ -73,7 +73,7 @@ class PostSystemRefresh(PreSystemRefresh):
             if params['IV_REPNAME'] == 'RSARFCDL':
                 self.err = "Failed to delete SM58 TRC Queues"
             if params['IV_REPNAME'] == 'ZRSCLXCOP':
-                self.data['Success'] = "Failed to Execute Report in Batch to Import printer devices"
+                self.data['Success'] = "Failed to Execute Report in Batch for User Master Import!"
             if params['IV_REPNAME'] == 'RSPOXDEV':
                 self.data['Success'] = "Failed to Import Printer devices!"
             if params['IV_REPNAME'] == 'STC_SC_UI_BDLS':

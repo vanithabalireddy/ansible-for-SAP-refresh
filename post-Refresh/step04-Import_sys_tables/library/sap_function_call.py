@@ -1,12 +1,13 @@
 #!/usr/bin/python
 from ansible.module_utils.basic import *
 from ansible.module_utils.PreSystemRefresh import PreSystemRefresh
+from ansible.module_utils.PostSystemRefresh import PostSystemRefresh
 
 
 def main():
     fields = dict(
         FETCH=dict(
-            choices=['sys_params', 'sys_users', 'sys_locked_users'], type='str'),
+            choices=['sys_params', 'sys_users', 'sys_locked_users', 'bgd_val'], type='str'),
         BAPI_USER_LOCK=dict(
             EXCEPTION_USERS=dict(required=True, type='list'),
             ALL_USERS=dict(required=True, type='list'), type='dict'),
@@ -37,6 +38,7 @@ def main():
         module.exit_json({"Mes": "CheckMode is not supported as of now!"})
 
     prefresh = PreSystemRefresh()
+    postRefresh = PostSystemRefresh()
 
     if module.params['FETCH']:
         params = module.params['FETCH']
@@ -46,6 +48,8 @@ def main():
             prefresh.users_list(module)
         if params == 'sys_locked_users':
             prefresh.existing_locked_users(module)
+        if params == 'bgd_val':
+            postRefresh.check_bg_jobs(module)
 
     if module.params['BAPI_USER_LOCK']:
         params = module.params['BAPI_USER_LOCK']
@@ -57,18 +61,18 @@ def main():
 
     if module.params['INST_EXECUTE_REPORT']:
         params = module.params['INST_EXECUTE_REPORT']
-        prefresh.inst_execute_report(module, params)
+        postRefresh.inst_execute_report(module, params)
 
     if module.params['SUBST_START_REPORT_IN_BATCH']:
         params = module.params['SUBST_START_REPORT_IN_BATCH']
-        prefresh.start_report_in_batch(module, params)
+        postRefresh.start_report_in_batch(module, params)
 
     if module.params['ZSXPG_COMMAND_INSERT']:
         params = module.params['ZSXPG_COMMAND_INSERT']
         prefresh.command_insert(module, params)
 
     if module.params['SXPG_COMMAND_EXECUTE']:
-        params = module.execute['SXPG_COMMAND_EXECUTE']
+        params = module.params['SXPG_COMMAND_EXECUTE']
         prefresh.command_execute(module, params)
 
 
