@@ -1,18 +1,9 @@
 ---
 # tasks file for user_master_export
-  - name: Fetch sys_params (client, sid, bin_path, trans_val, sid_ctc_val)
-    sap_function_call:
-      FETCH: sys_params
-    register: sys_params
-
-  - debug: var=sys_params
-
   - name: copy exp.ctl file
     template:
       src: exp.ctl
       dest: /tmp/exp.ctl
       group: sapsys
-      owner: "{{ sys_params.meta.stdout.sid }}adm"
+      owner: "{{ owner }}"
       force: yes
-    vars:
-      client: "{{ sys_params.meta.stdout.client }}"
