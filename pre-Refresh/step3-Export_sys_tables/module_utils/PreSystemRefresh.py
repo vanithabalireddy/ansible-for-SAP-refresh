@@ -10,7 +10,7 @@ class PreSystemRefresh:
 
     def __init__(self):
         self.config = ConfigParser()
-        self.config.read(os.environ["HOME"] + '/.config/sap_config.cnf')
+        self.config.read(os.environ["HOME"] + '/.config/sap_config.ini')
         self.creds = self.config['SAP']
 
         self.conn = Connection(user=self.creds['user'], passwd=self.creds['passwd'], ashost=self.creds['ashost'],
