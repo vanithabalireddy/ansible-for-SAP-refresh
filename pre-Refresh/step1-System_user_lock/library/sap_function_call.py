@@ -108,6 +108,11 @@ options:
         required: yes
         type: str
     type: dict
+notes:
+    - For pyrfc and SAP network SDK's installation visit [page](https://sap.github.io/PyRFC/install.html)
+requirements:
+    - pyrfc >= 2.0
+    - configparser
 '''
 
 from ansible.module_utils.basic import *
