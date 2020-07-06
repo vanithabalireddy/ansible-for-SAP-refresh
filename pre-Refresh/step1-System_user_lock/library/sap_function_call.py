@@ -1,4 +1,115 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+ANSIBLE_METADATA = {'metadata_version': '1.1',
+                    'status': ['preview'],
+                    'supported_by': 'community'}
+
+DOCUMENTATION = r'''
+---
+module: sap_function_call
+short_description: To perform System Refresh Activities.
+description:
+    - Interacts with SAP application using RFC protocol.
+    - Calls SAP Function modules by passing params required.
+    - Create, delete, update variants.
+    - For all the pre and post refresh activities of SAP System Refresh.
+version_added: "1.1"
+author: "Mahesh Ramachandrappa (@mramachandrappa)"
+
+options:
+  FETCH:
+    description:
+    - Fetches following information from SAP Application.
+        'sys_params' > trans_val, UME_Trans_No, sid_ctc_val, bin_path, client, sid_val
+        'sys_users'  > Entire System user list
+        'sys_locked_users' > Existing locked users.
+    type: str
+    choices: ['sys_params', 'sys_users', 'sys_locked_users']
+  BAPI_USER_LOCK:
+    description:
+    - Lock SAP System users. 
+    options:
+        EXCEPTION_USERS: 
+        - Exception user list to keep them from Locking.
+        required: yes
+        type: list
+        All_USERS: 
+        - Entire SAP System user list.
+        required: yes
+        type: list
+    type: dict
+  BAPI_USER_UNLOCK:
+    description:
+    - UnLocks SAP System users. 
+    options:
+        EXCEPTION_USERS: 
+        - Exception user list to keep them from Locking.
+        required: yes
+        type: list
+        All_USERS: 
+        - Entire SAP System user list.
+        required: yes
+        type: list
+    type: dict
+  INST_EXECUTE_REPORT:
+    description:
+    - Executes an SAP Program.
+    options:
+        PROGRAM: 
+        - Program to run.
+        required: yes
+        type: str
+    type: dict
+  SUBST_START_REPORT_IN_BATCH:
+    description:
+    - Starts report in batch.
+    options:
+        IV_JOBNAME: 
+        - Jobname to run
+        required: yes
+        type: str
+        IV_REPNAME: 
+        - Report name
+        required: yes
+        type: str
+        IV_VARNAME: 
+        - Variant name
+        required: yes
+        type: str
+    type: dict
+  ZSXPG_COMMAND_INSERT:
+    description: 
+    - Inserts a command to execute.
+    options:
+        NAME: 
+        - Name of the command
+        required: yes
+        type: str
+        OPSYSTEM: 
+        - OS Environment
+        required: yes
+        type: str
+        OPCOMMAND: 
+        - Command
+        required: yes
+        type: str 
+        PARAMETERS: 
+        - params for command
+        required: yes
+        type: str
+    type: dict
+  SXPG_COMMAND_EXECUTE:
+    description: 
+    - Executes the command created.
+    options:
+        COMMAND: 
+        - Entire command to execute
+        required: yes
+        type: str
+    type: dict
+'''
+
 from ansible.module_utils.basic import *
 from ansible.module_utils.PreSystemRefresh import PreSystemRefresh
 
