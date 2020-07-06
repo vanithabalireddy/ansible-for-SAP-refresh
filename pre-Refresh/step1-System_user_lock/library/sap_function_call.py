@@ -12,7 +12,6 @@ short_description: To perform System Refresh Activities.
 description:
     - Interacts with SAP application using RFC protocol.
     - Calls SAP Function modules by passing params required.
-    - Create, delete, update variants.
     - For all the pre and post refresh activities of SAP System Refresh.
 version_added: "1.1"
 author: "Mahesh Ramachandrappa (@mramachandrappa)"

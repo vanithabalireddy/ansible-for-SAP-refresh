@@ -1,4 +1,170 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+ANSIBLE_METADATA = {'metadata_version': '1.1',
+                    'status': ['preview'],
+                    'supported_by': 'community'}
+
+DOCUMENTATION = r'''
+---
+module: sap_function_call
+short_description: To perform System Refresh Activities.
+description:
+    - Interacts with SAP application using RFC protocol.
+    - Calls SAP Function modules by passing params required.
+    - For all the pre and post refresh activities of SAP System Refresh.
+version_added: "1.1"
+author: "Mahesh Ramachandrappa (@mramachandrappa)"
+
+options:
+  FETCH:
+    description:
+    - Fetches following information from SAP Application.
+        'sys_params' > trans_val, UME_Trans_No, sid_ctc_val, bin_path, client, sid_val
+        'sys_users'  > Entire System user list
+        'sys_locked_users' > Existing locked users.
+    type: str
+    choices: ['sys_params', 'sys_users', 'sys_locked_users']
+  BAPI_USER_LOCK:
+    description:
+    - Lock SAP System users. 
+    options:
+        EXCEPTION_USERS: 
+        - Exception user list to keep them from Locking.
+        required: yes
+        type: list
+        All_USERS: 
+        - Entire SAP System user list.
+        required: yes
+        type: list
+    type: dict
+  BAPI_USER_UNLOCK:
+    description:
+    - UnLocks SAP System users. 
+    options:
+        EXCEPTION_USERS: 
+        - Exception user list to keep them from Locking.
+        required: yes
+        type: list
+        All_USERS: 
+        - Entire SAP System user list.
+        required: yes
+        type: list
+    type: dict
+  INST_EXECUTE_REPORT:
+    description:
+    - Executes an SAP Program.
+    options:
+        PROGRAM: 
+        - Program to run.
+        required: yes
+        type: str
+    type: dict
+  SUBST_START_REPORT_IN_BATCH:
+    description:
+    - Starts report in batch.
+    options:
+        IV_JOBNAME: 
+        - Jobname to run
+        required: yes
+        type: str
+        IV_REPNAME: 
+        - Report name
+        required: yes
+        type: str
+        IV_VARNAME: 
+        - Variant name
+        required: yes
+        type: str
+    type: dict
+  ZSXPG_COMMAND_INSERT:
+    description: 
+    - Inserts a command to execute.
+    options:
+        NAME: 
+        - Name of the command
+        required: yes
+        type: str
+        OPSYSTEM: 
+        - OS Environment
+        required: yes
+        type: str
+        OPCOMMAND: 
+        - Command
+        required: yes
+        type: str 
+        PARAMETERS: 
+        - params for command
+        required: yes
+        type: str
+    type: dict
+  SXPG_COMMAND_EXECUTE:
+    description: 
+    - Executes the command created.
+    options:
+        COMMAND: 
+        - Entire command to execute
+        required: yes
+        type: str
+    type: dict
+requirements:
+    - pyrfc >= 2.0
+    - configparser
+notes:
+    - For pyrfc and SAP network SDK's installation visit > https://sap.github.io/PyRFC/install.html
+'''
+
+EXAMPLES = r'''
+# FETCH
+- name: Fetches the values. choices['sys_params', 'sys_users', 'sys_locked_users'] 
+  sap_function_call:
+    FETCH: sys_users
+  register: users
+
+#BAPI_USER_LOCK
+- name: Locks all users with exception to the EXCEPTION_USERS List provided.
+  sap_function_call:
+    BAPI_USER_LOCK:
+        EXCEPTION_USERS: "['MRAM', 'GIRIDR']"
+        ALL_USERS: "{{ users.meta.USERS }}"
+
+#BAPI_USER_UNLOCK
+- name: Locks all users with exception to the EXCEPTION_USERS List provided.
+  sap_function_call:
+    BAPI_USER_LOCK:
+        EXCEPTION_USERS: "['MRAM', 'GIRIDR']"
+        ALL_USERS: "{{ users.meta.USERS }}"
+
+#INST_EXECUTE_REPORT
+- name: Executes the SAP program.
+  sap_function_call:
+    INST_EXECUTE_REPORT:
+        PROGRAM: 'BTCTRNS1'
+
+#SUBST_START_REPORT_IN_BATCH
+- name: Starts report in batch.
+  sap_function_call:
+    SUBST_START_REPORT_IN_BATCH:
+        IV_JOBNAME: "ZRSCLXCOP"
+        IV_REPNAME: "ZRSCLXCOP"
+        IV_VARNAME: "SST_ZUSR_EXP"
+
+#ZSXPG_COMMAND_INSERT
+- name: Inserts command into OS level.
+  sap_function_call:
+    ZSXPG_COMMAND_INSERT:
+        NAME: 'ZTABEXP'
+        OPSYSTEM: 'Linux'
+        OPCOMMAND: 'R3trans'
+        PARAMETERS: '-w /tmp/exp_ecc.log /tmp/exp.ctl'
+
+#SXPG_COMMAND_EXECUTE
+- name: Executes the command inserted.
+  sap_function_call:
+    SXPG_COMMAND_EXECUTE:
+        NAME: "ZTABEXP"
+'''
+
 from ansible.module_utils.basic import *
 from ansible.module_utils.PreSystemRefresh import PreSystemRefresh
 
