@@ -108,11 +108,62 @@ options:
         required: yes
         type: str
     type: dict
-notes:
-    - For pyrfc and SAP network SDK's installation visit [page](https://sap.github.io/PyRFC/install.html)
 requirements:
     - pyrfc >= 2.0
     - configparser
+notes:
+    - For pyrfc and SAP network SDK's installation visit > https://sap.github.io/PyRFC/install.html
+'''
+
+EXAMPLES = r'''
+# FETCH
+- name: Fetches the values. choices['sys_params', 'sys_users', 'sys_locked_users'] 
+  sap_function_call:
+    FETCH: sys_users
+  register: users
+
+#BAPI_USER_LOCK
+- name: Locks all users with exception to the EXCEPTION_USERS List provided.
+  sap_function_call:
+    BAPI_USER_LOCK:
+        EXCEPTION_USERS: "['MRAM', 'GIRIDR']"
+        ALL_USERS: "{{ users.meta.USERS }}"
+
+#BAPI_USER_UNLOCK
+- name: Locks all users with exception to the EXCEPTION_USERS List provided.
+  sap_function_call:
+    BAPI_USER_LOCK:
+        EXCEPTION_USERS: "['MRAM', 'GIRIDR']"
+        ALL_USERS: "{{ users.meta.USERS }}"
+        
+#INST_EXECUTE_REPORT
+- name: Executes the SAP program.
+  sap_function_call:
+    INST_EXECUTE_REPORT:
+        PROGRAM: 'BTCTRNS1'
+
+#SUBST_START_REPORT_IN_BATCH
+- name: Starts report in batch.
+  sap_function_call:
+    SUBST_START_REPORT_IN_BATCH:
+        IV_JOBNAME: "ZRSCLXCOP"
+        IV_REPNAME: "ZRSCLXCOP"
+        IV_VARNAME: "SST_ZUSR_EXP"
+
+#ZSXPG_COMMAND_INSERT
+- name: Inserts command into OS level.
+  sap_function_call:
+    ZSXPG_COMMAND_INSERT:
+        NAME: 'ZTABEXP'
+        OPSYSTEM: 'Linux'
+        OPCOMMAND: 'R3trans'
+        PARAMETERS: '-w /tmp/exp_ecc.log /tmp/exp.ctl'
+
+#SXPG_COMMAND_EXECUTE
+- name: Executes the command inserted.
+  sap_function_call:
+    SXPG_COMMAND_EXECUTE:
+        NAME: "ZTABEXP"
 '''
 
 from ansible.module_utils.basic import *
