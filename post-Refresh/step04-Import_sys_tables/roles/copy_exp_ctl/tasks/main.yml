@@ -1,25 +1,10 @@
 ---
-# tasks file for user_master_export
-  - name: Fetch sys_params (client, sid, bin_path, trans_val, sid_ctc_val)
-    sap_function_call:
-      FETCH: sys_params
-    register: sys_params
-
+# tasks file for copy_exp_ctl
   - name: copy exp.ctl file
     template:
       src: exp.ctl
       dest: /tmp/exp.ctl
       group: sapsys
-      owner: pc3adm
+      owner: "{{ lookup('ini', 'sid section=SAP file={{ ansible_env.HOME }}/.config/sap_config.ini')|lower }}adm"
       force: yes
-    vars:
-      client: "{{ sys_params.meta.stdout.client }}"
 
-#  - name: Execute Command
-#    command: R3trans -w /tmp/exp_ecc.log /tmp/exp.ctl
-#    become: yes
-#    become_user: pc3adm
-#    register: comm_execute
-#
-#  - debug: var=comm_execute
-#
