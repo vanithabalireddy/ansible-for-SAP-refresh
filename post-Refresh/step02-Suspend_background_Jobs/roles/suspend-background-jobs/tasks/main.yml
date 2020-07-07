@@ -5,6 +5,5 @@
         INST_EXECUTE_REPORT:
           PROGRAM: 'BTCTRNS1'
    register: suspend_bg_jobs
-   tags: suspend_bg_jobs
 
  - debug: var=suspend_bg_jobs
