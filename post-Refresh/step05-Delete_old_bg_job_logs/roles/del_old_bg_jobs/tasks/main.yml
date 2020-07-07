@@ -1,6 +1,6 @@
 ---
 # tasks file for del_old_bg_jobs
-- name: Copy Variables templates containing variant details
+ - name: Copy Variables templates containing variant details
    template:
         src: variant_data.py.j2
         dest: "{{playbook_dir}}/module_utils/variant_data.py"
