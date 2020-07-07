@@ -4,8 +4,6 @@ from ansible.module_utils.basic import *
 import os
 import logging
 
-logging.basicConfig(filename="system_refresh.log", level=logging.INFO, format='%(asctime)s:%(levelname)s:%(message)s')
-
 
 class PreSystemRefresh:
     data = dict()
@@ -16,17 +14,23 @@ class PreSystemRefresh:
         try:
             self.config.read(os.environ["HOME"] + '/.config/sap_config.ini')
             self.creds = self.config['SAP']
+
+            logging.basicConfig(filename="/tmp/system_refresh.log", level=logging.INFO,
+                                format='%(asctime)s:%(levelname)s:%(message)s')
+
             self.conn = Connection(user=self.creds['user'], passwd=self.creds['passwd'], ashost=self.creds['ashost'],
                                    sysnr=self.creds['sysnr'], sid=self.creds['sid'], client=self.creds['client'])
             logging.info("CONNECTION: Successful!")
         except KeyError:
             self.config.read(os.path.expanduser('~') + '\.config\sap_config.ini')
-            self.conn = Connection(user=self.config.get('SAP', 'user'),
-                                   passwd=self.config.get('SAP', 'passwd'),
-                                   ashost=self.config.get('SAP', 'ashost'),
-                                   sysnr=self.config.get('SAP', 'sysnr'),
-                                   sid=self.config.get('SAP', 'sid'),
-                                   client=self.config.get('SAP', 'client'))
+            self.creds = self.config['SAP']
+
+            logging.basicConfig(filename=os.path.expanduser('~') + '\system_refresh.log', level=logging.INFO,
+                                format='%(asctime)s:%(levelname)s:%(message)s')
+
+            self.conn = Connection(user=self.creds['user'], passwd=self.creds['passwd'], ashost=self.creds['ashost'],
+                                   sysnr=self.creds['sysnr'], sid=self.creds['sid'], client=self.creds['client'])
+
             logging.info("CONNECTION: Successful!")
         except Exception as e:
             logging.error("CONNECTION: Failed to connect to SAP. Please check the creds: {}".format(e))
@@ -350,6 +354,5 @@ class PreSystemRefresh:
             self.err = "Failed to delete variant {} for report {}: {}".format(variant_name, report, e)
             logging.error("DELETE VARIANT: Failed to delete variant {} for report {}: {}".format(variant_name, report, e))
             module.fail_json(msg=self.err, error=to_native(), exception=traceback.format_exc())
-
 
 
