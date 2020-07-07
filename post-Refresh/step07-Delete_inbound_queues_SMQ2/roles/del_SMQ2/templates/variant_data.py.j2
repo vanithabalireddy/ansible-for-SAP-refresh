@@ -2,7 +2,7 @@
 
 report = "{{ report }}"
 variant_name = "{{ variant_name }}"
-client = "{{ client }}"
+client = "{{ lookup('ini', 'client section=SAP file={{ ansible_env.HOME }}/.config/sap_config.ini') }}"
 
 desc = dict(
     MANDT=client,

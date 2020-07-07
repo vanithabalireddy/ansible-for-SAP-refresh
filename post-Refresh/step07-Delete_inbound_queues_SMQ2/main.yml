@@ -7,6 +7,5 @@
       vars:
         report: "RSTRFCID"
         variant_name: "SST_DELSMQ2"
-        client: 100
 
 
