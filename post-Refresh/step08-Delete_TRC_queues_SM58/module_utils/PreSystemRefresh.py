@@ -203,7 +203,6 @@ class PreSystemRefresh:
             try:
                 output = self.conn.call("RFC_READ_TABLE",
                                         QUERY_TABLE='E070L')  # IF Condition check needs to be implemented
-                logging.info("FETCH: Successfully queried data from 'E070L' Table")
             except Exception as e:
                 self.err = "Failed to get data from E070L Table: {}".format(e)
                 logging.error("FETCH: Failed to get data from E070L Table: {}".format(e))
@@ -216,12 +215,9 @@ class PreSystemRefresh:
                     trans_val = ((val.split()[1][:3] + 'C') + str(int(val.split()[1][4:]) + 1))
                     result["trans_val"] = trans_val
 
-            logging.info("FETCH: trans_val is set to", trans_val)
-
             try:
                 trans_output = self.conn.call("RFC_READ_TABLE", QUERY_TABLE='E070',
                                               OPTIONS=[{"TEXT": "TRFUNCTION EQ 'M' AND AS4USER EQ 'DDIC'"}])  # IF Condition check needs to be implemented
-                logging.info("FETCH: Successfully queried 'E070' Table")
             except Exception as e:
                 self.err = "Failed to query E070L Table: {}".format(e)
                 logging.error("FETCH: Failed to query E070L Table: {}".format(e))
@@ -237,14 +233,8 @@ class PreSystemRefresh:
             transport_number = trans[0]
             result['UME_Trans_No'] = transport_number
 
-            if transport_number:
-                logging.info("FETCH: Successfully fetched User Master Export Transport Number", transport_number)
-            else:
-                logging.error("FETCH: Failed to fetch User Master Export Transport Number!")
-
             try:
                 output = self.conn.call("RFC_READ_TABLE", QUERY_TABLE='TMSPCONF')
-                logging.info("FETCH: Successfully queried 'TMSPCONF' Table")
             except Exception as e:
                 self.err = "Failed to query Table 'TMSPCONF': {}".format(e)
                 logging.error("FETCH: Failed to qyery Table 'TMSPCONF': {}".format(e))
@@ -258,20 +248,22 @@ class PreSystemRefresh:
                 if field['WA'].split()[1] == 'TRANSDIR' and self.creds['sid'] in field['WA'].split()[0]:
                     bin_path = field['WA'].split()[2] + '/bin'
 
-            logging.info("FETCH: bin_path is set to: ", bin_path)
-
             if ctc is '1':
                 sid_ctc_val = self.creds['sid'] + '.' + self.creds['client']
                 result["sid_ctc_val"] = sid_ctc_val
-                logging.info("FETCH: ctc value is found as 1. sid_ctc_val is set to: ", sid_ctc_val)
             else:
                 sid_ctc_val = self.creds['sid']
                 result["sid_ctc_val"] = sid_ctc_val
-                logging.info("FETCH: ctc value is found as 0. sid_ctc_val is set to: ", sid_ctc_val)
 
             result["bin_path"] = bin_path
             result["client"] = self.creds['client']
             result["sid_val"] = self.creds['sid']
+
+            logging.info("FETCH: trans_val is set to: {}\n"
+                         "\t UME_Trans_No is set to: {}\n"
+                         "\t bin_path is set to: {}\n"
+                         "\t sid_ctc_val is set to: {}".format(result['trans_val'], transport_number['UME_Trans_No'],
+                                                               result['bin_path'], result["sid_ctc_val"]))
 
             if trans_val and ctc is not None:
                 self.data['stdout'] = result
@@ -327,7 +319,7 @@ class PreSystemRefresh:
 
         self.data['stdout'] = False
         self.data['mes'] = "variant {} for report {} doesn't exist!".format(variant_name, report)
-        logging.error("CHECK VARIANT: variant {} for report {} doesn't exist!".format(variant_name, report))
+        logging.info("CHECK VARIANT: variant {} for report {} doesn't exist!".format(variant_name, report))
         module.exit_json(changed=False, meta=self.data)
 
     def create_variant(self, module, report, variant_name, desc, content, text, screen):
@@ -341,7 +333,7 @@ class PreSystemRefresh:
         except Exception as e:
             self.err = "CREATE VARIANT: Failed to create variant {} for report {} : {}".format(variant_name, report, e)
             logging.error("CREATE VARIANT: Failed to create variant {} for report {} : {}".format(variant_name, report, e))
-            module.fail_json(msg=self.err, error=to_native(), exception=traceback.format_exc())
+            module.fail_json(msg=self.err, error=to_native(e), exception=traceback.format_exc())
 
     def delete_variant(self, module, report, variant_name):
         try:
@@ -353,6 +345,6 @@ class PreSystemRefresh:
         except Exception as e:
             self.err = "Failed to delete variant {} for report {}: {}".format(variant_name, report, e)
             logging.error("DELETE VARIANT: Failed to delete variant {} for report {}: {}".format(variant_name, report, e))
-            module.fail_json(msg=self.err, error=to_native(), exception=traceback.format_exc())
+            module.fail_json(msg=self.err, error=to_native(e), exception=traceback.format_exc())
 
 
