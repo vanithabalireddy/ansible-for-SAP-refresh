@@ -5,4 +5,4 @@
   roles:
     - role: system_user_lock
       vars:
-        exception_list: ['SST_TRNG', 'KRISHNA', 'BJOERN', 'DDIC', 'DBISWAS', 'GIRIDR', 'MRAM']
+        exception_list: "{{ lookup('ini', 'exception_list section=SAP file={{ ansible_env.HOME }}/.config/sap_config.ini') }}"
