@@ -24,8 +24,8 @@
       vars:
         report: "STC_SC_UI_BDLS"
         variant_name: "Z_PRDTOQA"
-        prod_client: {{ prod_client }}
-        prod_sid: {{ prod_sid }}
+        source_client: "{{ lookup('ini', 'source_client section=SAP file={{ ansible_env.HOME }}/.config/sap_config.ini') }}"
+        source_sid: "{{ lookup('ini', 'source_sid section=SAP file={{ ansible_env.HOME }}/.config/sap_config.ini') }}"
         P_CNT: {{ P_CNT }}
         P_PROC: {{ P_PROC }}
 

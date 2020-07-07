@@ -9,7 +9,7 @@ desc = dict(
     VARIANT=variant_name
 )
 
-content = [{'SELNAME': 'P_LS', 'KIND': 'S', 'SIGN': 'I', 'OPTION': 'BT', 'LOW': '{{ prod_sid }}CLNT{{ prod_client }}', 'HIGH': '{{ sid }}CLNT{{ client }}'},
+content = [{'SELNAME': 'P_LS', 'KIND': 'S', 'SIGN': 'I', 'OPTION': 'BT', 'LOW': '{{ source_sid }}CLNT{{ source_client }}', 'HIGH': '{{ sid }}CLNT{{ client }}'},
            {'SELNAME': 'P_TAB', 'KIND': 'S', 'SIGN': 'I', 'OPTION': 'CP', 'LOW': '*'},
            {'SELNAME': 'P_CNT', 'KIND': 'P', 'LOW': '{{ P_CNT }}'},
            {'SELNAME': 'P_JOB_TN', 'KIND': 'P', 'LOW': 'X'},
