@@ -262,7 +262,7 @@ class PreSystemRefresh:
             logging.info("FETCH: trans_val is set to: {}\n"
                          "\t UME_Trans_No is set to: {}\n"
                          "\t bin_path is set to: {}\n"
-                         "\t sid_ctc_val is set to: {}".format(result['trans_val'], transport_number['UME_Trans_No'],
+                         "\t sid_ctc_val is set to: {}".format(result['trans_val'], result['UME_Trans_No'],
                                                                result['bin_path'], result["sid_ctc_val"]))
 
             if trans_val and ctc is not None:
