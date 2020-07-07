@@ -2,10 +2,5 @@
   vars:
      ansible_connection: local
      ansible_python_interpreter: /usr/bin/python3
-#  vars_prompt:
-#  - name: existing_locked_users
-#    prompt: " Existing locked users list taken in pre refresh are\n {{lookup('file', '/tmp/existing_locked_users')}}\n Please confirm yes/no"
-#    private: no
-
   roles:
-    - role: system_user_lock
+    - role: system_user_unlock
