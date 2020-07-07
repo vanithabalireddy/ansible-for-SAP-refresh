@@ -8,7 +8,7 @@ import logging
 class PreSystemRefresh:
     data = dict()
     err = str()
-
+    
     def __init__(self):
         self.config = ConfigParser()
         try:
@@ -16,24 +16,23 @@ class PreSystemRefresh:
             self.creds = self.config['SAP']
 
             logging.basicConfig(filename="/tmp/system_refresh.log", level=logging.INFO,
-                                format='%(asctime)s:%(levelname)s:%(message)s')
+                                format='%(levelname)s: %(message)s: %(asctime)s')
 
             self.conn = Connection(user=self.creds['user'], passwd=self.creds['passwd'], ashost=self.creds['ashost'],
                                    sysnr=self.creds['sysnr'], sid=self.creds['sid'], client=self.creds['client'])
-            logging.info("CONNECTION: Successful!")
         except KeyError:
             self.config.read(os.path.expanduser('~') + '\.config\sap_config.ini')
             self.creds = self.config['SAP']
 
             logging.basicConfig(filename=os.path.expanduser('~') + '\system_refresh.log', level=logging.INFO,
-                                format='%(asctime)s:%(levelname)s:%(message)s')
+                                format='%(levelname)s: %(message)s: %(asctime)s')
 
             self.conn = Connection(user=self.creds['user'], passwd=self.creds['passwd'], ashost=self.creds['ashost'],
                                    sysnr=self.creds['sysnr'], sid=self.creds['sid'], client=self.creds['client'])
 
-            logging.info("CONNECTION: Successful!")
         except Exception as e:
             logging.error("CONNECTION: Failed to connect to SAP. Please check the creds: {}".format(e))
+
 
     def users_list(self, module):
         users = []
@@ -100,9 +99,10 @@ class PreSystemRefresh:
         self.data['ERRORS'] = errors
         self.data['EXCEPTION_USERS'] = users_exempted
 
-        logging.info("BAPI_USER_LOCK: Successfully Locked users with exception to the Exception list provided!")
-        logging.info("BAPI_USER_LOCK: Exception users list provided are:", params['EXCEPTION_USERS'])
-        logging.info("BAPI_USER_LOCK: Users that were failed to Lock:", errors if errors else None)
+        logging.info("BAPI_USER_LOCK: Exception users list provided are: {}\n"
+                     "BAPI_USER_LOCK: Successfully Locked users with exception to the Exception list provided!\n"
+                     "BAPI_USER_LOCK: Users that were failed to Lock: {}".format(params['EXCEPTION_USERS'], errors if errors else None))
+
         module.exit_json(changed=True, meta=self.data)
 
     def bapi_user_unlock(self, module, params):
@@ -130,9 +130,9 @@ class PreSystemRefresh:
         self.data['ERRORS'] = errors
         self.data['EXCEPTION_USERS'] = users_exempted
 
-        logging.info("BAPI_USER_UNLOCK: Successfully Unlocked users with exception to the Exception list provided!")
-        logging.info("BAPI_USER_UNLOCK: Exception users list from being unlocked:", params['EXCEPTION_USERS'])
-        logging.info("BAPI_USER_UNLOCK: Users that were failed to Unlock:", errors if errors else None)
+        logging.info("BAPI_USER_LOCK: Exception users list: {}\n"
+                     "BAPI_USER_LOCK: Successfully Locked users with exception to the Exception list provided!\n"
+                     "BAPI_USER_LOCK: Users that were failed to Lock: {}".format(params['EXCEPTION_USERS'], errors if errors else None))
 
         module.exit_json(changed=True, meta=self.data)
 
