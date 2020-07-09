@@ -6,7 +6,7 @@
         NAME: 'ZTABEXP'
         OPSYSTEM: 'Linux'
         OPCOMMAND: 'R3trans'
-        PARAMETERS: '-w /tmp/exp_ecc.log /tmp/exp.ctl'
+        PARAMETERS: '-w /tmp/import_ecc.log /tmp/import.ctl'
     register: comm_insert
 
   - debug: var=comm_insert
