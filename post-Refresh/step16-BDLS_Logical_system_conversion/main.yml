@@ -1,32 +1,16 @@
-- hosts: localhost
-  vars:
+---
+ - hosts: all
+   vars:
      ansible_connection: local
      ansible_python_interpreter: /usr/bin/python3
-  vars_prompt:
-    - name: prod_client
-      prompt: "Enter production client no\n"
-      private: no
-
-    - name: prod_sid
-      prompt: "Enter production sid no\n"
-      private: no
-
-    - name: P_CNT
-      prompt: "Enter P_CNT value\n"
-      private: no
-
-    - name: P_PROC
-      prompt: "Enter P_PROC value\n"
-      private: no
-
-  roles:
-    - role: logical_system_conversion
-      vars:
-        report: "STC_SC_UI_BDLS"
-        variant_name: "Z_PRDTOQA"
-        source_client: "{{ lookup('ini', 'source_client section=SAP file={{ ansible_env.HOME }}/.config/sap_config.ini') }}"
-        source_sid: "{{ lookup('ini', 'source_sid section=SAP file={{ ansible_env.HOME }}/.config/sap_config.ini') }}"
-        P_CNT: {{ P_CNT }}
-        P_PROC: {{ P_PROC }}
+   roles:
+     - role: logical_system_conversion
+       vars:
+         report: "STC_SC_UI_BDLS"
+         variant_name: "Z_PRDTOQA"
+         source_client: "{{ lookup('ini', 'source_client section=SAP file={{ ansible_env.HOME }}/.config/sap_config.ini') }}"
+         source_sid: "{{ lookup('ini', 'source_sid section=SAP file={{ ansible_env.HOME }}/.config/sap_config.ini') }}"
+         P_CNT: {{ P_CNT }}
+         P_PROC: {{ P_PROC }}
 
 

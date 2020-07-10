@@ -1,8 +1,9 @@
-- hosts: localhost
-  vars:
+---
+ - hosts: all
+   vars:
      ansible_connection: local
      ansible_python_interpreter: /usr/bin/python3
-  roles:
-    - role: zscreen_login_info_change
+   roles:
+     - role: zscreen_login_info_change
 
 

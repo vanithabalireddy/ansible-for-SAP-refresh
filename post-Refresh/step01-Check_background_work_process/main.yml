@@ -1,6 +1,7 @@
-- hosts: localhost
-  vars:
+---
+ - hosts: all
+   vars:
      ansible_connection: local
      ansible_python_interpreter: /usr/bin/python3
-  roles:
-    - role: check-background-jobs
+   roles:
+     - role: check-background-jobs
