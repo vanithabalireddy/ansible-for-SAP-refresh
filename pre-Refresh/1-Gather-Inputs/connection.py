@@ -1,6 +1,5 @@
 from pyrfc import Connection
 from configparser import ConfigParser
-from ansible.module_utils.basic import *
 import os
 
 
