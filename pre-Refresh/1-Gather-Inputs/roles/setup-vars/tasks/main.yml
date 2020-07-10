@@ -27,4 +27,5 @@
      line: "{{ lookup('ini', 'target_ip_addr section=SAP file={{ ansible_env.HOME }}/.config/sap_config.ini') }}\t{{ lookup('ini', 'ashost section=SAP file={{ ansible_env.HOME }}/.config/sap_config.ini') }}"
      state: present
    when: ansible_facts['distribution'] != "Windows"
+   become: yes
    tags: hostupdate
