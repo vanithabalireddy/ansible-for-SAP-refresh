@@ -6,7 +6,7 @@
      state: directory
      mode: '0755'
 
- - name: Create sap_config.cnf file in $HOME/.config/sap_config.cnf
+ - name: Create sap_config.cnf file in $HOME/.config/sap_config.ini
    template:
      src: sap_config.ini
      dest: "{{ ansible_env.HOME }}/.config/sap_config.ini"
