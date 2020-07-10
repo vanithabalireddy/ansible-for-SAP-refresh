@@ -36,8 +36,8 @@
 
  - debug:
      msg: "Connection is Successful"
-   when: conn.stdout_lines == True
+   when: conn.stdout == "True"
 
  - debug:
      msg: "Failed to establish connection to SAP: {{ conn.stdout_lines }}"
-   when: conn.stdout_lines != True
+   when: conn.stdout != "True"
