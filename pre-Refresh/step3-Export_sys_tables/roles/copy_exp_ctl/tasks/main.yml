@@ -1,10 +1,12 @@
 ---
-# tasks file for user_master_export
+# tasks file for copy_exp_ctl
   - name: copy exp.ctl file
     template:
       src: exp.ctl
       dest: /tmp/exp.ctl
       group: sapsys
-      owner: "{{ lookup('ini', 'sid section=SAP file={{ ansible_env.HOME }}/.config/sap_config.ini')|lower }}adm"
+      owner: "{{ lookup('ini','sid section=SAP file={{ filepath }}')|lower }}adm"
       force: yes
     become: yes
+    vars:
+      filepath: "{{ lookup('env','HOME') }}/.config/sap_config.ini"
