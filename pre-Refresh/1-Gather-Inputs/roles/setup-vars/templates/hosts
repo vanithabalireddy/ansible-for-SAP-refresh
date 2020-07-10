@@ -1,0 +1,2 @@
+[system_refresh_target]
+{{ target_sap_hostname }}
