@@ -34,4 +34,10 @@
    command: "{{ ansible_python_interpreter }} {{ playbook_dir }}/connection.py"
    register: conn
 
- - debug: var=conn
+ - debug:
+     msg: "Connection is Successful"
+   when: conn.stdout_lines == True
+
+ - debug:
+     msg: "Failed to establish connection to SAP: {{ conn.stdout_lines }}"
+   when: conn.stdout_lines != True
