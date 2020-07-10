@@ -1,5 +1,5 @@
 ---
- - hosts: sap
+ - hosts: system_refresh_target
    roles:
      - role: copy_imp_ctl
 

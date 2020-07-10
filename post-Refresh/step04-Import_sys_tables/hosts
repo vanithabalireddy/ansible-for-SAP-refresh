@@ -1,2 +1,2 @@
-[sap]
-"{{ lookup('ini', 'ashost section=SAP file={{ ansible_env.HOME }}/.config/sap_config.ini') }}"
+[system_refresh_target]
+sstsap06
