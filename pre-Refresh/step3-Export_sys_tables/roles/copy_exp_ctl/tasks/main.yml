@@ -5,8 +5,5 @@
       src: exp.ctl
       dest: /tmp/exp.ctl
       group: sapsys
-      owner: "{{ lookup('ini','sid section=SAP file={{ filepath }}')|lower }}adm"
+      owner: "{{ sid|lower }}adm"
       force: yes
-    become: yes
-    vars:
-      filepath: "{{ lookup('env','HOME') }}/.config/sap_config.ini"

@@ -1,9 +1,11 @@
 ---
- - hosts: sap
+ - hosts: system_refresh_target
+   vars:
+      ansible_user: "{{ sid|lower }}adm"
    roles:
      - role: copy_exp_ctl
 
- - hosts: all
+ - hosts: localhost
    vars:
      ansible_connection: local
      ansible_python_interpreter: /usr/bin/python3
