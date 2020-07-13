@@ -47,7 +47,7 @@
      msg: "Failed to establish connection to SAP: {{ conn.stdout_lines }}"
    when: conn.stdout != "True"
 
- - name: updating host entry for exporting system tables
+ - name: updating host entry for system tables import/export
    template:
       src: hosts
       dest: "{{ item }}"
