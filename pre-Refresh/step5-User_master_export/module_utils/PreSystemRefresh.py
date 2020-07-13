@@ -227,6 +227,7 @@ class PreSystemRefresh:
             for data in trans_output['DATA']:
                 for val in data.values():
                     if str(self.creds['sid'] + 'KT') in val.split()[0]:
+                        logging.info(trans.append(val.split()[0]))
                         trans.append(val.split()[0])
 
             trans.sort(reverse=True)
