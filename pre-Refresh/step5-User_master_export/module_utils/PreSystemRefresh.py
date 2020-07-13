@@ -8,7 +8,7 @@ import logging
 class PreSystemRefresh:
     data = dict()
     err = str()
-    
+
     def __init__(self):
         self.config = ConfigParser()
         try:
@@ -32,7 +32,6 @@ class PreSystemRefresh:
 
         except Exception as e:
             logging.error("CONNECTION: Failed to connect to SAP. Please check the creds: {}".format(e))
-
 
     def users_list(self, module):
         users = []
@@ -101,7 +100,8 @@ class PreSystemRefresh:
 
         logging.info("BAPI_USER_LOCK: Exception users list provided are: {}\n"
                      "BAPI_USER_LOCK: Successfully Locked users with exception to the Exception list provided!\n"
-                     "BAPI_USER_LOCK: Users that were failed to Lock: {}".format(params['EXCEPTION_USERS'], errors if errors else None))
+                     "BAPI_USER_LOCK: Users that were failed to Lock: {}".format(params['EXCEPTION_USERS'],
+                                                                                 errors if errors else None))
 
         module.exit_json(changed=True, meta=self.data)
 
@@ -132,7 +132,8 @@ class PreSystemRefresh:
 
         logging.info("BAPI_USER_LOCK: Exception users list: {}\n"
                      "BAPI_USER_LOCK: Successfully Locked users with exception to the Exception list provided!\n"
-                     "BAPI_USER_LOCK: Users that were failed to Lock: {}".format(params['EXCEPTION_USERS'], errors if errors else None))
+                     "BAPI_USER_LOCK: Users that were failed to Lock: {}".format(params['EXCEPTION_USERS'],
+                                                                                 errors if errors else None))
 
         module.exit_json(changed=True, meta=self.data)
 
@@ -191,7 +192,8 @@ class PreSystemRefresh:
         try:
             self.conn.call("SXPG_COMMAND_EXECUTE", COMMANDNAME=params['NAME'])
             self.data["Success!"] = "Successfully Executed command {} and exported system tables".format(params['NAME'])
-            logging.info("SXPG_COMMAND_EXECUTE: Successfully Executed command {} and exported system tables".format(params['NAME']))
+            logging.info("SXPG_COMMAND_EXECUTE: Successfully Executed command {} and exported system tables".format(
+                params['NAME']))
             module.exit_json(changed=True, meta=self.data)
         except Exception as e:
             self.err = "Failed to Execute command {}".format(params['NAME'])
@@ -217,7 +219,8 @@ class PreSystemRefresh:
 
             try:
                 trans_output = self.conn.call("RFC_READ_TABLE", QUERY_TABLE='E070',
-                                              OPTIONS=[{"TEXT": "TRFUNCTION EQ 'M' AND AS4USER EQ 'DDIC'"}])  # IF Condition check needs to be implemented
+                                              OPTIONS=[{
+                                                           "TEXT": "TRFUNCTION EQ 'M' AND AS4USER EQ 'DDIC'"}])  # IF Condition check needs to be implemented
             except Exception as e:
                 self.err = "Failed to query E070L Table: {}".format(e)
                 logging.error("FETCH: Failed to query E070L Table: {}".format(e))
@@ -227,7 +230,6 @@ class PreSystemRefresh:
             for data in trans_output['DATA']:
                 for val in data.values():
                     if str(self.creds['sid'] + 'KT') in val.split()[0]:
-                        logging.info(trans.append(val.split()[0]))
                         trans.append(val.split()[0])
 
             trans.sort(reverse=True)
@@ -333,7 +335,8 @@ class PreSystemRefresh:
             module.exit_json(changed=True, meta=self.data)
         except Exception as e:
             self.err = "CREATE VARIANT: Failed to create variant {} for report {} : {}".format(variant_name, report, e)
-            logging.error("CREATE VARIANT: Failed to create variant {} for report {} : {}".format(variant_name, report, e))
+            logging.error(
+                "CREATE VARIANT: Failed to create variant {} for report {} : {}".format(variant_name, report, e))
             module.fail_json(msg=self.err, error=to_native(e), exception=traceback.format_exc())
 
     def delete_variant(self, module, report, variant_name):
@@ -345,7 +348,8 @@ class PreSystemRefresh:
             module.exit_json(changed=True, meta=self.data)
         except Exception as e:
             self.err = "Failed to delete variant {} for report {}: {}".format(variant_name, report, e)
-            logging.error("DELETE VARIANT: Failed to delete variant {} for report {}: {}".format(variant_name, report, e))
+            logging.error(
+                "DELETE VARIANT: Failed to delete variant {} for report {}: {}".format(variant_name, report, e))
             module.fail_json(msg=self.err, error=to_native(e), exception=traceback.format_exc())
 
 
