@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 from pyrfc import Connection
 from configparser import ConfigParser
 from ansible.module_utils.basic import *
@@ -16,7 +19,7 @@ class PreSystemRefresh:
             self.creds = self.config['SAP']
 
             logging.basicConfig(filename="/tmp/system_refresh.log", level=logging.INFO,
-                                format='%(levelname)s: %(message)s: %(asctime)s')
+                                format='[%(asctime)s]: [%(levelname)s]: [%(message)s]')
 
             self.conn = Connection(user=self.creds['user'], passwd=self.creds['passwd'], ashost=self.creds['ashost'],
                                    sysnr=self.creds['sysnr'], sid=self.creds['sid'], client=self.creds['client'])
@@ -25,7 +28,7 @@ class PreSystemRefresh:
             self.creds = self.config['SAP']
 
             logging.basicConfig(filename=os.path.expanduser('~') + '\system_refresh.log', level=logging.INFO,
-                                format='%(levelname)s: %(message)s: %(asctime)s')
+                                format='[%(asctime)s]: [%(levelname)s]: [%(message)s]')
 
             self.conn = Connection(user=self.creds['user'], passwd=self.creds['passwd'], ashost=self.creds['ashost'],
                                    sysnr=self.creds['sysnr'], sid=self.creds['sid'], client=self.creds['client'])
@@ -219,8 +222,7 @@ class PreSystemRefresh:
 
             try:
                 trans_output = self.conn.call("RFC_READ_TABLE", QUERY_TABLE='E070',
-                                              OPTIONS=[{
-                                                           "TEXT": "TRFUNCTION EQ 'M' AND AS4USER EQ 'DDIC'"}])  # IF Condition check needs to be implemented
+                                              OPTIONS=[{"TEXT": "TRFUNCTION EQ 'M' AND AS4USER EQ 'DDIC'"}])
             except Exception as e:
                 self.err = "Failed to query E070L Table: {}".format(e)
                 logging.error("FETCH: Failed to query E070L Table: {}".format(e))
@@ -233,8 +235,7 @@ class PreSystemRefresh:
                         trans.append(val.split()[0])
 
             trans.sort(reverse=True)
-            transport_number = trans[0]
-            result['UME_Trans_No'] = transport_number
+            result['UME_Trans_No'] = trans[0]
 
             try:
                 output = self.conn.call("RFC_READ_TABLE", QUERY_TABLE='TMSPCONF')
@@ -252,21 +253,17 @@ class PreSystemRefresh:
                     bin_path = field['WA'].split()[2] + '/bin'
 
             if ctc is '1':
-                sid_ctc_val = self.creds['sid'] + '.' + self.creds['client']
-                result["sid_ctc_val"] = sid_ctc_val
+                result["sid_ctc_val"] = self.creds['sid'] + '.' + self.creds['client']
             else:
-                sid_ctc_val = self.creds['sid']
-                result["sid_ctc_val"] = sid_ctc_val
+                result["sid_ctc_val"] = self.creds['sid']
 
             result["bin_path"] = bin_path
             result["client"] = self.creds['client']
             result["sid_val"] = self.creds['sid']
 
-            logging.info("FETCH: trans_val is set to: {}\n"
-                         "\t UME_Trans_No is set to: {}\n"
-                         "\t bin_path is set to: {}\n"
-                         "\t sid_ctc_val is set to: {}".format(result['trans_val'], result['UME_Trans_No'],
-                                                               result['bin_path'], result["sid_ctc_val"]))
+            logging.info("FETCH: trans_val='{}', UME_Trans_No='{}', bin_path='{}', sid_ctc_val='{}', ctc='{}', "
+                         "client='{}', sid='{}'".format(result['trans_val'], result['UME_Trans_No'], result['bin_path'],
+                                                        result["sid_ctc_val"], ctc, result['client'], result['sid_val']))
 
             if trans_val and ctc is not None:
                 self.data['stdout'] = result
@@ -293,31 +290,31 @@ class PreSystemRefresh:
         for cont in var_content:  # Export Printer devices
             if cont['SELNAME'] == 'FILE' and cont['LOW'] == '/tmp/printers':
                 self.data['stdout'] = True
-                logging.info("CHECK VARIANT: variant {} for report {} is found!".format(variant_name, report))
+                logging.info("CHECK VARIANT: variant {} for report {} is already exist!".format(variant_name, report))
                 module.exit_json(changed=True, meta=self.data)
 
         for cont in var_content:  # User Master Export
             if cont['SELNAME'] == 'COPYCLI' and cont['LOW'] == self.creds['client']:
                 self.data['stdout'] = True
-                logging.info("CHECK VARIANT: variant {} for report {} is found!".format(variant_name, report))
+                logging.info("CHECK VARIANT: variant {} for report {} is already exist!".format(variant_name, report))
                 module.exit_json(changed=True, meta=self.data)
 
         for cont in var_content:  # Delete_old_bg_jobs
             if cont['SELNAME'] == 'FORCE' and cont['LOW'] == 'X':
                 self.data['stdout'] = True
-                logging.info("CHECK VARIANT: variant {} for report {} is found!".format(variant_name, report))
+                logging.info("CHECK VARIANT: variant {} for report {} is already exist!".format(variant_name, report))
                 module.exit_json(changed=True, meta=self.data)
 
         for cont in var_content:  # Delete_outbound_queues_SMQ1
             if cont['SELNAME'] == 'DISPLAY' and cont['LOW'] == 'X':
                 self.data['stdout'] = True
-                logging.info("CHECK VARIANT: variant {} for report {} is found!".format(variant_name, report))
+                logging.info("CHECK VARIANT: variant {} for report {} is already exist!".format(variant_name, report))
                 module.exit_json(changed=True, meta=self.data)
 
         for cont in var_content:  # Delete_outbound_queues_SMQ2
             if cont['SELNAME'] == 'SET_EXEC' and cont['LOW'] == 'X':
                 self.data['stdout'] = True
-                logging.info("CHECK VARIANT: variant {} for report {} is found!".format(variant_name, report))
+                logging.info("CHECK VARIANT: variant {} for report {} is already exist!".format(variant_name, report))
                 module.exit_json(changed=True, meta=self.data)
 
         self.data['stdout'] = False
@@ -331,12 +328,11 @@ class PreSystemRefresh:
                            VARI_CONTENTS=content, VARI_TEXT=text, VSCREENS=screen)
             self.data['Success'] = "Successfully Created variant {} for report {}".format(variant_name, report)
             self.data['stdout'] = True
-            logging.info("CREATE VARIANT: Successfully Created variant {} for report {}".format(variant_name, report))
+            logging.info("CREATE VARIANT: Created variant {} for report {}".format(variant_name, report))
             module.exit_json(changed=True, meta=self.data)
         except Exception as e:
             self.err = "CREATE VARIANT: Failed to create variant {} for report {} : {}".format(variant_name, report, e)
-            logging.error(
-                "CREATE VARIANT: Failed to create variant {} for report {} : {}".format(variant_name, report, e))
+            logging.error("CREATE VARIANT: Failed to create variant {} for report {} : {}".format(variant_name, report, e))
             module.fail_json(msg=self.err, error=to_native(e), exception=traceback.format_exc())
 
     def delete_variant(self, module, report, variant_name):
@@ -344,12 +340,11 @@ class PreSystemRefresh:
             self.conn.call("RS_VARIANT_DELETE_RFC", REPORT=report, VARIANT=variant_name)
             self.data['Success'] = "Successfully Deleted variant {} for report {}".format(variant_name, report)
             self.data['stdout'] = True
-            logging.info("DELETE VARIANT: Successfully Delete variant {} for report {}".format(variant_name, report))
+            logging.info("DELETE VARIANT: Deleted variant {} for report {}".format(variant_name, report))
             module.exit_json(changed=True, meta=self.data)
         except Exception as e:
             self.err = "Failed to delete variant {} for report {}: {}".format(variant_name, report, e)
-            logging.error(
-                "DELETE VARIANT: Failed to delete variant {} for report {}: {}".format(variant_name, report, e))
+            logging.error("DELETE VARIANT: Failed to delete variant {} for report {}: {}".format(variant_name, report, e))
             module.fail_json(msg=self.err, error=to_native(e), exception=traceback.format_exc())
 
 
