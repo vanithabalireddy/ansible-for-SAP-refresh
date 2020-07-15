@@ -1,5 +1,5 @@
 #!/usr/bin/python
-#  -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 ANSIBLE_METADATA = {'metadata_version': '1.1',
                     'status': ['preview'],
@@ -14,17 +14,17 @@ description:
     - Calls SAP Function modules by passing params required.
     - For all the pre and post refresh activities of SAP System Refresh.
 version_added: "1.1"
+author: "Mahesh Ramachandrappa (@mramachandrappa)"
 
 options:
   FETCH:
     description:
     - Fetches following information from SAP Application.
-        'sys_params' > returns trans_val, UME_Trans_No, sid_ctc_val, bin_path, client, sid_val
-        'sys_users'  > returns entire System user list
-        'sys_locked_users' > returns existing locked users.
-        'bgd_val'    > returns bgd value.
+        'sys_params' > trans_val, UME_Trans_No, sid_ctc_val, bin_path, client, sid_val
+        'sys_users'  > Entire System user list
+        'sys_locked_users' > Existing locked users.
     type: str
-    choices: ['sys_params', 'sys_users', 'sys_locked_users', 'bgd_val']
+    choices: ['sys_params', 'sys_users', 'sys_locked_users']
   BAPI_USER_LOCK:
     description:
     - Lock SAP System users. 
@@ -112,8 +112,6 @@ requirements:
     - configparser
 notes:
     - For pyrfc and SAP network SDK's installation visit > https://sap.github.io/PyRFC/install.html
-    
-author: "Mahesh Ramachandrappa" [maheshramachandrappa91@gmail.com]
 '''
 
 EXAMPLES = r'''
@@ -136,7 +134,7 @@ EXAMPLES = r'''
     BAPI_USER_LOCK:
         EXCEPTION_USERS: "['MRAM', 'GIRIDR']"
         ALL_USERS: "{{ users.meta.USERS }}"
-
+        
 #INST_EXECUTE_REPORT
 - name: Executes the SAP program.
   sap_function_call:
@@ -169,13 +167,12 @@ EXAMPLES = r'''
 
 from ansible.module_utils.basic import *
 from ansible.module_utils.PreSystemRefresh import PreSystemRefresh
-from ansible.module_utils.PostSystemRefresh import PostSystemRefresh
 
 
 def main():
     fields = dict(
         FETCH=dict(
-            choices=['sys_params', 'sys_users', 'sys_locked_users', 'bgd_val'], type='str'),
+            choices=['sys_params', 'sys_users', 'sys_locked_users'], type='str'),
         BAPI_USER_LOCK=dict(
             EXCEPTION_USERS=dict(required=True, type='list'),
             ALL_USERS=dict(required=True, type='list'), type='dict'),
@@ -205,8 +202,7 @@ def main():
     if module.check_mode:
         module.exit_json({"Mes": "CheckMode is not supported as of now!"})
 
-    prefresh = PreSystemRefresh()
-    postRefresh = PostSystemRefresh()
+    prefresh = PreSystemRefresh(module)
 
     if module.params['FETCH']:
         params = module.params['FETCH']
@@ -216,8 +212,6 @@ def main():
             prefresh.users_list(module)
         if params == 'sys_locked_users':
             prefresh.existing_locked_users(module)
-        if params == 'bgd_val':
-            postRefresh.check_bg_jobs(module)
 
     if module.params['BAPI_USER_LOCK']:
         params = module.params['BAPI_USER_LOCK']
@@ -229,11 +223,11 @@ def main():
 
     if module.params['INST_EXECUTE_REPORT']:
         params = module.params['INST_EXECUTE_REPORT']
-        postRefresh.inst_execute_report(module, params)
+        prefresh.inst_execute_report(module, params)
 
     if module.params['SUBST_START_REPORT_IN_BATCH']:
         params = module.params['SUBST_START_REPORT_IN_BATCH']
-        postRefresh.start_report_in_batch(module, params)
+        prefresh.start_report_in_batch(module, params)
 
     if module.params['ZSXPG_COMMAND_INSERT']:
         params = module.params['ZSXPG_COMMAND_INSERT']
