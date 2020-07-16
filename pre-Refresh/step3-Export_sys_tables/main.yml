@@ -1,9 +1,8 @@
 ---
- - hosts: system_refresh_target
+ - hosts: all
    vars:
-      ansible_user: "{{ sid|lower }}adm"
-   roles:
-     - role: copy_exp_ctl
+      ansible_user: "{{ lookup('ini', 'remote_ssh_user section=SAP file={{ ansible_env.HOME }}/.config/sap_config.ini') }}"
+   - role: copy_exp_ctl
 
  - hosts: all
    vars:
