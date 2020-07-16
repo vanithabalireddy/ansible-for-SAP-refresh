@@ -1,5 +1,5 @@
 ---
-# tasks file for system_user_lock
+# tasks file for setup-vars
  - name: Create $HOME/.config directory if doesn't exist
    file:
      path: "{{ ansible_env.HOME }}/.config"
@@ -47,12 +47,5 @@
      msg: "Failed to establish connection to SAP: {{ conn.stdout_lines }}"
    when: conn.stdout != "True"
 
- - name: updating host entry for system tables import/export
-   template:
-      src: hosts
-      dest: "{{ item }}"
-      force: yes
-   with_items:
-        - "{{ playbook_dir }}/../step3-Export_sys_tables/hosts"
-        - "{{ playbook_dir }}/../../post-Refresh/step04-Import_sys_tables/hosts"
+
 
