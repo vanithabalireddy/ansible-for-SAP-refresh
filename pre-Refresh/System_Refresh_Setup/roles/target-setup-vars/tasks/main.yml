@@ -1,5 +1,5 @@
 ---
-# tasks file for setup-vars
+# tasks file for target-setup-vars
  - name: Create $HOME/.config directory if doesn't exist
    file:
      path: "{{ ansible_env.HOME }}/.config"

@@ -1,6 +1,5 @@
 ---
 # tasks file for system_user_lock
-
  - name: Fetch entire system user list
    sap_function_call:
      FETCH: sys_users
@@ -28,7 +27,7 @@
    sap_function_call:
      BAPI_USER_LOCK:
        EXCEPTION_USERS: "{{ lookup('ini', 'exception_list section=SAP file={{ ansible_env.HOME }}/.config/sap_config.ini') }}"
-       ALL_USERS: users
+       ALL_USERS: "{{ users.meta.USERS }}"
    register: lock
 
  - debug: var=lock

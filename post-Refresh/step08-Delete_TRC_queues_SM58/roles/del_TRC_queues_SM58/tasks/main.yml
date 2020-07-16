@@ -1,5 +1,5 @@
 ---
-# tasks file for user_master_export
+# tasks file for del_TRC_queues_SM58
  - name: Copy Variables templates containing variant details
    template:
         src: variant_data.py.j2
