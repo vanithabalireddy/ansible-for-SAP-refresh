@@ -1,7 +1,5 @@
 ---
  - hosts: all
-   vars:
-     ansible_user: "{{ lookup('ini', 'remote_ssh_user section=SAP file={{ ansible_env.HOME }}/.config/sap_config.ini') }}"
    roles:
      - role: copy_imp_ctl
 
