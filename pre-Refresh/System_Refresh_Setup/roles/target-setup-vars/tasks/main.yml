@@ -8,11 +8,11 @@
  
  - name: Delete existing sap_config.ini configuration file
    file:
-     dest: "{{ ansible_env.HOME }}/.config/sap_config.ini"
+     dest: "{{ ansible_env.HOME }}/.config/{{ ansible_hostname }}.ini"
      state: absent
 
  - name: Create configuration file sap_config.ini in $HOME/.config/
    template:
      src: sap_config.ini
-     dest: "{{ ansible_env.HOME }}/.config/sap_config.ini"
+     dest: "{{ ansible_env.HOME }}/.config/{{ ansible_hostname }}.ini"
      force: yes

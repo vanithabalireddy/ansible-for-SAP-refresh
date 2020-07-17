@@ -6,7 +6,7 @@ import os
 def main():
     config = ConfigParser()
     try:
-        config.read(os.environ["HOME"] + '/.config/sap_config.ini')
+        config.read(os.environ["HOME"] + '/.config/os.environ["HOSTNAME"].ini')
         creds = config['SAP']
 
         conn = Connection(user=creds['user'], passwd=creds['passwd'], ashost=creds['ashost'],
@@ -15,7 +15,7 @@ def main():
         if conn:
             return True
     except KeyError:
-         config.read(os.path.expanduser('~') + '\.config\sap_config.ini')
+         config.read(os.path.expanduser('~') + '\.config\{}.ini'.format(os.environ['COMPUTERNAME']))
          creds = config['SAP']
 
          conn = Connection(user=creds['user'], passwd=creds['passwd'], ashost= creds['ashost'],
