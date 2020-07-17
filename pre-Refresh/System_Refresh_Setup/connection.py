@@ -6,7 +6,7 @@ import os
 def main():
     config = ConfigParser()
     try:
-        config.read(os.environ["HOME"] + '/.config/os.environ["HOSTNAME"].ini')
+        config.read(os.environ["HOME"] + '/.config/{}.ini'.format(os.environ["HOSTNAME"]))
         creds = config['SAP']
 
         conn = Connection(user=creds['user'], passwd=creds['passwd'], ashost=creds['ashost'],
