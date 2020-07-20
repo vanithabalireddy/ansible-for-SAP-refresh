@@ -9,24 +9,20 @@ def main():
         config.read(os.environ["HOME"] + '/.config/{}.ini'.format(os.environ["HOSTNAME"]))
         creds = config['SAP']
 
-        conn = Connection(user=creds['user'], passwd=creds['passwd'], ashost=creds['ashost'],
+        Connection(user=creds['user'], passwd=creds['passwd'], ashost=creds['ashost'],
                                sysnr=creds['sysnr'], sid=creds['sid'], client=creds['client'])
 
-        if conn:
-            return True
+        return True
     except KeyError:
          config.read(os.path.expanduser('~') + '\.config\{}.ini'.format(os.environ['COMPUTERNAME']))
          creds = config['SAP']
 
-         conn = Connection(user=creds['user'], passwd=creds['passwd'], ashost= creds['ashost'],
+         Connection(user=creds['user'], passwd=creds['passwd'], ashost= creds['ashost'],
                            sysnr=creds['sysnr'], sid=creds['sid'], client=creds['client'])
 
-         if conn:
-            return True
+         return True
     except Exception:
         return False
-
-    return False
 
 
 if __name__ == '__main__':
