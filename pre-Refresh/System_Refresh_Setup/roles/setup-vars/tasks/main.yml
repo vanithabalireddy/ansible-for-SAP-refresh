@@ -10,6 +10,7 @@
    git:
      repo: git@github.com:mramachandrappa/ansible-for-SAP.git
      dest: "{{ ansible_env.HOME }}/sr_working_dir/{{ target_sap_sid }}"
+     version: cloudbolt/ansible-system-refresh
 
  - name: Delete existing sap_config.ini configuration file
    file:
@@ -39,17 +40,15 @@
    when: ansible_facts['distribution'] != "Windows"
    become: yes
 
- - name: Check connection
-   command: "{{ ansible_python_interpreter }} {{ playbook_dir }}/connection.py"
-   register: conn
-
- - debug:
-     msg: "Connection is Successful"
-   when: conn.stdout == "True"
-
- - debug:
-     msg: "Failed to establish connection to SAP: {{ conn.stdout_lines }}"
-   when: conn.stdout != "True"
-
-
+# - name: Check connection
+#   command: "{{ ansible_python_interpreter }} {{ playbook_dir }}/connection.py"
+#   register: conn
+#
+# - debug:
+#     msg: "Connection is Successful"
+#   when: conn.stdout == "True"
+#
+# - debug:
+#     msg: "Failed to establish connection to SAP: {{ conn.stdout_lines }}"
+#   when: conn.stdout != "True"
 
