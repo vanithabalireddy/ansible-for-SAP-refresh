@@ -2,6 +2,9 @@
  - hosts: all
    roles:
      - role: target-setup-vars
+       vars:
+         working_dir: "{{ ansible_env.HOME }}/sr_working_dir/{{ target_sap_sid }}"
+         config_file_path: "{{ ansible_env.HOME }}/sr_working_dir/{{ target_sap_sid }}/ansible-for-SAP/sap_config.ini"
 
  - hosts: all
    vars:
@@ -9,3 +12,6 @@
      ansible_python_interpreter: /usr/bin/python3
    roles:
      - role: setup-vars
+       vars:
+         working_dir: "{{ ansible_env.HOME }}/sr_working_dir/{{ target_sap_sid }}"
+         config_file_path: "{{ ansible_env.HOME }}/sr_working_dir/{{ target_sap_sid }}/ansible-for-SAP/sap_config.ini"

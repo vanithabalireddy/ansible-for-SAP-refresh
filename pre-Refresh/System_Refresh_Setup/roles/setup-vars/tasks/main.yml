@@ -1,33 +1,28 @@
 ---
 # tasks file for setup-vars
- - name: Create $HOME/.config directory if doesn't exist
+ - name: Create working directory as per SID
    file:
-     path: "{{ ansible_env.HOME }}/sr_working_dir/{{ target_sap_sid }}"
+     path: "{{ working_dir }}"
      state: directory
      mode: '0755'
 
- - name: clone a ansible repo for System Refresh
+ - name: clone ansible repo of System Refresh activities
    git:
      repo: git@github.com:mramachandrappa/ansible-for-SAP.git
-     dest: "{{ ansible_env.HOME }}/sr_working_dir/{{ target_sap_sid }}"
+     dest: "{{ working_dir }}"
      version: cloudbolt/ansible-system-refresh
-
- - name: Delete existing sap_config.ini configuration file
-   file:
-     dest: "{{ ansible_env.HOME }}/sr_working_dir/{{ target_sap_sid }}/sap_config.ini"
-     state: absent
 
  - name: Create configuration file sap_config.ini in $HOME/.config/
    template:
      src: sap_config.ini
-     dest: "{{ ansible_env.HOME }}/sr_working_dir/{{ target_sap_sid }}/sap_config.ini"
+     dest: "{{ config_file_path }}"
      force: yes
 
  - name: Adding an entry in /etc/hosts
    win_hosts:
      state: present
-     canonical_name: "{{ lookup('ini', 'ashost section=SAP file={{ ansible_env.HOME }}/sr_working_dir/{{ target_sap_sid }}/sap_config.ini') }}"
-     ip_address: "{{ lookup('ini', 'target_ip_addr section=SAP file={{ ansible_env.HOME }}/sr_working_dir/{{ target_sap_sid }}/sap_config.ini') }}"
+     canonical_name: "{{ lookup('ini', 'ashost section=SAP file={{ config_file_path }}') }}"
+     ip_address: "{{ lookup('ini', 'target_ip_addr section=SAP file={{ config_file_path }}') }}"
    when: ansible_facts['distribution'] == "Windows"
    tags: hostupdate
 
@@ -35,7 +30,7 @@
    lineinfile:
      dest: /etc/hosts
      insertafter: EOF
-     line: "{{ lookup('ini', 'target_ip_addr section=SAP file={{ ansible_env.HOME }}/sr_working_dir/{{ target_sap_sid }}/sap_config.ini') }}\t{{ lookup('ini', 'ashost section=SAP file={{ ansible_env.HOME }}/sr_working_dir/{{ target_sap_sid }}/sap_config.ini') }}"
+     line: "{{ lookup('ini', 'target_ip_addr section=SAP file={{ config_file_path }}') }}\t{{ lookup('ini', 'ashost section=SAP file={{ config_file_path }}') }}"
      state: present
    when: ansible_facts['distribution'] != "Windows"
    become: yes
@@ -51,4 +46,3 @@
 # - debug:
 #     msg: "Failed to establish connection to SAP: {{ conn.stdout_lines }}"
 #   when: conn.stdout != "True"
-
