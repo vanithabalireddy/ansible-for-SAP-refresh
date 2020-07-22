@@ -1,0 +1,11 @@
+- hosts: sap
+  roles:
+    - role: copy_imp_ctl
+
+- hosts: localhost
+  vars:
+     ansible_connection: local
+     ansible_python_interpreter: /usr/bin/python3
+  roles:
+    - role: import_system_tables
+

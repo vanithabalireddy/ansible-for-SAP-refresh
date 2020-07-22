@@ -6,23 +6,27 @@ import os
 def main():
     config = ConfigParser()
     try:
-        config.read(os.environ["HOME"] + '/.config/{}.ini'.format(os.environ["HOSTNAME"]))
+        config.read(os.environ["HOME"] + '/.config/sap_config.ini')
         creds = config['SAP']
 
-        Connection(user=creds['user'], passwd=creds['passwd'], ashost=creds['ashost'],
+        conn = Connection(user=creds['user'], passwd=creds['passwd'], ashost=creds['ashost'],
                                sysnr=creds['sysnr'], sid=creds['sid'], client=creds['client'])
 
-        return True
+        if conn:
+            return True
     except KeyError:
-         config.read(os.path.expanduser('~') + '\.config\{}.ini'.format(os.environ['COMPUTERNAME']))
+         config.read(os.path.expanduser('~') + '\.config\sap_config.ini')
          creds = config['SAP']
 
-         Connection(user=creds['user'], passwd=creds['passwd'], ashost= creds['ashost'],
+         conn = Connection(user=creds['user'], passwd=creds['passwd'], ashost= creds['ashost'],
                            sysnr=creds['sysnr'], sid=creds['sid'], client=creds['client'])
 
-         return True
+         if conn:
+            return True
     except Exception:
         return False
+
+    return False
 
 
 if __name__ == '__main__':
