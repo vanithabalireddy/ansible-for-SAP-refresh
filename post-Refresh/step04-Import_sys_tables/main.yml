@@ -1,0 +1,11 @@
+- hosts: sap
+  roles:
+    - role: copy_exp_ctl
+
+- hosts: localhost
+  vars:
+     ansible_connection: local
+     ansible_python_interpreter: /usr/bin/python3
+  roles:
+    - role: export_system_tables
+

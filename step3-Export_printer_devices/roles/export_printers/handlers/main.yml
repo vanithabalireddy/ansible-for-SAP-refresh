@@ -1,9 +1,0 @@
----
-# handlers file for user_master_export
- - name: Delete Variant
-   variant:
-       report: "{{ report }}"
-       variant_name: "{{ variant_name }}"
-       action: delete
-
-

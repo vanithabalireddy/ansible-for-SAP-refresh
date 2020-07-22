@@ -1,9 +1,0 @@
----
-# tasks file for system_user_lock
- - name: Suspend background jobs
-   sap_function_call:
-        suspend_bg_jobs: True
-   register: suspend_bg_jobs
-   tags: suspend_bg_jobs
-
- - debug: var=suspend_bg_jobs
