@@ -1,9 +1,0 @@
-- hosts: localhost
-  vars:
-     ansible_connection: local
-     ansible_python_interpreter: /usr/bin/python3
-  roles:
-    - role: export_printers
-      vars:
-        report: "RSPOXDEV"
-        variant_name: "SST_ZPRINT_EXP"

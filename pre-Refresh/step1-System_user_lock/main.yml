@@ -1,8 +1,0 @@
-- hosts: localhost
-  vars:
-     ansible_connection: local
-     ansible_python_interpreter: /usr/bin/python3
-  roles:
-    - role: system_user_lock
-      vars:
-        exception_list: ['SST_TRNG', 'KRISHNA', 'BJOERN', 'DDIC', 'DBISWAS', 'GIRIDR', 'MRAM']
